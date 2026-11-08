@@ -1,0 +1,164 @@
+﻿<script src="~/customjs/buttons.print.min.js"></script>
+<script src="~/customjs/buttons.print.min.js"></script>
+<script src="~/customjs/vfs_fonts.js"></script>
+<script src="~/customjs/quotation/printpi.js"></script>
+
+
+
+<div>    
+@*  <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <img src="~/assets/images/brand/91.png" height="90px;width:130px;" />
+                            </div>
+                            <div class="col-sm-6">
+                            </div>
+                        </div>
+                        <div class="row" style="border:1px solid">
+                            <div class="col-sm-6">
+                                <h6 style="background-color:lightgray;width:550px;">CUSTOMER</h6>
+                                <br />
+                                <table>
+                                    <tr>
+                                        <td><label id="cusname"></label><br /><label id="cusaddress"></label><br /><label>BIN/VAT Reg No :</label><label id="regno"></label><br /><label><br />Product:</label> <label id="productname"></label> <br /><label>HS Code:</label> <label id="hscode"></label></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <div class="col-sm-6"></div>
+                                    <div class="col-sm-6">
+                                        <h6 style="background-color:lightgray;text-align:center">PROFORMA INVOICE</h6>
+                                    </div>
+                                </div>
+
+
+                                <br />
+                                <div class="row" style="font-size:9px;">
+                                    <div class="col-sm-6"></div>
+                                    <div class="col-sm-6" style="text-align:right">
+                                        <div class="row" style="text-align:right">
+                                            <div class="col-sm-6" style="text-align:left"><label>Date</label></div>
+                                            <div class="col-sm-6" style="text-align:right;background-color:lightgray"><label id="date"></label></div>
+                                        </div>
+                                        <div class="row" style="text-align:right">
+                                            <div class="col-sm-6" style="text-align:left"><label>Expiration Date</label></div>
+                                            <div class="col-sm-6" style="text-align:right;background-color:lightgray"><label id="expdate"></label></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6" style="text-align:left"><label>Invoice </label></div>
+                                            <div class="col-sm-6" style="text-align:right;background-color:lightgray"><label style="text-align:right" id="invoiceno"></label></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6" style="text-align:left"><label>Customer ID </label></div>
+                                            <div class="col-sm-6" style="text-align:right;background-color:lightgray"><label id="cusid"></label></div>
+                                        </div>
+                                        <div class="row">
+                                            <label style="background-color:lightgray;text-align:left;padding:4px;">SHIPPING DETAILS</label>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6" style="text-align:left"><label>Shipping Mode :</label></div>
+                                            <div class="col-sm-6" style="text-align:right;"><label id="shippingmode"></label></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6" style="text-align:left"><label>Mode of Transportation : </label></div>
+                                            <div class="col-sm-6" style="text-align:right;"><label id="modeoftransportation"></label></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6" style="text-align:left"><label>Net Weight (Kg) </label></div>
+                                            <div class="col-sm-6" style="text-align:right;"><label id="netweight"></label></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                            </div>
+
+                            <div>
+                                <table id="print" style="width:100%">
+                                    <tr style="background-color:lightgray;font-weight:bold;font-size:8px; text-align:center;border:1px solid lightgray">
+                                        <th style="font-weight:bold">Product code</th>
+                                        <th style="font-weight:bold">Description</th>
+                                        <th style="font-weight:bold">Thickness (μ)</th>
+                                        <th style="font-weight:bold">Width (mm)</th>
+                                        <th style="font-weight:bold">Quantity (Kg)</th>
+                                        <th style="font-weight:bold">Base Price</th>
+                                        <th style="font-weight:bold">VAT</th>
+                                        <th style="font-weight:bold">Unit Price</th>
+                                        <th style="font-weight:bold">Total Amount</th>
+                                    </tr>
+                                    <tr ng-repeat="list in lineprint">
+                                        <td style="text-align:center;border:1px solid lightgray;">{{list.productcode}}</td>
+                                        <td style="text-align:center;border:1px solid lightgray;">{{list.productname}}</td>
+                                        <td style="text-align:center;border:1px solid lightgray;">{{list.thikness}}</td>
+                                        <td style="text-align:center;border:1px solid lightgray;">{{list.width}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;">{{list.quantity}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;">{{list.bascprice}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;">{{list.vat}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;">{{list.unitprice}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;">{{list.totalamount}}</td>
+                                    </tr>
+                                    <tr style="border:1px solid black">
+                                        <td colspan="8" style="text-align:right;font-weight:bold">Total Amount - </td>
+                                        <td><label style="color:red;margin-top:8px;text-align:right" id="totalamt"></label></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h6>Terms and Condition</h6>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                </div>
+                            </div>
+
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h6>Accepted by buyer</h6>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6 style="text-align:right">Akij BIAX Films Ltd.</h6>
+                                </div>
+                            </div>
+                            <br /><br /><br />
+                            <div class="row" style="margin-top:40px;">
+                                <div class="col-sm-6">
+                                    <h6>(Authorised signatory)</h6>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6 style="text-align:right">(Authorised signatory)</h6>
+                                </div>
+                            </div>
+                            <br />
+                        </div>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+
+                        
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="print_btn">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11.9688 8.46875C12.1146 8.32292 12.2917 8.25 12.5 8.25C12.7083 8.25 12.8854 8.32292 13.0312 8.46875C13.1771 8.61458 13.25 8.79167 13.25 9C13.25 9.20833 13.1771 9.38542 13.0312 9.53125C12.8854 9.67708 12.7083 9.75 12.5 9.75C12.2917 9.75 12.1146 9.67708 11.9688 9.53125C11.8229 9.38542 11.75 9.20833 11.75 9C11.75 8.79167 11.8229 8.61458 11.9688 8.46875ZM13.5 5.5C14.1875 5.5 14.7708 5.75 15.25 6.25C15.75 6.72917 16 7.3125 16 8V12C16 12.1458 15.9479 12.2708 15.8438 12.375C15.7604 12.4583 15.6458 12.5 15.5 12.5H13.5V15.5C13.5 15.6458 13.4479 15.7604 13.3438 15.8438C13.2604 15.9479 13.1458 16 13 16H3C2.85417 16 2.72917 15.9479 2.625 15.8438C2.54167 15.7604 2.5 15.6458 2.5 15.5V12.5H0.5C0.354167 12.5 0.229167 12.4583 0.125 12.375C0.0416667 12.2708 0 12.1458 0 12V8C0 7.3125 0.239583 6.72917 0.71875 6.25C1.21875 5.75 1.8125 5.5 2.5 5.5V1C2.5 0.729167 2.59375 0.5 2.78125 0.3125C2.96875 0.104167 3.1875 0 3.4375 0H10.375C10.7917 0 11.1458 0.145833 11.4375 0.4375L13.0625 2.0625C13.3542 2.35417 13.5 2.70833 13.5 3.125V5.5ZM4 1.5V5.5H12V3.5H10.5C10.3542 3.5 10.2292 3.45833 10.125 3.375C10.0417 3.27083 10 3.14583 10 3V1.5H4ZM12 14.5V12.5H4V14.5H12ZM14.5 11V8C14.5 7.72917 14.3958 7.5 14.1875 7.3125C14 7.10417 13.7708 7 13.5 7H2.5C2.22917 7 1.98958 7.10417 1.78125 7.3125C1.59375 7.5 1.5 7.72917 1.5 8V11H14.5Z"
+                                          fill="white" />
+                                </svg>
+                                <span>Print</span>
+                            </button>
+                        </div>
+                    </form>*@
+</div>
+                

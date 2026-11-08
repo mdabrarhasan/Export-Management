@@ -1,0 +1,12 @@
+﻿CREATE TABLE [dbo].[TBLCUSTOMER] (
+    [ID]           INT           IDENTITY (1, 1) NOT NULL,
+    [CODE]         NVARCHAR (50) NULL,
+    [NAME]         NVARCHAR (50) NULL,
+    [ADDRESS]      NVARCHAR (50) NULL,
+    [EMAILID]      NVARCHAR (50) NULL,
+    [MOBILENUMBER] NVARCHAR (50) NULL,
+    [UNITID]       INT           NULL,
+    [ISACTIVE]     BIT           NULL,
+    CONSTRAINT [PK_TBLCUSTOMER] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

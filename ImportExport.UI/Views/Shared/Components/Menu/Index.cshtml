@@ -1,0 +1,28 @@
+﻿
+<ul class="metismenu list-unstyled" id="side-menu">
+    @if (Model != null)
+    {
+        var submenu = (List<ImportExport.UI.Models.Menu.Menus>)Model;
+        var groupByMenu = submenu.GroupBy(x => new { x.SUBMENU, x.ICON }).ToList();
+
+        foreach (var MenuList in groupByMenu)
+        {
+            <li>
+                <a href="javascript: void(0);" class="has-arrow">
+                    <i class="@MenuList.Key.ICON" style="color:lightseagreen"></i>
+                    <span class="menu-item" data-key="t-ui-elements"> @MenuList.Key.SUBMENU</span>
+                </a>
+                <ul class="sub-menu" aria-expanded="false">
+
+                    @foreach (var SubMenuList in MenuList)
+                    {
+                        <li data-key="t-notifications">
+                            <a href='@Url.Action(@SubMenuList.VIEWNAME,@SubMenuList.CONTROLLERNAME)'>@SubMenuList.SUBMENUNAME</a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    }
+
+</ul>

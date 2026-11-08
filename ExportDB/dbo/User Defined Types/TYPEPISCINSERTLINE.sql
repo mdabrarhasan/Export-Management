@@ -1,0 +1,20 @@
+﻿CREATE TYPE [dbo].[TYPEPISCINSERTLINE] AS TABLE (
+    [ITEMTYPEID]     INT             NULL,
+    [ITEMID]         INT             NULL,
+    [UOMID]          INT             NULL,
+    [SIZE]           NVARCHAR (MAX)  NULL,
+    [CONSTRUCTION]   NVARCHAR (MAX)  NULL,
+    [WEIGHT]         NVARCHAR (MAX)  NULL,
+    [SLIT]           NVARCHAR (MAX)  NULL,
+    [SCRIM]          NVARCHAR (MAX)  NULL,
+    [QUALITY]        NVARCHAR (MAX)  NULL,
+    [ITEMTITLE]      NVARCHAR (MAX)  NULL,
+    [PACKINGDETAILS] NVARCHAR (MAX)  NULL,
+    [QUANTITY]       DECIMAL (18, 2) NULL,
+    [PRICE]          DECIMAL (18, 2) NULL,
+    [DISCOUNTID]     INT             NULL,
+    [DISCOUNT]       DECIMAL (18, 2) NULL,
+    [TOTALAMOUNT]    DECIMAL (18, 2) NULL,
+    [DESCRIPTIONS]   VARCHAR (1000)  NULL,
+    [REMARKS]        VARCHAR (1000)  NULL);
+

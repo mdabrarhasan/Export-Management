@@ -1,0 +1,10 @@
+﻿-- exec SPGetTermsAndCondition
+CREATE PROCEDURE [dbo].[SPGetTermsAndCondition]
+
+AS
+BEGIN
+ 
+
+ SELECT ID, DESCRIPTION as Name FROM TBLTERMSCONDITION
+
+END;

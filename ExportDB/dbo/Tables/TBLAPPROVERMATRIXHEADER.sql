@@ -1,0 +1,22 @@
+﻿CREATE TABLE [dbo].[TBLAPPROVERMATRIXHEADER] (
+    [ID]                  INT            IDENTITY (1, 1) NOT NULL,
+    [SUBMENUID]           INT            NULL,
+    [CODE]                NVARCHAR (50)  NOT NULL,
+    [PROCSSNAME]          NVARCHAR (200) NOT NULL,
+    [TBLDOCUMENTSTATUSID] INT            NOT NULL,
+    [ISAPPROVALALLOWED]   BIT            NOT NULL,
+    [DESCRIPTION]         NVARCHAR (200) NULL,
+    [ISACTIVE]            BIT            NOT NULL,
+    [UNITID]              INT            NULL,
+    [CREATEDBY]           INT            NOT NULL,
+    [CREATEDDATE]         DATETIME       NOT NULL,
+    [UPDATEBY]            INT            NOT NULL,
+    [UPDATEDDATE]         DATETIME       NOT NULL,
+    CONSTRAINT [PK_TBLAPPROVERMATRIXHEADER] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_TBLAPPROVERMATRIXHEADER]
+    ON [dbo].[TBLAPPROVERMATRIXHEADER]([CODE] ASC);
+

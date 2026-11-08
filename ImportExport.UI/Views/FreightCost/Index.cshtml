@@ -1,0 +1,624 @@
+﻿<script src="~/customjs/Freight/Freight.js"></script>
+<script src="~/customjs/common.js"></script>
+<link href="~/customcss/print.css" rel="stylesheet" />
+
+<div ng-app="App" ng-controller="Ctl">
+
+    <div ng-show="loading">
+        <img style="width:50%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4>Jute Expense</h4>
+                </div>
+
+                <div class="card-body" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+
+                    <!-- Top Controls -->
+                    <div class="row align-items-center mb-3">
+
+                        <!-- Left: Add Button -->
+                        <div class="col-md-4 d-flex align-items-center">
+                            <button type="button"
+                                    class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+                                    ng-click="Clear()"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalFullscreen">
+                                <b>
+                                    <i class="mdi mdi-plus"></i>
+                                    <span>Add New</span>
+                                </b>
+                            </button>
+                        </div>
+
+                        <!-- Middle: Business Unit -->
+                        <div class="col-md-4" ng-init="GetUnit()">
+                            <label class="form-label fw-semibold">Business Unit</label>
+                            <select class="form-select"
+                                    ng-model="unitid"
+                                    ng-change="PCList()"
+                                    id="unitid">
+                                <option value="">-- Select Unit --</option>
+                                <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Right: Search -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Search</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search Sales Contract, Customer..."
+                                       ng-change="onSearchChange()">
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table id="tblinfo" class="table table-bordered table-hover">
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="display:none;">ID</th>
+                                    <th ng-click='sortBy("erppoid")'>PO No</th>
+                                    <th ng-click='sortBy("scname")'>Sales Contract</th>
+                                    <th ng-click='sortBy("prname")'>Invoice Number</th>
+                                    <th ng-click='sortBy("customername")'>Customer</th>
+                                    <th ng-click='sortBy("amount")' class="text-start">Final Amount</th>
+                                    <th>Status</th>
+                                    <th class="text-center" style="width:150px;">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr dir-paginate="list in PClist | orderBy: sortColumn : reverse | filter:search | itemsPerPage: pageSize"
+                                    current-page="currentPage">
+
+                                    <td style="display:none;">{{list.id}}</td>
+                                    <td>{{list.erppoid || ''}}</td>
+                                    <td>{{list.scname}}</td>
+                                    <td>{{list.prname}}</td>
+                                    <td>{{list.customername}}</td>
+                                    <td class="text-start">{{list.amount | upto4}}</td>
+
+                                    <td>
+                                        <span class="badge bg-info" ng-if='list.documentstatuscode=="PEND"'>Pending</span>
+                                        <span class="badge bg-success" ng-if='list.documentstatuscode=="APPR"'>Approved</span>
+                                        <span class="badge bg-danger" ng-if='list.documentstatuscode=="REJC"'>Rejected</span>
+                                        <span class="badge bg-primary" ng-if='list.documentstatuscode=="COMP"'>Complete</span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <button type="button"
+                                                class="btn btn-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#ViewEditexampleModalFullscreen"
+                                                ng-click="ViewCData(list.id)">
+                                            <i class="fas fa-search-plus"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-info btn-sm"
+                                                ng-disabled='list.flag == 1'
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#EditexampleModalFullscreen"
+                                                ng-click="ViewCData(list.id)">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm"
+                                                ng-disabled='list.flag == 1'
+                                                ng-click="DeleteMaster(list.id)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <div ng-init="currentPage=1; pageSize=10"></div>
+                    <style>
+                        /* Pagination container */
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 6px;
+                            padding-left: 0;
+                            margin-top: 20px;
+                        }
+
+                        /* Pagination items */
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            /* Links */
+                            dir-pagination-controls li a {
+                                display: inline-block;
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                font-weight: 500;
+                                border: 1px solid transparent;
+                                transition: all 0.25s ease;
+                            }
+
+                                /* Hover effect */
+                                dir-pagination-controls li a:hover {
+                                    background: #e7f1ff;
+                                    border-color: #0d6efd;
+                                    text-decoration: none;
+                                }
+
+                            /* Active page */
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                                border-color: #0d6efd;
+                                box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
+                            }
+
+                            /* Disabled state */
+                            dir-pagination-controls li.disabled a {
+                                background: #e9ecef;
+                                color: #adb5bd;
+                                cursor: not-allowed;
+                            }
+
+                            /* Optional: subtle click animation */
+                            dir-pagination-controls li a:active {
+                                transform: scale(0.95);
+                            }
+                    </style>
+                    <div class="row mt-2 align-items-center">
+
+                        <!-- LEFT: Total Records -->
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; color:#444; letter-spacing:0.3px; opacity:0.75;">
+                                Total Records:
+                                <span style="color:#444; font-weight:700;">
+                                    {{ (PClist | filter:search).length }}
+                                </span>
+                            </span>
+                        </div>
+
+                        <!-- CENTER: Pagination -->
+                        <div class="col-md-4 text-center">
+
+                            <dir-pagination-controls direction-links="true"
+                                                     max-size="10"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+
+                        </div>
+
+                        <!-- RIGHT: empty for balance -->
+                        <div class="col-md-4"></div>
+
+                    </div>
+                   
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Expense (Insertion Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-3" ng-init="GetUnit()">
+                                <label>Select Business Unit :</label>
+                                
+                                <select class="form-control"
+                                        ng-change="PassID(unitidforloadmodel)"
+                                        ng-model="unitidforloadmodel"
+                                        ng-options="list.id as list.name for list in unitlist"
+                                        id="unitidforload">
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <input type="hidden" id="txtPISCID"/>
+                                <label>Search By Sales Contract :</label>
+                                <input type="text" class="form-control" ng-paste="SearchPI()" ng-keyup="SearchPI()" placeholder="Search PI/SC..." id="txtPISC" autocomplete="off" />
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label>Select Picking Packing :</label>
+                                <select class="form-control" ng-model="txtpackingid"
+                                        id="txtpackingid">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in packinglist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <input type="hidden" id="txtSupplierID" />
+                                <label>Search by Supplier :</label>
+                                <input type="text" class="form-control" id="txtSupplier"
+                                       ng-keyup="SearchSupplier()"
+                                       placeholder="Type supplier name..." autocomplete="off" />
+                            </div>
+
+                        </div>
+                        <br />
+                        <div class="row">
+
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Buyer Details</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label>Buyer Name</label>
+                                                <input type="hidden" id="hcusid" />
+                                                <input type="text" class="form-control" id="txtBuyerName" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Phone</label>
+                                                <input type="text" class="form-control" id="txtPhone" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Email</label>
+                                                <input type="text" class="form-control" id="txtEmail" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Address</label>
+                                                <input type="text" class="form-control" id="txtAddress" disabled />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        
+                        <div class="jute table-responsive">
+                            <h4>Add Cost Item :</h4>
+                            <table class="table able-bordered" id="editmycontainer">
+                                <thead>
+                                    <tr>
+                                       
+                                        <th>Type</th>
+                                        <th>Item Cost</th>
+                                        <th> Cost</th>
+                                        <th> Currency</th>
+                                       
+                                        <th>Con. Rate</th>
+                                        <th>Total Amount Line</th>
+                                        
+                                        <th>Remarks</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr class="mycontainer" id="mainrow">
+                                        <td style="width:20%">
+                                            <select class="ddllcmtypeid form-select" ng-model="ddllcmtypeid" ng-init="LCMCostItem()" 
+                                                    id="ddllcmtypeid" ng-change="GetItemListByShipNo(ddllcmtypeid)">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in lcmtypelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select LCM Type</span>
+                                        </td>
+                                        <td style="width:20%">
+                                            <select class="lcmcostitemid form-select" ng-model="lcmcostitemid" 
+                                                    id="lcmcostitemid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in lcmitemlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Cost Item</span>
+                                        </td>
+                                        <td style="width:10%">
+
+                                            <input class="cost form-control"  ng-keyup="CalculateLine()" type="text" id="cost" value="" >
+
+                                        </td>
+                                        <td style="width:10%">
+
+                                            <input class="currency form-control" type="text" id="currency" value="BDT" ng-keypress="SearchFGLine($index)" disabled>
+
+                                        </td>
+                                        <td style="width:10%">
+
+                                            <input class="ccrate form-control" type="text" id="ccrate" value="1" ng-keypress="SearchFGLine($index)" disabled>
+
+                                        </td>
+                                        <td style="width:10%">
+
+                                            <input class="totalamount form-control"type="text" id="totalamount" value="" ng-keypress="SearchFGLine($index)" disabled>
+
+                                        </td>
+                                        <td style="width:15%">
+
+                                            <input class="remarks form-control" type="text" id="remarks" value="" ng-keypress="SearchFGLine($index)">
+
+                                        </td>
+                                        <td style="width:5%">
+                                            <button type="button" id="add" value="add" ng-click="Add()" class="btn btn-info btn-sm"><i class="fas fa-ad"></i></button>
+                                        </td>
+
+
+                                    </tr>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h5>List of Cost Items :</h5>
+                                <table class="table" id="detailsItems">
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms & Condition</label>
+                                <textarea class="form-control" id="termscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description :</label>
+                                <textarea class="form-control" id="description"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Save()" id="savebutton" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="EditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Jute Expense (Edit Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+
+                        <!-- Master Info -->
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Expense</h6>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <table class="table table-bordered" ng-repeat="mlist in masterdata">
+                                            <tr ng-init="SetFCID(mlist.id)">
+                                                <td>
+                                                    <label>PO No</label>
+                                                    <input type="text" class="form-control" ng-model="mlist.erppoid" ng-disabled="true">
+                                                </td>
+                                                <td>
+                                                    <label>Sales Contract</label>
+                                                    <input type="text" class="form-control" ng-model="mlist.scname" ng-disabled="true">
+                                                </td>
+
+                                                <td>
+                                                    <label>Invoice Number</label>
+                                                    <input type="text" class="form-control" ng-model="mlist.prname" ng-disabled="true">
+                                                </td>
+                                                <td>
+                                                    <label>Customer Name</label>
+                                                    <input type="text" class="form-control" ng-model="mlist.customername" ng-disabled="true">
+                                                </td>
+                                                <td>
+                                                    <label>Supplier Name</label>
+                                                    <input type="text" class="form-control" ng-model="mlist.suppliername" ng-disabled="true">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Details Table -->
+                        <div class="mt-3">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h4>List of Item's</h4>
+
+                                    <table class="table table-bordered table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th style="display:none;">ID</th>
+                                                <th>Sl No.</th>
+                                                <th>Cost Type</th>
+                                                <th>Cost Name</th>
+                                                <th>Cost</th>
+                                                <th>Remarks</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        
+                                        <tbody ng-init="LCMCostItem()">
+                                            <tr ng-repeat="list in detailsbyid" ng-init="EGetItemListByShipNo(list.lcmtypeid, list)">
+                                                <td style="display:none;">
+                                                    <input type="hidden" ng-model="list.id">
+                                                </td>
+                                                <td style="width:3%">
+                                                    {{$index+1}}
+                                                </td>
+                                                <!-- Cost Type Dropdown -->
+                                                <td style="width:15%">
+                                                    <select class="form-select"
+                                                            ng-model="list.lcmtypeid"
+                                                            ng-options="item.id as item.name for item in lcmtypelist"
+                                                            ng-change="EGetItemListByShipNo(list.lcmtypeid, list)"
+                                                            required>
+                                                       
+                                                    </select>
+                                                </td>
+
+                                                <td style="width:30%">
+                                                    <select class="form-select"
+                                                            ng-model="list.itemcostid"
+                                                            ng-options="item.id as item.name for item in list.lcmitemlist"
+                                                            required>
+
+                                                    </select>
+                                                </td>
+
+                                                <td style="width:15%">
+                                                    <input type="number" step="0.0001" class="form-control" ng-model="list.cost" required>
+                                                </td>
+
+                                                <td style="width:30%">
+                                                    <input type="text" class="form-control" ng-model="list.remarks" required>
+                                                </td>
+
+                                                <td>
+                                                    <button type="button" class="btn btn-info btn-sm" ng-click="Update(list.id,list.lcmtypeid,list.itemcostid,list.cost,list.remarks)">
+                                                        <i class="fas fa-arrow-circle-up"></i> 
+                                                    </button>
+                                                    <button type="button"
+                                                            class="btn btn-danger btn-sm"
+                                                            ng-disabled='list.flag == 1'
+                                                            ng-click="DeleteLine(list.id)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <div id="ViewEditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Jute Expense (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>Expense</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id="tblview" ng-repeat="list in masterdata" class="table table-bordered" style="font-weight:bold">
+                                            <tr>
+                                                <td>PO No:   {{list.erppoid || ''}}</td>
+                                                <td>Sales Contract:   {{list.scname}}</td>
+                                                <td>Invoice Number:   {{list.prname}}</td>
+                                                <td>Customer Name:   {{list.customername}}</td>
+                                                <td>Supplier Name:   {{list.suppliername || ''}}</td>
+                                                <td>Final Amount:   {{list.amount | upto4}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h4>List of Item's</h4>
+                                    <table id="tblinfo" class="table table-responsive">
+                                        <th>Sl No.</th>
+                                        <th>Cost Type</th>
+                                        <th>Cost Name</th>
+                                        <th>Total Amount Line</th>
+                                        
+                                        <tr ng-repeat="list in detailsbyid">
+                                            <td style="display:none;">{{list.id}}</td>
+                                            <td style="width:2%">
+                                                {{$index+1}}
+                                            </td>
+                                            <td style="width:15%">{{list.costtypename}}</td>
+                                            <td style="width:30%">{{list.costname}}</td>
+                                            <td style="width:15%">{{list.totalamount | upto4}}</td>
+                                            
+                                       </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

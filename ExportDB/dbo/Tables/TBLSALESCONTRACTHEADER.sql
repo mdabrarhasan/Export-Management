@@ -1,0 +1,28 @@
+﻿CREATE TABLE [dbo].[TBLSALESCONTRACTHEADER] (
+    [ID]                      INT            IDENTITY (1, 1) NOT NULL,
+    [GLOBALID]                INT            NOT NULL,
+    [SALESQUOTATIONHEADERID]  INT            NULL,
+    [PROFORMAINVOICEHEADERID] INT            NULL,
+    [SCNUMBER]                NVARCHAR (50)  NOT NULL,
+    [SCDATE]                  DATETIME       NOT NULL,
+    [CUSTOMERID]              INT            NOT NULL,
+    [SCEXPIREDATE]            DATETIME       NOT NULL,
+    [SHIPMENTDATE]            DATETIME       NOT NULL,
+    [SHIPMENTMODEID]          INT            NOT NULL,
+    [INCOTERM]                NVARCHAR (50)  NULL,
+    [PAYMENTTERMID]           INT            NOT NULL,
+    [TERMSCONDITION]          NVARCHAR (MAX) NOT NULL,
+    [FROMSHIPMENTCOUNTRYID]   INT            NULL,
+    [TOSHIPMENTCOUNTRYID]     INT            NOT NULL,
+    [FROMSHIPMENTPORTID]      INT            NULL,
+    [TODISCHARGEPORT]         NVARCHAR (100) NULL,
+    [TARRIFCODE]              NVARCHAR (50)  NULL,
+    [DESCRIPTIONS]            NVARCHAR (MAX) NULL,
+    [DOCUMENTCREATEDDATE]     DATETIME       NOT NULL,
+    [DOCUMENTCREATEDBY]       INT            NOT NULL,
+    [DOCUMENTSTATUSID]        INT            NULL,
+    [ISACTIVE]                BIT            NULL,
+    [UNITID]                  INT            NULL,
+    CONSTRAINT [PK_TBLSALESCONTRACTHEADER] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

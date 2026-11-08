@@ -1,0 +1,8 @@
+﻿CREATE TYPE [dbo].[TYPEPCINSERTLINE] AS TABLE (
+    [ID]           INT             NULL,
+    [ITEMID]       INT             NULL,
+    [QUANTITY]     DECIMAL (18, 2) NULL,
+    [PRICE]        DECIMAL (18, 2) NULL,
+    [OFFERPRICE]   DECIMAL (18, 2) NULL,
+    [CONFIRMPRICE] DECIMAL (18, 2) NULL);
+

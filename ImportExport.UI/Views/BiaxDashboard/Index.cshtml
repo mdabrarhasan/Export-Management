@@ -1,0 +1,266 @@
+﻿<script src="~/customjs/common.js"></script>
+<script src="~/customjs/BiaxDashboard.js"></script>
+<script src="~/assets/js/biaxdashboardchart.js"></script>
+<script src="~/assets/js/biaxdashboardchartextra.js"></script>
+
+<div ng-app="App" ng-controller="ChartController">
+    <div class="container-fluid">
+        <br /><br /><br /><br /><br />
+        <div class="row">
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="font-size-15">Sales Quotation</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success sqt fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success sqp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success sqc fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium sqr font-size-14 align-middle">2.64%</span>
+                                </h6>
+                            </div>
+                            <div class="">
+                                <div class="avatar">
+                                    <div class="avatar-title rounded bg-soft-primary">
+                                        <i class="bx bx-store-alt font-size-24 mb-0 text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        @*  <div id="mini-1" data-colors='["#e6ecf9"]' class="apex-charts"></div> *@
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0 font-size-15">Proforma Invoice</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success pit fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success pip fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success pic fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium pir font-size-14 align-middle">2.64%</span>
+                                </h6>
+
+                            </div>
+
+                            <div class="">
+                                <div class="avatar">
+                                    <div class="avatar-title rounded bg-soft-primary">
+                                        <i class="bx bx-money font-size-24 mb-0 text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0 font-size-15">Sales Contract</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success sct fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success scp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success scc fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium scr font-size-14 align-middle">2.64%</span>
+                                </h6>
+                            </div>
+
+                            <div class="">
+                                <div class="avatar">
+                                    <div class="avatar-title rounded bg-soft-primary">
+                                        <i class="bx bx-revision font-size-24 mb-0 text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0 font-size-15">LC</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success lct fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success lcp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success lcc fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium lcr font-size-14 align-middle">2.64%</span>
+                                </h6>
+                            </div>
+
+                            <div class="">
+                                <div class="avatar">
+                                    <div class="avatar-title rounded bg-soft-primary">
+                                        <i class="bx bx-chart font-size-24 mb-0 text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-init="DashBoard()">
+
+        <div class="row">
+            <div class="col-sm-3">
+                <canvas id="myChart" ng-init="DashBoardGraphBar(2)" width="400" height="400"></canvas>
+                </div>
+            <div class="col-sm-3">
+                <canvas id="chartPIData" ng-init="DashBoardGraphBar2(1)" width="400" height="200"></canvas>
+            </div>
+                    <div class="col-sm-3">
+                        <canvas id="doughnut" width="400" ng-init="DashBoardGraphBar3(3)" height="200"></canvas>
+                    </div>
+                    <div class="col-sm-3">
+                        <canvas id="myChart2" width="400" ng-init="DashBoardGraphBar4(4)" height="400"></canvas>
+                    </div>
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="font-size-15">Sales Quotation</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success sqt fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success sqp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success sqc fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium sqr font-size-14 align-middle">2.64%</span>
+                                </h6>
+                            </div>
+                            <div class="">
+                                <div class="avatar">
+                                    <div class="avatar-title rounded bg-soft-primary">
+                                        <i class="bx bx-store-alt font-size-24 mb-0 text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        @*  <div id="mini-1" data-colors='["#e6ecf9"]' class="apex-charts"></div> *@
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0 font-size-15">Proforma Invoice</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success pit fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success pip fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success pic fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium pir font-size-14 align-middle">2.64%</span>
+                                </h6>
+
+                            </div>
+
+                            <div class="">
+                                <div class="avatar">
+                                    <div class="avatar-title rounded bg-soft-primary">
+                                        <i class="bx bx-money font-size-24 mb-0 text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0 font-size-15">Sales Contract</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success sct fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success scp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success scc fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium scr font-size-14 align-middle">2.64%</span>
+                                </h6>
+                            </div>
+
+                            <div class="">
+                                <div class="avatar">
+                                    <div class="avatar-title rounded bg-soft-primary">
+                                        <i class="bx bx-revision font-size-24 mb-0 text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0 font-size-15">LC</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success lct fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success lcp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success lcc fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium lcr font-size-14 align-middle">2.64%</span>
+                                </h6>
+                            </div>
+
+                            <div class="">
+                                <div class="avatar">
+                                    <div class="avatar-title rounded bg-soft-primary">
+                                        <i class="bx bx-chart font-size-24 mb-0 text-primary"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

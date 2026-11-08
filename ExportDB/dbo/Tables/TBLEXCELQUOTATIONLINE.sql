@@ -1,0 +1,26 @@
+﻿CREATE TABLE [dbo].[TBLEXCELQUOTATIONLINE] (
+    [ID]                      INT             IDENTITY (1, 1) NOT NULL,
+    [OCFITEMID]               INT             NULL,
+    [ITEMID]                  INT             NOT NULL,
+    [QUANTITY]                DECIMAL (18, 2) NOT NULL,
+    [PRICE]                   DECIMAL (18, 2) NOT NULL,
+    [DISCOUNT]                DECIMAL (18, 2) NULL,
+    [VATID]                   INT             NULL,
+    [VATAMOUNT]               DECIMAL (18, 2) NULL,
+    [TOTALAMOUNT]             DECIMAL (18, 2) NOT NULL,
+    [UOMID]                   INT             NULL,
+    [THIKNESS]                DECIMAL (18, 2) NULL,
+    [WIDTH]                   DECIMAL (18, 2) NULL,
+    [LENGTH]                  DECIMAL (18, 2) NULL,
+    [TREATMENTLEVEL]          NVARCHAR (200)  NULL,
+    [TREATMENTDIRECTIONID]    INT             NULL,
+    [COREID]                  INT             NULL,
+    [REALOD]                  NVARCHAR (100)  NULL,
+    [DISEREDDATEOFDELIVERY]   DATETIME        NULL,
+    [TENTATIVEDATEOFDELIVERY] DATETIME        NULL,
+    [TOLERANCEID]             INT             NULL,
+    [REMARKS]                 NVARCHAR (1000) NULL,
+    [DESCRIPTIONS]            NVARCHAR (1000) NULL,
+    [DISCOUNTID]              INT             NULL
+);
+

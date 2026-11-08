@@ -1,0 +1,288 @@
+<script src="~/customjs/mastertype/mastertype.js"></script>
+<div ng-app="App" ng-controller="Ctl" ng-init="LoadData()">
+    <div ng-show="loading">
+        <img style="width:70%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Master Type Setup</h4>
+                </div>
+
+                <div class="card-body" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+
+                    <!-- Top Bar -->
+                    <div class="row align-items-center mb-3">
+
+                        <!-- Right: Search -->
+                        <div class="col-md-6 ms-auto">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search value..."
+                                       ng-change="onSearchChange()">
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    
+                    <!-- Insert Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="row align-items-end">
+
+                                <div class="col-sm-5">
+                                    <label>Master Type</label>
+                                    <select class="form-control"
+                                            ng-model="SelectedType"
+                                            ng-change="ChangeMasterType()"
+                                            ng-options="m.Value as m.Text for m in MasterTypes">
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-7">
+                                    <label>Value</label>
+                                    <div class="d-flex gap-2">
+                                        <input type="text"
+                                               class="form-control"
+                                               ng-model="inputValue"
+                                               placeholder="Enter value..."
+                                               ng-keyup="$event.keyCode === 13 && Save()" />
+
+                                        <button ng-click="Save()"
+                                                ng-disabled="!inputValue.trim() || saving"
+                                                class="btn btn-success btn-sm">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-danger" ng-show="showValueError">Value Required</small>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    @* <div class="row mb-4">
+                        <div class="col-md-6">
+
+                            <div class="row align-items-end">
+
+                                <div class="col-sm-5">
+                                    <label>Master Type</label>
+                                    <select class="form-control"
+                                            ng-model="SelectedType"
+                                            ng-change="ChangeMasterType()"
+                                            ng-options="m.Value as m.Text for m in MasterTypes">
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-7">
+                                    <label>Value</label>
+                                    <div class="d-flex gap-2">
+                                        <input type="text"
+                                               class="form-control"
+                                               ng-model="inputValue"
+                                               placeholder="Enter value..."
+                                               ng-change="CheckInputValue()" />
+
+                                        <button ng-click="Save()"
+                                                class="btn btn-success btn-sm">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div> *@
+
+
+
+
+                    <!-- Table -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table id="tblinfo" class="table table-bordered table-hover">
+
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th style="width:100px;">ID</th>
+                                            <th>Value</th>
+                                            <th style="width:140px; text-align:center;">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr dir-paginate="list in MasterTypeList | filter:search | itemsPerPage: pageSize"
+                                            current-page="currentPage">
+
+                                            <td>{{list.id}}</td>
+                                            <td>{{list.value}}</td>
+
+                                            <td class="text-center">
+                                                <button type="button"
+                                                        class="btn btn-info btn-sm"
+                                                        ng-click="Edit(list)"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editMasterTypeModal">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm"
+                                                        ng-click="DeleteMaster(list.id)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination Init -->
+                    <div ng-init="currentPage=1; pageSize=10"></div>
+
+                    <!-- Common Pagination Style -->
+                    <style>
+                        /* Pagination container */
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 6px;
+                            padding-left: 0;
+                            margin-top: 20px;
+                        }
+
+                        /* Pagination items */
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            /* Links */
+                            dir-pagination-controls li a {
+                                display: inline-block;
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                font-weight: 500;
+                                border: 1px solid transparent;
+                                transition: all 0.25s ease;
+                            }
+
+                                /* Hover effect */
+                                dir-pagination-controls li a:hover {
+                                    background: #e7f1ff;
+                                    border-color: #0d6efd;
+                                    text-decoration: none;
+                                }
+
+                            /* Active page */
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                                border-color: #0d6efd;
+                                box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
+                            }
+
+                            /* Disabled state */
+                            dir-pagination-controls li.disabled a {
+                                background: #e9ecef;
+                                color: #adb5bd;
+                                cursor: not-allowed;
+                            }
+
+                            /* Click animation */
+                            dir-pagination-controls li a:active {
+                                transform: scale(0.95);
+                            }
+                    </style>
+
+                    <!-- Bottom Bar -->
+                    <div class="row mt-2 align-items-center">
+
+                        <!-- LEFT: Total Records -->
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; color:#444; letter-spacing:0.3px; opacity:0.75;">
+                                Total Records:
+                                <span style="color:#444; font-weight:700;">
+                                    {{ (MasterTypeList | filter:search).length }}
+                                </span>
+                            </span>
+                        </div>
+
+                        <!-- CENTER: Pagination -->
+                        <div class="col-md-4 text-center">
+                            <dir-pagination-controls direction-links="true"
+                                                     max-size="10"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+                        </div>
+
+                        <!-- RIGHT: Empty -->
+                        <div class="col-md-4"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editMasterTypeModal" class="modal fade" tabindex="-1" aria-labelledby="editMasterTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editMasterTypeModalLabel">Master Type Edit Form ({{SelectedType}})</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <input type="hidden" id="txtEditID" value="0" />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>Value :</label>
+                                <input type="text" class="form-control" id="txtEditValue" placeholder="Enter value..." />
+                                <span class="error">Value Required</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                    <button ng-click="Update()" id="updatebutton" type="button" class="btn btn-success">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

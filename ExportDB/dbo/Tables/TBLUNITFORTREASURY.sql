@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[TBLUNITFORTREASURY] (
+    [ID]   INT           NULL,
+    [CODE] VARCHAR (500) NULL,
+    [NAME] VARCHAR (500) NULL
+);
+

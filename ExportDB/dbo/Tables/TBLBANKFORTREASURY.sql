@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[TBLBANKFORTREASURY] (
+    [BANKID]   INT           NULL,
+    [BANKNAME] VARCHAR (200) NULL
+);
+

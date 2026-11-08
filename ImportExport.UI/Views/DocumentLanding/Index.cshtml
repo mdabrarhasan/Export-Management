@@ -1,0 +1,406 @@
+﻿<link href="~/customcss/common.css" rel="stylesheet" />
+<script src="~/customjs/documentsetup/documentlanding.js"></script>
+<script src="~/customjs/common.js"></script>
+
+@{
+    var enroll = Context.Session.GetInt32("Enroll");
+    var username = Context.Session.GetString("UserName");
+    var unitid = Context.Session.GetString("UnitID");
+}
+
+<div ng-app="App" ng-controller="Ctl">
+    <div ng-show="loading">
+        <img style="width:70%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+    <div class="row table-responsive">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Document Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <br />
+                            <button type="button" class="btn btn-primary btn-sm insert" ng-click="Clear()" data-bs-toggle="modal" data-bs-target="#exampleModalFullscreen"><i class="mdi mdi-plus me-1"></i></button>
+                        </div>
+                        
+                        <div class="col-sm-4">
+                            <label>Document List :</label>
+                            <select class="form-control" ng-model="rootdoclistid" ng-init="GetRootDocumentList()" ng-change="List()"
+                                    id="rootdoclistid">
+                                <option value="">--Select--</option>
+                                <option ng-repeat="list in rootdoclist" value="{{list.id}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Search</label>
+                            <input type="text" ng-model="search" class="form-control" placeholder="Search.." />
+                        </div>
+                    </div><br />
+
+                    <div class="row table-responsive">
+                        <div class="col-sm-12">
+                            <table id="tblinfo" class="table table-bordered">
+                                <tr>
+                                    <th style="display:none;">ID</th>
+                                    <th ng-click='sortBy("PINUMBER")'>
+                                        Doc Number
+                                        <span ng-show="sortColumn=='DOCNUMBER'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("PICKPACKNUMBER")'>
+                                        Pick Pack Number
+                                        <span ng-show="sortColumn=='PICKPACKNUMBER'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("CUSTOMERNAME")'>
+                                        Customer Name
+                                        <span ng-show="sortColumn=='CUSTOMERNAME'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("DOCDATE")'>
+                                        Document Date
+                                        <span ng-show="sortColumn=='DOCDATE'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("DOCSTATUSNAME")'>
+                                        Status
+                                        <span ng-show="sortColumn=='DOCSTATUSNAME'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                                <tr dir-paginate="list in list | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                    <td style="display:none;">{{list.id}}</td>
+                                    <td>{{list.docnumber}}</td>
+                                    <td>{{list.pickpacknumber}}</td>
+                                    <td>{{list.cusname}}</td>
+                                    <td>{{list.docdate}}</td>
+                                    <td>
+                                        <span class="badge rounded-pill badge-soft-info font-size-11" ng-if='list.code=="PEND"'>{{list.docstatusname}}</span>
+                                        <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.code=="APPR"'>{{list.docstatusname}}</span>
+                                        <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.code=="REJC"'>{{list.docstatusname}}</span>
+                                        <span class="badge rounded-pill badge-soft-primary font-size-11" ng-if='list.code=="COMP"'>{{list.docstatusname}}</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#ViewexampleModalFullscreen" ng-click="ViewByMasterID(list.id,list.pickpacknumber,list.docnumber,list.pickingpackingheaderid)"><span class="fas fa-search-plus"></span></button>
+                                        <button ng-disabled='list.flag == 1' type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.id,list.pickingpackingheaderid)"><span class="fa fa-edit"></span></button>
+                                        <button ng-disabled='list.flag == 1' type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id,list.pickingpackingheaderid)"><span class="fa fa-trash"></span></button>
+                                        <button type="button" class="btn btn-soft-primary btn-sm print" ng-click="Print(list.id)"><span class="fa fa-print"></span></button>
+                                    </td>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-6">
+                            <dir-pagination-controls max-size="10" style="font-size:16px;"
+                                                     direction-links="true"
+                                                     boundary-links="true">
+                            </dir-pagination-controls>
+
+                        </div>
+                        <div class="col-sm-2">
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Document (Insertion Mode)</h5>
+                    @*<h4 style="text-align:center;color:red;margin-left:35%" id="cusname"></h4>*@
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label>Select Business Unit :</label>
+                                <select class="form-control" ng-model="unitid" ng-init="GetUnit()"
+                                        id="unitid">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>Select Document :</label>
+                                <select class="form-control" ng-model="popuprootdoclistid" ng-init="GetRootDocumentList()" ng-change="LoadDocByPickPackNumber()"
+                                        id="popuprootdoclistid">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in rootdoclist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                                <span class="error">Select from Document List </span>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>Pick Pack Number :</label>
+                                <input type="hidden" id="txtPickPackID" />
+                                <input type="text" class="form-control" ng-keyup="SearchPickPack()" placeholder="Search PickPack Number..." id="txtPickPack" autocomplete="off" />
+                                <span class="error">Select a Pick Pack Number</span>
+                            </div>
+                        </div>
+
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <ul id="sortable-left">
+
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms and Condition</label>
+                                <textarea class="form-control" id="termscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description</label>
+                                <textarea class="form-control" id="description"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Save()" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="EditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Document (Edit Mode)</h5>
+                    @*<h4 style="text-align:center;color:red;margin-left:35%" id="cusname"></h4>*@
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input type="hidden" id="eid" />
+                                <label>Select Document :</label>
+                                <select class="form-control" ng-model="epopuprootdoclistid" ng-init="GetRootDocumentList()" ng-change="LoadDocByPickPackNumber()" disabled
+                                        id="epopuprootdoclistid">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in rootdoclist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                                <span class="error">Select from Document List </span>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Pick Pack Number :</label>
+                                <input type="hidden" id="etxtPickPackID" />
+                                <input type="text" class="form-control" ng-keyup="SearchPickPack()" placeholder="Search PickPack Number..." id="etxtPickPack" autocomplete="off" disabled />
+                                <span class="error">Select a Pick Pack Number</span>
+                            </div>
+                        </div>
+
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <ul id="esortable-left">
+
+                                </ul>
+                                
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms and Condition</label>
+                                <textarea class="form-control" id="etermscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description</label>
+                                <textarea class="form-control" id="edescription"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Update()" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ViewexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Document (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>Agreement Information</h6>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <table id="tblview" ng-repeat="list in masterdata" class="table table-bordered" style="font-weight:bold">
+                                            <tr>
+                                                <td style="text-align:right">Document Number :</td>
+                                                <td style="text-align:left">{{list.docnumber}}</td>
+                                                <td style="text-align:right">Pick Pack Number</td>
+                                                <td style="text-align:left">{{list.pickpacknumber}}</td>
+                                                <td style="text-align:right">Customer Name :</td>
+                                                <td style="text-align:left">{{list.cusname}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:right">Document Date :</td>
+                                                <td style="text-align:left">{{list.docdate}}</td>
+                                                <td style="text-align:right">Terms & Condition</td>
+                                                <td style="text-align:left">{{list.termscondition}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:right">Descriptions :</td>
+                                                <td style="text-align:left">{{list.descriptions}}</td>
+                                                <td style="text-align:right">Document Created Date</td>
+                                                <td style="text-align:left">{{list.documentcreateddate}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                       @* <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>List of Item's</h4>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No.</th>
+                                        <th>Document Name</th>
+                                        <th>Document Number</th>
+                                        <th>Document List</th>
+                                        <th>Type</th>
+                                        <th>Terms & Condition</th>
+                                        <th>Remarks</th>
+                                       
+                                    </tr>
+
+                                    <tr ng-repeat="list in detailsdata">
+                                        <td>
+                                            {{$index+1}}
+                                        </td>
+                                        <td>
+                                            {{list.rootdocname}}
+                                        </td>
+                                       
+                                        <td>
+                                            {{list.childdocname}}
+                                        </td>
+
+                                        <td>
+                                            {{list.mandatorylabel}}
+                                        </td>
+                                        
+                                        <td>
+                                            {{list.termscondition}}
+                                        </td>
+                                        <td>
+                                            {{list.descriptions}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br />*@
+
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>Document Status Level</h4>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No.</th>
+                                        <th>Codeno</th>
+                                        <th>Inititator</th>
+                                        <th>Approver</th>
+                                        <th>Action Date</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+
+                                    <tr ng-repeat="vlist in docstatusview">
+                                        <td>
+                                            {{$index+1}}
+                                        </td>
+                                        <td>
+                                            {{vlist.processcode}}
+                                        </td>
+                                        <td>
+                                            {{vlist.vinitiator}}
+                                        </td>
+
+                                        <td>
+                                            {{vlist.approvar}}
+                                        </td>
+
+                                        <td>
+                                            {{vlist.documentcreateddate}}
+                                        </td>
+                                        <td>
+                                            {{vlist.docstatus}}
+                                        </td>
+                                        <td>
+                                            {{vlist.descriptions}}
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Attachment</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>Document List</th>
+                                        <th>File Name</th>
+                                        <th>Attachment Status</th>
+                                        <th>File Fitting</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tbody id="tblData"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

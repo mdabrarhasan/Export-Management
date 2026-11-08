@@ -1,0 +1,26 @@
+﻿CREATE TABLE [dbo].[TBLLIMITFACILITY] (
+    [ID]                     INT             IDENTITY (1, 1) NOT NULL,
+    [SANCTIONNO]             NVARCHAR (500)  NULL,
+    [SANCTIONREF]            NVARCHAR (500)  NULL,
+    [SODLIMIT]               DECIMAL (25, 2) NULL,
+    [EXPIREDATE]             DATE            NULL,
+    [UNITID]                 INT             NULL,
+    [INNERUNITID]            INT             NULL,
+    [BANKID]                 INT             NULL,
+    [RAWMATERIALLIMIT]       DECIMAL (25, 2) NULL,
+    [LOANLIMIT]              DECIMAL (18, 2) NULL,
+    [MACHINERYLIMIT]         DECIMAL (18, 2) NULL,
+    [SHORTTERMLOAN]          DECIMAL (18, 2) NULL,
+    [OVERDRAFTFACILITY]      DECIMAL (18, 2) NULL,
+    [BANKGUARANTEELIMIT]     DECIMAL (18, 2) NULL,
+    [TIMELOANLIMIT]          DECIMAL (18, 2) NULL,
+    [TERMLOANLIMIT]          DECIMAL (18, 2) NULL,
+    [LCSPARESMACHINERYLIMIT] DECIMAL (18, 2) NULL,
+    [TOTAL]                  DECIMAL (18, 2) NULL,
+    [CREATEDBY]              INT             NULL,
+    [UPDATEDBY]              INT             NULL,
+    [CREATEDDATE]            DATE            NULL,
+    [UPDATEDDATE]            DATE            NULL,
+    [ISACTIVE]               BIT             NULL
+);
+

@@ -1,0 +1,264 @@
+﻿@{
+    var enroll = Context.Session.GetInt32("Enroll");
+    var username = Context.Session.GetString("UserName");
+    var unitid = Context.Session.GetString("UnitID");
+}
+<!doctype html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <title>ABG EXPORT MANAGEMENT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesdesign" name="author" />
+
+    <link href="~/assets/css/choices.min.css" rel="stylesheet" />
+    <link href="~/assets/css/classic.min.css" rel="stylesheet" />
+    <link href="~/assets/css/monolith.min.css" rel="stylesheet" />
+    <link href="~/assets/css/nano.min.css" rel="stylesheet" />
+    <link href="~/assets/css/flatpickr.min.css" rel="stylesheet" />
+    <!-- plugin css -->
+    <link href="assets/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Bootstrap Css -->
+    <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    
+    <!-- Icons Css -->
+    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+
+
+    <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+
+    <link href="~/assets/css/notify.css" rel="stylesheet" />
+    <link href="~/assets/css/notify.min.css" rel="stylesheet" />
+
+   
+    <script src="~/js/jquery.min.js"></script>
+
+    <link href="~/assets/css/jquery-ui.css" rel="stylesheet" />
+    <script src="~/assets/js/pages/jquery-1.8.3.js"></script>
+    <script src="~/assets/js/pages/jquery-ui.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+   
+    <script src="~/js/angular.min.js"></script>
+    <script src="~/js/pagination-angular.js"></script>
+    <script src="~/js/pagination-dirpagination.js"></script>
+
+
+    <link href="~/customcss/common.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div id="layout-wrapper">
+
+        <header id="page-topbar" class="isvertical-topbar">
+           
+            <div class="navbar-header">
+                <div class="d-flex">
+
+                    <button type="button" class="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn">
+                        <i class="bx bx-menu align-middle"></i>
+                    </button>
+
+                    <!-- start page title -->
+                    <div class="page-title-box align-self-center d-none d-md-block">
+                        <h3 class="page-title mb-0" style="letter-spacing:10px;color:white"> ABG EXPORT MANAGEMENT </h3>
+                    </div>
+                    <!-- end page title -->
+
+                </div>
+
+                <div class="d-flex">
+                    <div class="dropdown d-inline-block">
+                        
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 pull-right">
+                            <form class="p-2">
+                                <div class="search-box">
+                                    <div class="position-relative">
+                                        <input type="text" class="form-control rounded bg-light border-0" placeholder="Search...">
+                                        <i class="bx bx-search search-icon"></i>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="dropdown d-inline-block">
+                       @* <button type="button" class="btn header-item noti-icon" id="page-header-notifications-dropdown-v"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bx bx-bell icon-sm align-middle"></i>
+                            <span class="noti-dot bg-danger rounded-pill">4</span>
+                        </button>*@
+                        <div class="dropdown-menu dropdown-menu-xl dropdown-menu-end p-0"
+                             aria-labelledby="page-header-notifications-dropdown-v">
+                            <div class="p-3">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h5 class="m-0 font-size-15"> Notifications </h5>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="#!" class="small fw-semibold text-decoration-underline"> Mark all as read</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-simplebar style="max-height: 250px;">
+                                <a href="#!" class="text-reset notification-item">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0 me-3">
+                                            <img src="~/assets/images/users/icon.jpg" class="rounded-circle avatar-sm" alt="user-pic">
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="text-muted font-size-13 mb-0 float-end">1 hour ago</p>
+                                            <h6 class="mb-1">James Lemire</h6>
+                                            <div>
+                                                <p class="mb-0">It will seem like simplified English.</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                <a href="#!" class="text-reset notification-item">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0 avatar-sm me-3">
+                                            <span class="avatar-title bg-primary rounded-circle font-size-18">
+                                                <i class="bx bx-cart"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="text-muted font-size-13 mb-0 float-end">3 min ago</p>
+                                            <h6 class="mb-1">Your order is placed</h6>
+                                            <div>
+                                                <p class="mb-0">If several languages coalesce the grammar</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="#!" class="text-reset notification-item">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0 avatar-sm me-3">
+                                            <span class="avatar-title bg-success rounded-circle font-size-18">
+                                                <i class="bx bx-badge-check"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="text-muted font-size-13 mb-0 float-end">8 min ago</p>
+                                            <h6 class="mb-1">Your item is shipped</h6>
+                                            <div>
+                                                <p class="mb-0">If several languages coalesce the grammar</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <a href="#!" class="text-reset notification-item">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0 me-3">
+                                            @*<img src="assets/images/users/avatar-6.jpg" class="rounded-circle avatar-sm" alt="user-pic">*@
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="text-muted font-size-13 mb-0 float-end">1 hour ago</p>
+                                            <h6 class="mb-1">Salena Layfield</h6>
+                                            <div>
+                                                <p class="mb-1">As a skeptical Cambridge friend of mine occidental.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="p-2 border-top d-grid">
+                                <a class="btn btn-sm btn-link font-size-14 btn-block text-center" href="javascript:void(0)">
+                                    <i class="uil-arrow-circle-right me-1"></i> <span>View More..</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dropdown d-inline-block">
+                        <button type="button" class="btn header-item user text-start d-flex align-items-center" id="page-header-user-dropdown-v" style="color:white"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img class="rounded-circle header-profile-user" src="~/assets/images/users/icon.jpg"
+                                 alt="Header Avatar">
+                            @* <span class="d-none d-xl-inline-block ms-2 fw-medium username font-size-15">@TempData["Name"]</span> *@
+                            <span class="d-none d-xl-inline-block ms-2 fw-medium username font-size-15">@username</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end pt-0">
+                            <div class="p-3 border-bottom">
+                                <h6 style="color:black" class="mb-0 logingname">@username</h6>
+                                
+                               
+                                <p class="mb-0 font-size-11 loginenroll text-muted">@enroll</p>
+                            </div>
+                           @* <a class="dropdown-item" href="contacts-profile.html"><i class="mdi mdi-account-circle text-muted font-size-16 align-middle me-2"></i> <span class="align-middle">Profile</span></a>
+                            <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted font-size-16 align-middle me-2"></i> <span class="align-middle">Messages</span></a>
+                            <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted font-size-16 align-middle me-2"></i> <span class="align-middle">Help</span></a>
+                            <a class="dropdown-item d-flex align-items-center" href="#"><i class="mdi mdi-cog-outline text-muted font-size-16 align-middle me-2"></i> <span class="align-middle me-3">Settings</span><span class="badge badge-soft-success ms-auto">New</span></a>
+                            <a class="dropdown-item" href="auth-lock-screen.html"><i class="mdi mdi-lock text-muted font-size-16 align-middle me-2"></i> <span class="align-middle">Lock screen</span></a>
+                            <div class="dropdown-divider"></div>*@
+                            <a class="dropdown-item" href='@Url.ActionLink("Index","Login")'><i class="mdi mdi-logout text-muted font-size-16 align-middle me-2"></i> <span class="align-middle">Logout</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+       
+
+        <div class="vertical-menu" style="background-color:#f1f2f3">
+
+            <!-- LOGO -->
+            <div class="navbar-brand-box" style="background-color:#3b4045;">
+
+                <a class="logo logo-dark">
+                        <span class="logo-sm">
+                        @* <img src="assets/images/logo-light-sm.png" alt="" height="28"> *@
+                        <i class="bx bx-home" style="color:lightseagreen;font-size:20px;"></i>
+                       
+                        </span>
+                        <span class="logo-lg">
+                        <img src="assets/images/brand/logo-white.png" alt="" height="26">
+                        </span>
+                    </a>
+            </div>
+
+            <button type="button" class="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn">
+                <i class="bx bx-menu align-middle"></i>
+            </button>
+
+            
+            <div data-simplebar class="sidebar-menu-scroll">
+                <div id="sidebar-menu" >
+                    @await Component.InvokeAsync("Menu")
+                </div>
+            </div>
+        </div>
+       <br />
+  
+
+                <div class="main-content">
+                    <div class="page-content">
+                         @RenderBody()
+                
+                    </div>
+            
+                </div>
+ </div>
+
+    
+    <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/libs/metismenujs/metismenujs.min.js"></script>
+    <script src="assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="assets/libs/eva-icons/eva.min.js"></script>
+
+   
+
+    <!-- Vector map-->
+    <script src="assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <script src="~/assets/js/pages/notify.js"></script>
+    <script src="~/assets/js/pages/notify.min.js"></script>
+
+</body>
+
+</html>

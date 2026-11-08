@@ -1,0 +1,60 @@
+﻿-- =============================================
+-- Author:		<Fahim Hossain Rafayet>
+-- Create date: <28-11-24>
+-- Description:	<SP for biax dashboard>
+-- =============================================
+
+-- exec spGetBiaxDashBoard 1
+-- exec spGetBiaxDashBoard 2
+-- exec spGetBiaxDashBoard 3
+-- exec spGetBiaxDashBoard 4
+
+CREATE PROCEDURE [dbo].[spGetBiaxDashBoard] 
+	@TYPE INT
+AS
+BEGIN
+DECLARE @currentMonth NVARCHAR(20), @nextMonth1 NVARCHAR(20), @nextMonth2 NVARCHAR(20), @nextMonth3 NVARCHAR(20);
+
+SET @currentMonth = DATENAME(MONTH, GETDATE());
+SET @nextMonth1 = DATENAME(MONTH, DATEADD(MONTH, -1, GETDATE()));
+SET @nextMonth2 = DATENAME(MONTH, DATEADD(MONTH, -2, GETDATE()));
+SET @nextMonth3 = DATENAME(MONTH, DATEADD(MONTH, -3, GETDATE()));
+
+SELECT 
+
+--(select count(ID) from ABGAPIS.dbo.TBLPRICECONFIRMHEADER 
+--where QUOTATIONTYPEID = @TYPE 
+--        AND DOCUMENTCREATEDDATE >= DATEADD(MONTH, 0, CAST(GETDATE() AS DATE)) 
+--        AND DOCUMENTCREATEDDATE < DATEADD(MONTH, 1, CAST(GETDATE() AS DATE)) 
+--		AND DOCUMENTSTATUSID=7 ) AS ID,
+
+--(select count(ID) from ABGAPIS.dbo.TBLPRICECONFIRMHEADER 
+--where QUOTATIONTYPEID = @TYPE 
+--           AND DOCUMENTCREATEDDATE >= DATEADD(MONTH, -1, CAST(GETDATE() AS DATE)) 
+--           AND DOCUMENTCREATEDDATE < DATEADD(MONTH, 0, CAST(GETDATE() AS DATE))  
+--		   AND DOCUMENTSTATUSID=7 ) AS NEXT_MONTH_1,
+
+--(select count(ID) from ABGAPIS.dbo.TBLPRICECONFIRMHEADER 
+--where QUOTATIONTYPEID = @TYPE   
+--         AND DOCUMENTCREATEDDATE >= DATEADD(MONTH, -2, CAST(GETDATE() AS DATE)) 
+--         AND DOCUMENTCREATEDDATE < DATEADD(MONTH, -1, CAST(GETDATE() AS DATE)) 
+--         AND DOCUMENTSTATUSID=7 ) AS NEXT_MONTH_2,
+
+--(select count(ID) from ABGAPIS.dbo.TBLPRICECONFIRMHEADER 
+--where QUOTATIONTYPEID = @TYPE 
+--         AND DOCUMENTCREATEDDATE >= DATEADD(MONTH, -3, CAST(GETDATE() AS DATE))
+--         AND DOCUMENTCREATEDDATE < DATEADD(MONTH, -2, CAST(GETDATE() AS DATE)) 
+--         AND DOCUMENTSTATUSID=7 )  AS NEXT_MONTH_3,@currentMonth AS CURRENTMONTH,@nextMonth1 AS NEXTMONTH1,@nextMonth2 AS NEXTMONTH2,@nextMonth3 AS NEXTMONTH3 
+
+
+10 AS ID,
+12 AS NEXT_MONTH_1,
+17 AS NEXT_MONTH_2,
+15 AS NEXT_MONTH_3,@currentMonth AS CURRENTMONTH,@nextMonth1 AS NEXTMONTH1,@nextMonth2 AS NEXTMONTH2,@nextMonth3 AS NEXTMONTH3 
+
+
+
+INTO #TempResultsGRAPH; 
+SELECT * FROM #TempResultsGRAPH;
+
+END

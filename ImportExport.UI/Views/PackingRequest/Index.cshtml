@@ -1,0 +1,1099 @@
+﻿<script src="~/customjs/packingreq/packingrequest.js"></script>
+<script src="~/customjs/common.js"></script>
+
+
+<div ng-app="App" ng-controller="Ctl">
+
+    <div ng-show="loading">
+        <img style="width:50%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+
+                <!-- Header -->
+                <div class="card-header">
+                    <h4>Mill Declaration</h4>
+                </div>
+
+                <div class="card-body" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+
+                    <!-- Top Section -->
+                    <div class="row align-items-center mb-3">
+
+                        <!-- Add Button -->
+                        <div class="col-md-6 d-flex align-items-center">
+                            <button type="button"
+                                    class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+                                    ng-click="Clear()"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalFullscreen">
+                                <b>
+                                    <i class="mdi mdi-plus"></i>
+                                    <span>Add New</span>
+                                </b>
+                            </button>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search by Req No, PI/SC, Customer..."
+                                       ng-change="onSearchChange()">
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table id="tblinfo" class="table table-bordered table-hover" ng-init="GetAllData()">
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="display:none;">ID</th>
+
+                                    <th ng-click='sortBy("packreqnumber")'>Packing Req.</th>
+                                    <th ng-click='sortBy("piscnumber")'>PI/SC No</th>
+                                    <th ng-click='sortBy("customername")'>Customer</th>
+                                    <th ng-click='sortBy("packreqdate")'>Req Date</th>
+                                    <th ng-click='sortBy("currency")'>Currency</th>
+                                    <th ng-click='sortBy("documentcreateddate")'>Created Date</th>
+
+                                    <th>Status</th>
+                                    <th style="width:200px;">Report</th>
+                                    <th style="width:160px; text-align:center;">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr dir-paginate="list in getalldata | orderBy: sortColumn : reverse | filter:search | itemsPerPage: pageSize"
+                                    current-page="currentPage">
+
+                                    <td style="display:none;">{{list.id}}</td>
+
+                                    <td>
+                                        <a href="" ng-click="Report(list.packreqnumber)">
+                                            {{list.packreqnumber}}
+                                        </a>
+                                    </td>
+
+                                    <td>{{list.piscnumber}}</td>
+                                    <td>{{list.customername}}</td>
+                                    <td>{{list.packreqdate}}</td>
+                                    <td>{{list.currency}}</td>
+                                    <td>{{list.documentcreateddate}}</td>
+
+                                    <!-- Status -->
+                                    <td>
+                                        <span class="badge rounded-pill badge-soft-info"
+                                              ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+
+                                        <span class="badge rounded-pill badge-soft-success"
+                                              ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+
+                                        <span class="badge rounded-pill badge-soft-danger"
+                                              ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+
+                                        <span class="badge rounded-pill badge-soft-primary"
+                                              ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                    </td>
+
+                                    <!-- Report -->
+                                    <td>
+                                        <select class="form-select"
+                                                ng-model="list.selectedReport"
+                                                ng-change="OpenReport(list.id, list.selectedReport)">
+                                            <option value="">-- Report --</option>
+                                            <option value="JuteInvoiceReport">Invoice</option>
+                                            <option value="PackingListReport">Declaration</option>
+                                            <option value="ThePackingList">Packing List</option>
+                                        </select>
+                                    </td>
+
+                                    <!-- Actions -->
+                                    <td class="text-center">
+
+                                        <button type="button"
+                                                class="btn btn-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#ViewEditexampleModalFullscreen"
+                                                ng-click="ViewData(list.id)">
+                                            <i class="fas fa-search-plus"></i>
+                                        </button>
+
+                                        <button type="button"
+                                               class="btn btn-info btn-sm"
+                                                ng-disabled='list.flag == 1'
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#EditexampleModalFullscreen"
+                                                ng-click="EditbyMasterID(list.id,list.agreementtypeid,list.piscnumber)">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm"
+                                                ng-disabled='list.flag == 1'
+                                                ng-click="DeleteMaster(list.id)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <!-- Pagination Init -->
+                    <div ng-init="currentPage=1; pageSize=8"></div>
+
+                    <!-- Pagination Style -->
+                    <style>
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            gap: 6px;
+                            margin-top: 20px;
+                            padding-left: 0;
+                        }
+
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            dir-pagination-controls li a {
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                font-weight: 500;
+                                transition: 0.25s;
+                            }
+
+                                dir-pagination-controls li a:hover {
+                                    background: #e7f1ff;
+                                }
+
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                            }
+
+                            dir-pagination-controls li.disabled a {
+                                background: #e9ecef;
+                                color: #adb5bd;
+                            }
+                    </style>
+
+                    <!-- Footer -->
+                    <div class="row mt-2 align-items-center">
+
+                        <!-- Total -->
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; opacity:0.75;">
+                                Total Records:
+                                <b>{{ (getalldata | filter:search).length }}</b>
+                            </span>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="col-md-4 text-center">
+                            <dir-pagination-controls direction-links="true"
+                                                     max-size="10"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+                        </div>
+
+                        <div class="col-md-4"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="exampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Mill Declaration (Insertion Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-3">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="hidden" id="hunitid" />
+                                <input type="hidden" id="txtPISCID" />
+                                <table width="100%">
+                                    <tr>
+                                        <td style="width:100px;">PI/SC Search :</td>
+                                        <td><input type="text" class="form-control" ng-keyup="SearchPI()" placeholder="Search PI/SC..." id="txtPISC" autocomplete="off" /></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-sm-3">
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Declaration Details</h6>
+                                    </div>
+                                    <div class="card-body">
+
+                                        <!-- Hidden field kept in DOM -->
+                                        <input type="hidden" id="hcusid" />
+
+                                        <!-- Row 1 -->
+                                        <div class="row">
+                                            <div class="col">
+                                                <label>Invoice Number</label>
+                                                <input type="text" class="form-control" id="txtInvoiceCode" disabled placeholder="Invoice Code" />
+                                            </div>
+                                            <div class="col">
+                                                <label>Invoice Date</label>
+                                                <input type="date" class="form-control" id="txtInvoiceDate" />
+                                                <span class="error">Invoice Date Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipped Per</label>
+                                                <input type="text" class="form-control" id="txtShipperPer" placeholder="Enter Shipped Per" />
+                                                <span class="error">Shipped Per Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Contract No.</label>
+                                                <input type="text" class="form-control" id="txtContract" placeholder="Enter Contract No." />
+                                                <span class="error">Contract No Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Packing Exp. Date</label>
+                                                <input type="date" class="form-control" id="txtPackingReqDate" />
+                                                <span class="error">Packing Exp. Date Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipment Period</label>
+                                                <input type="date" class="form-control" id="txtShipmentPeriod" />
+                                                <span class="error">Shipment Period Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Purchase Order No.</label>
+                                                <input type="text" class="form-control" id="txtPurchaseOderNo" />
+                                                <span class="error">Purchase Order No. Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Purchase Order Date</label>
+                                                <input type="date" class="form-control" id="txtPurchaseOderDate" />
+                                                <span class="error">Purchase Order Date Required.</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Row 2 -->
+                                        <div class="row mt-2">
+                                            
+                                            <div class="col">
+                                                <label>Invoice To</label>
+                                                <input type="text" class="form-control" id="txtInvoiceTo" disabled />
+                                                <span class="error">Invoice To Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipped From</label>
+                                                <input type="text" class="form-control" id="txtShippedfrom" disabled />
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipped To</label>
+                                                <input type="text" class="form-control" id="txtShippedto" disabled />
+                                            </div>
+                                            <div class="col">
+                                                <label>Agreement Number</label>
+                                                <input type="text" class="form-control" id="txtPINumber" disabled />
+                                            </div>
+                                            <div class="col"></div>
+                                            <div class="col"></div>
+                                            <div class="col"></div>
+                                            <div class="col"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>List of Item :</h4>
+                            </div>
+                            <div class="card-body">
+                                <div style="overflow-x: auto;">
+                                    <table class="table table-bordered text-center" id="keditmycontainer" style="table-layout: fixed; width: max-content;" ng-init="GetMillByUnit(@(Context.Session.GetInt32("UnitID") ?? 0))">
+
+                                        <tr>
+                                            <th style="width:40px;">
+                                                <input type="checkbox" id="checkboxAllPR">
+                                            </th>
+                                            <th style="margin:30px;width: 50px;">Sl No.</th>
+                                            <th style="margin:30px;width: 50px;display:none">piscline id.</th>
+                                            <th style="margin:30px;width: 90px;">Item Code</th>
+                                            <th style="margin:30px;width: 150px;">Item Name</th>
+                                            <th style="margin:30px;width: 120px;">UOM</th>
+                                            <th style="margin:30px;width: 120px;">Agg. wise Quantity</th>
+                                            <th style="margin:30px;width: 120px;">Rem. Quantity</th>
+                                            <th style="margin:30px;width: 120px;">Accepted Quantity</th>
+                                             
+                                            <th style="margin:30px;width: 120px;">Exp Production Date</th>
+                                            <th style="margin:30px;width: 120px;">Total Truss</th>
+                                            <th style="margin:30px;width: 120px;">Total Bale</th>
+                                            <th style="margin:30px;width: 120px;">Total Tare</th>
+                                            <th style="margin:30px;width: 120px;">Total Bundle</th>
+                                            <th style="margin:30px;width: 120px;">Total Pallet</th>
+                                            <th style="margin:30px;width: 120px;">Total Cartoon</th>
+                                            <th style="margin:30px;width: 120px;">Additional Weight</th>
+                                            <th style="margin:30px;width: 120px;">Gross weight</th>
+                                            <th style="margin:30px;width: 150px;">Truss/Carton Measurement</th>
+                                            <th style="margin:30px;width: 100px;">SI No</th>
+                                            <th style="margin:30px;width: 100px;">Total Spool</th>
+                                            <th style="margin:30px;width: 220px;">Mill ID</th>
+                                            <th style="margin:30px;width: 100px;">Mark Ink</th>
+                                            <th style="margin:30px;width: 100px;">Spool/Palat</th>
+                                            <th style="margin:30px;width: 100px;">Remarks</th>
+                                            <th style="margin:30px;width: 100px;">Short Description</th>
+                                            <th style="margin:30px;width: 50px;">Action</th>
+                                        </tr>
+
+                                        <tr ng-repeat="list in detailsbyid">
+                                            <td style="width:40px; text-align:center;">
+                                                <input type="checkbox"
+                                                       value="{{list.itemid}}"
+                                                       name="checkmulPR"
+                                                       class="checkItemPR"
+                                                       data-index="{{$index}}" />
+                                            </td>
+                                                            <td style="width: 50px;">{{$index+1}}</td>
+                                            <td style="display:none">
+                                                <input style="display:none"  class="form-control" type="text" id="{{'pisclineid'+$index}}" value="{{list.pisclineid}}" disabled />
+                                                                <span class="error">Item Name required</span>
+                                                            </td>
+
+                                                            <td style="width: 90px;">
+                                                                <input type="text" id="{{'itemcode'+$index}}" class="form-control" value="{{list.itemid}}" disabled />
+                                                                <span class="error">Item Code required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 150px;">
+                                                                <input class="form-control" type="text" id="{{'name'+$index}}" value="{{list.itemname}}" disabled />
+                                                                <span class="error">Item Name required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 50px;">
+                                                                <input type="text" id="{{'uom'+$index}}" class="form-control" value="{{list.uom}}" disabled />
+                                                                <span class="error">UOM required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 50px;">
+                                                                <input type="text" id="{{'quantity'+$index}}" class="form-control" value="{{list.quantity}}" disabled />
+                                                                <span class="error">Quantity required</span>
+                                                            </td>
+
+                                      
+                                                            <td style="width: 50px;">
+                                                              <input type="text" id="{{'remainingqty' + $index}}" value="{{list.remainingqty}}"
+                                                                       class="form-control"
+                                                                       disabled />
+                                                                <span class="error">Remaining Quantity required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 50px;">
+                                                                <input type="text"
+                                                                       id="{{'packingreqquantity' + $index}}"
+                                                                       ng-model="list.packingreqquantity"
+                                                                       class="form-control"
+                                                       ng-keyup="updateRemainingQty(list,$index)" />
+                                                                <span class="error">Packing Req. Quantity required</span>
+                                                            </td>
+                                       
+
+                                                            
+
+                                                            <td style="width: 50px;">
+                                                                <input type="date" id="{{'Exproductiondate'+$index}}" value="{{list.expproductiondate}}" class="form-control" />
+                                                                <span class="error">Production Date required</span>
+                                                            </td>
+                                                            <td style="width: 50px;">
+                                                                <input class="form-control" type="text" id="{{'TrussNo'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'TrussNo')" />
+                                                                <span class="error">Total Truss required</span>
+                                                            </td>
+                                                            <td style="width: 50px;">
+                                                                <input class="form-control" type="text" id="{{'TotalBale'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'TotalBale')" />
+                                                                <span class="error">Total Bale required</span>
+                                                            </td>
+
+                                                            <td style="width: 50px;">
+                                                                <input class="form-control" type="text" id="{{'TotalTare'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'TotalTare')" />
+                                                                <span class="error">Total Tare required</span>
+                                                            </td>
+
+                                                            <td style="width: 50px;">
+                                                                <input class="form-control" type="text" id="{{'CountNo'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'CountNo')" />
+                                                                <span class="error">Total Bundle required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 50px;">
+                                                                <input class="form-control" type="text" id="{{'TotalPallet'+$index}}" enter-key-nav ng-keypress="navigateToNextRowSameColumn($event, $index, 'TotalPallet')" />
+                                                                <span class="error">Total Pallet required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 50px;">
+                                                                <input class="form-control" type="text" id="{{'TotalCartoon'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'TotalCartoon')" />
+                                                                <span class="error">Total Cartoon required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 50px;">
+                                                                <input class="form-control" type="text" id="{{'AddWeight'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'AddWeight')" />
+                                                                <span class="error">Weight required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 100px;">
+                                                                <input class="form-control" type="text" id="{{'GrossWeight'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'GrossWeight')" />
+                                                                <span class="error">Gross Weight required</span>
+                                                            </td>
+
+                                                            <td style="width: 150px;">
+                                                                <input class="form-control" type="text" id="{{'Measurement'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'Measurement')" />
+                                                                <span class="error">Truss/Carton Measurement required</span>
+                                                            </td>
+
+                                                            <td style="width: 100px;">
+                                                                <input class="form-control" type="text" id="{{'SINo'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'SINo')" />
+                                                                <span class="error">SI No required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 100px;">
+                                                                <input class="form-control" type="text" id="{{'TotalSpool'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'TotalSpool')" />
+                                                                <span class="error">Total Spool required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 220px;">
+                                                                <select class="form-select" id="{{'MillID'+$index}}">
+                                                                    <option value="">--Select Mill--</option>
+                                                                    <option ng-repeat="m in milllist" value="{{m.id}}">{{m.name}}</option>
+                                                                </select>
+                                                                <span class="error">Mill ID required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 100px;">
+                                                                <input class="form-control" type="text" id="{{'MarkInk'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'MarkInk')" />
+                                                                <span class="error">Mark Ink required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 100px;">
+                                                                <input class="form-control" type="text" id="{{'SpoolOrPalat'+$index}}" ng-keypress="navigateToNextRowSameColumn($event, $index, 'SpoolOrPalat')" />
+                                                                <span class="error">Spool or Pallet required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 100px;">
+                                                                <input type="text" id="{{'remarks'+$index}}" value="{{list.remarks}}" class="form-control" ng-keypress="navigateToNextRowSameColumn($event, $index, 'remarks')" />
+                                                                <span class="error">Remarks required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 100px;">
+                                                                <input type="text" id="{{'shortdescription'+$index}}" value="{{list.shortdescription}}" class="form-control" ng-keypress="navigateToNextRowSameColumn($event, $index, 'shortdescription')" />
+                                                                <span class="error">Short Description required</span>
+                                                            </td>
+
+
+                                                            <td style="width: 50px;">
+                                                                <button ng-click="DeleteByLineID(list.id)" type="button" class="btn btn-danger btn-sm">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+
+                                                    
+                                                </table>
+                                            </div>
+                                            
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms & Condition</label>
+                                <textarea class="form-control" id="termscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description :</label>
+                                <textarea class="form-control" id="description"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label>Attachment</label>
+                            <input id="fileInput" name="fileInput" class="form-control" type="file" multiple>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Save()" id="savebutton" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="EditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Mill Declaration (Edit Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-3">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="hidden" id="etxtPISCID" />
+                                <table width="100%">
+                                    <tr>
+                                        <td style="width:100px;">PI/SC Search :</td>
+                                        <td><input type="text" class="form-control" ng-keyup="SearchPI()" placeholder="Search PI/SC..." id="etxtPISC" autocomplete="off" disabled /></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-sm-3">
+                            </div>
+                        </div>
+                        <br />
+                       
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Declaration Details</h6>
+                                    </div>
+                                    <div class="card-body">
+
+                                        <!-- Hidden field kept in DOM -->
+                                        <input type="hidden" id="ehcusid" />
+
+                                        <!-- Row 1 -->
+                                        <div class="row">
+                                            <div class="col">
+                                                <label>Invoice Number</label>
+                                                <input type="text" class="form-control" id="etxtInvoiceCode" disabled placeholder="Invoice Code" />
+                                            </div>
+                                            <div class="col">
+                                                <label>Invoice Date</label>
+                                                <input type="date" class="form-control" id="etxtInvoiceDate" />
+                                                <span class="error">Invoice Date Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipped Per</label>
+                                                <input type="text" class="form-control" id="etxtShipperPer" placeholder="Enter Shipped Per" />
+                                                <span class="error">Shipped Per Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Contract No.</label>
+                                                <input type="text" class="form-control" id="etxtContract" placeholder="Enter Contract No." />
+                                                <span class="error">Contract No Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Packing Exp. Date</label>
+                                                <input type="date" class="form-control" id="etxtPackingReqDate" />
+                                                <span class="error">Packing Exp. Date Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipment Period</label>
+                                                <input type="date" class="form-control" id="etxtShipmentPeriod" />
+                                                <span class="error">Shipment Period Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Purchase Order No.</label>
+                                                <input type="text" class="form-control" id="etxtPurchaseOderNo" />
+                                                <span class="error">Purchase Order No. Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Purchase Order Date</label>
+                                                <input type="date" class="form-control" id="etxtPurchaseDated" />
+                                                <span class="error">Purchase Order Date Required.</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Row 2 -->
+                                        <div class="row mt-2">
+                                            
+                                            <div class="col">
+                                                <label>Invoice To</label>
+                                                <input type="text" class="form-control" id="etxtInvoiceTo" disabled placeholder="Enter Invoice To" />
+                                                <span class="error">Invoice To Required.</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipped From</label>
+                                                <input type="text" class="form-control" id="etxtShippedfrom" placeholder="Enter Shipped from" disabled />
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipped To</label>
+                                                <input type="text" class="form-control" id="etxtShippedto" placeholder="Enter Shipped to" disabled />
+                                            </div>
+                                            <div class="col">
+                                                <label>Agreement Number</label>
+                                                <input type="text" class="form-control" id="etxtPINumber" disabled />
+                                                <span class="error">Purchase Order No. Required.</span>
+                                            </div>
+                                            <div class="col"></div>
+                                            <div class="col"></div>
+                                            <div class="col"></div>
+                                            <div class="col"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                       
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>List of Item :</h4>
+                            </div>
+                            <div class="card-body">
+                                    <div style="overflow-x: auto;">
+                                        <table class="table table-bordered text-center" id="editmycontainer" style="table-layout: fixed; width: max-content;" ng-init="GetMillByUnit(@(Context.Session.GetInt32("UnitID") ?? 0))">
+                                           
+                                                <tr>
+                                                    <th style="margin:30px;width: 50px;">Sl No.</th>
+                                                    <th style="margin:30px;width: 90px;">Item Code</th>
+                                                    <th style="margin:30px;width: 150px;">Item Name</th>
+                                                    <th style="margin:30px;width: 120px;">UOM</th>
+                                                    <th style="margin:30px;width: 120px;">Agg. wise Quantity</th>
+                                                   
+                                                    <th style="margin:30px;width: 120px;">Rem. Quantity</th>
+                                                    <th style="margin:30px;width: 120px;">Accepted Quantity</th>
+                                                    
+                                                    <th style="margin:30px;width: 120px;">Exp Production Date</th>
+                                                    <th style="margin:30px;width: 120px;">Total Truss</th>
+                                                    <th style="margin:30px;width: 120px;">Total Bale</th>
+                                                    <th style="margin:30px;width: 120px;">Total Tare</th>
+                                                    <th style="margin:30px;width: 120px;">Total Bundle</th>
+                                                    <th style="margin:30px;width: 120px;">Total Pallet</th>
+                                                    <th style="margin:30px;width: 120px;">Total Cartoon</th>
+                                                    <th style="margin:30px;width: 120px;">Additional Weight</th>
+                                                    <th style="margin:30px;width: 120px;">Gross weight</th>
+                                                    <th style="margin:30px;width: 150px;">Truss/Carton Measurement</th>
+                                                    <th style="margin:30px;width: 100px;">SI No</th>
+                                                    <th style="margin:30px;width: 100px;">Total Spool</th>
+                                                    <th style="margin:30px;width: 100px;">Mill ID</th>
+                                                    <th style="margin:30px;width: 100px;">Mark Ink</th>
+                                                    <th style="margin:30px;width: 100px;">Spool/Palat</th>
+                                                    <th style="margin:30px;width: 100px;">Remarks</th>
+                                                    <th style="margin:30px;width: 100px;">Short Description</th>
+                                                    <th style="margin:30px;width: 50px;">Action</th>
+                                                </tr>
+                                          
+                                          
+                                                <tr ng-repeat="list in edetailsbyid">
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" value="{{$index+1}}" disabled />
+                                                    </td>
+
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'eitemcode' + $index}}" value="{{list.itemid}}" disabled />
+                                                        <span class="error">Item Code required</span>
+                                                    </td>
+                                                    <td style="width: 90px;">
+                                                        <input class="form-control" type="text" id="{{'name' + $index}}" value="{{list.itemname}}" disabled />
+                                                        <span class="error">Name required</span>
+                                                    </td>
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'euom' + $index}}" value="{{list.uom}}" disabled />
+                                                        <span class="error">UOM required</span>
+                                                    </td>
+
+
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'equantity' + $index}}" value="{{list.quantity}}" disabled />
+                                                        <span class="error">Quantity required</span>
+                                                    </td>
+
+
+                                                        <td style="width: 50px;">
+                                                            <input type="text"
+                                                                   id="{{'eremainingqty' + $index}}"
+                                                                   ng-value="list.remainingqty"
+                                                                   class="form-control"
+                                                                   disabled />
+                                                            <span class="error">Remaining Quantity required</span>
+                                                        </td>
+
+
+                                                        <td style="width: 50px;">
+                                                            <input type="text"
+                                                                   id="{{'epackingreqquantity' + $index}}"
+                                                                   ng-model="list.packingreqquantity"
+                                                                   class="form-control"
+                                                       
+                                                                   
+                                                                   ng-blur="eupdateRemainingQty(list, $index)" />
+                                                            <span class="error">Packing Req. Quantity required</span>
+                                                        </td>
+                                                   
+
+                                                  
+
+                                                    <td style="width: 50px;">
+                                                <input class="form-control" type="date" id="{{'exproductiondate' + $index}}" value="{{list.expproductionorderdate | date:'yyyy-MM-dd'}}" />
+                                                        <span class="error">Expected Production Date required</span>
+                                                    </td>
+                                                    
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'etrussNo' + $index}}" value="{{list.trussNo}}" />
+                                                        <span class="error">Total Truss required</span>
+                                                    </td>
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'etotalBale' + $index}}" value="{{list.totalBale}}" />
+                                                        <span class="error">Total Bale required</span>
+                                                    </td>
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'etotalTare' + $index}}" value="{{list.totalTare}}" />
+                                                        <span class="error">Total Tare required</span>
+                                                    </td>
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'ecountNo' + $index}}" value="{{list.countNo}}" />
+                                                        <span class="error">Total Bundle required</span>
+                                                    </td>
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'etotalPallet' + $index}}" value="{{list.totalPallet}}" />
+                                                        <span class="error">Total Pallet required</span>
+                                                    </td>
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'etotalCartoon' + $index}}" value="{{list.totalCartoon}}" />
+                                                        <span class="error">Total Cartoon required</span>
+                                                    </td>
+                                                    <td style="width: 50px;">
+                                                        <input class="form-control" type="text" id="{{'eaddWeight' + $index}}" value="{{list.addWeight}}" />
+                                                        <span class="error">Add Weight required</span>
+                                                    </td>
+                                                    <td style="width: 100px;">
+                                                        <input class="form-control" type="text" id="{{'egrossWeight' + $index}}" value="{{list.grossWeight}}" />
+                                                        <span class="error">Gross Weight required</span>
+                                                    </td>
+
+                                                    <td style="width: 150px;">
+                                                        <input class="form-control" type="text" id="{{'emeasurement' + $index}}" value="{{list.measurement}}" />
+                                                        <span class="error">Truss/Carton Measurement required</span>
+                                                    </td>
+
+                                                    <td style="width: 100px;">
+                                                        <input class="form-control" type="text" id="{{'esiNo' + $index}}" value="{{list.siNo}}" />
+                                                        <span class="error">SI No required</span>
+                                                    </td>
+                                                    <td style="width: 100px;">
+                                                        <input class="form-control" type="text" id="{{'etotalSpool' + $index}}" value="{{list.totalSpool}}" />
+                                                        <span class="error">Total Spool required</span>
+                                                    </td>
+                                                    <td style="width: 220px;">
+                                                        <select class="form-select" id="{{'editMillName' + $index}}" ng-model="list.millid" ng-options="(m.id || m.ID) as (m.name || m.Name) for m in milllist">
+                                                            <option value="">--Select Mill--</option>
+                                                        </select>
+                                                        <span class="error">Mill ID required</span>
+                                                    </td>
+                                                    <td style="width: 100px;">
+                                                        <input class="form-control" type="text" id="{{'emarkInk' + $index}}" value="{{list.markInk}}" />
+                                                        <span class="error">Mark Ink required</span>
+                                                    </td>
+                                                    <td style="width: 100px;">
+                                                        <input class="form-control" type="text" id="{{'espoolOrPalat' + $index}}" value="{{list.spoolOrPalat}}" />
+                                                        <span class="error">Spool or Pallet required</span>
+                                                    </td>
+                                                    <td style="width: 100px;">
+                                                        <input class="form-control" type="text" id="{{'eremarks' + $index}}" value="{{list.remarks}}" />
+                                                        <span class="error">Remarks required</span>
+                                                    </td>
+                                                    <td style="width: 100px;">
+                                                        <input class="form-control" type="text" id="{{'edescriptions' + $index}}" value="{{list.descriptions}}" />
+                                                        <span class="error">Description required</span>
+                                                    </td>
+
+
+                                                    
+                                                    <td style="width:100px;">
+                                                        <button type="button" ng-click="UpdateByLineID($index,list.id)" class="btn btn-info btn-sm"><i class="fas fa-arrow-circle-up"></i></button>
+                                                        <button ng-click="DeleteByLineIDEdit(list.id)" type="button" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                           
+                                        </table>
+                                    </div>
+                                  
+                               
+
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms & Condition</label>
+                                <textarea class="form-control" id="termscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description :</label>
+                                <textarea class="form-control" id="description"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label>Attachment</label>
+                            <input id="efileInput" name="efileInput" class="form-control" type="file" multiple>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Update()" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <div id="ViewEditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="myExtraLargeModalLabel">Mill Declaration (View Mode)</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="hidden" id="etxtPISCID" />
+                                <table width="100%">
+                                    <tr>
+                                        <td style="width:120px;">Mill Declaration :</td>
+                                        <td><input type="text" class="form-control" ng-keyup="SearchPI()" placeholder="Search PI/SC..." id="vtxtPISC" autocomplete="off" disabled /></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-sm-3">
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>Mill Declaration Information </h6>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <table id="tblview" ng-repeat="list in masterdata" class="table table-bordered" style="font-weight:bold">
+                                            <tr>
+                                                <td style="text-align:right">Invoice Number :</td>
+                                                <td style="text-align:left">{{formatInvoiceNo(list.invoicenumber)}}</td>
+                                                <td style="text-align:right">Invoice to :</td>
+                                                <td style="text-align:left">{{list.invoiceto}}</td>
+                                                <td style="text-align:right">Invoice Date :</td>
+                                                <td style="text-align:left">
+                                                    {{ list.invoicedate | date:'yyyy-MM-dd' }}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="text-align:right">Mill dec. Number :</td>
+                                                <td style="text-align:left">
+                                                    {{list.packreqnumber}}
+                                                </td>
+                                                <td style="text-align:right">Packing Exp. date :</td>
+                                                <td style="text-align:left">
+                                                    {{ list.packreqdate | date:'yyyy-MM-dd' }}
+                                                </td>
+                                                <td style="text-align:right">Contract No :</td>
+                                                <td style="text-align:left">
+                                                    {{list.contractno}}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="text-align:right">Shipped per :</td>
+                                                <td style="text-align:left">{{list.shippedper}}</td>
+                                                <td style="text-align:right">Shipped from :</td>
+                                                <td style="text-align:left">{{list.shippedfrom}}</td>
+                                                <td style="text-align:right">Shipped to :</td>
+                                                <td style="text-align:left">{{list.shippedto}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="text-align:right">
+                                                    Purchase Order No:
+                                                </td>
+                                                <td style="text-align:left">
+                                                    {{list.purchaseorderno}}
+                                                </td>
+                                                <td style="text-align:right">
+                                                    Purchase Order Date:
+                                                </td>
+
+                                                <td style="text-align:left">
+                                                    {{ list.purchaseorderdated | date:'yyyy-MM-dd' }}
+                                                </td>
+                                                <td style="text-align:right"></td>
+                                                <td style="text-align:left"></td>
+                                            </tr>
+                                            <tr>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                           <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>List of Item :</h4>
+                                </div>
+                                <div class="card-body">
+                                    
+
+                                        <div style="max-height: 60vh; overflow: auto;">
+                                            <table class="table table-bordered text-center" id="editmycontainer" style="table-layout: fixed; width: max-content;">
+
+                                                <tr>
+                                                    <th style="margin:30px;width: 50px;">Sl No.</th>
+                                                    <th style="margin:30px;width: 90px;">Item Code</th>
+                                                    <th style="margin:30px;width: 150px;">Item Name</th>
+                                                    <th style="margin:30px;width: 120px;">UOM</th>
+                                                    <th style="margin:30px;width: 120px;">Agg. wise Quantity</th>
+                                                    <th style="margin:30px;width: 120px;">Rem. Quantity</th>
+                                                    <th style="margin:30px;width: 120px;">Accepted Quantity</th>
+
+                                                    <th style="margin:30px;width: 120px;">Exp Production Date</th>
+                                                    <th style="margin:30px;width: 120px;">Total Truss</th>
+                                                    <th style="margin:30px;width: 120px;">Total Bale</th>
+                                                    <th style="margin:30px;width: 120px;">Total Tare</th>
+                                                    <th style="margin:30px;width: 120px;">Total Bundle</th>
+                                                    <th style="margin:30px;width: 120px;">Total Pallet</th>
+                                                    <th style="margin:30px;width: 120px;">Total Cartoon</th>
+                                                    <th style="margin:30px;width: 120px;">Additional Weight</th>
+                                                    <th style="margin:30px;width: 120px;">Gross weight</th>
+                                                    <th style="margin:30px;width: 150px;">Truss/Carton Measurement</th>
+                                                    <th style="margin:30px;width: 100px;">SI No</th>
+                                                    <th style="margin:30px;width: 100px;">Total Spool</th>
+                                                    <th style="margin:30px;width: 100px;">Mill ID</th>
+                                                    <th style="margin:30px;width: 100px;">Mark Ink</th>
+                                                    <th style="margin:30px;width: 100px;">Spool/Palat</th>
+                                                    <th style="margin:30px;width: 100px;">Remarks</th>
+                                                    <th style="margin:30px;width: 100px;">Short Description</th>
+
+
+                                                </tr>
+
+
+                                                <tr ng-repeat="list in listdetails">
+                                                    <td style="width: 50px;">{{$index+1}}</td>
+                                                    <td style="width: 90px;"><input type="text" class="form-control" value="{{list.itemid}}" disabled /></td>
+                                                    <td style="width: 150px;"><input class="form-control" type="text" value="{{list.itemname}}" disabled></td>
+                                                    <td style="width: 50px;"><input type="text" class="form-control" value="{{list.uom}}" disabled /></td>
+                                                    <td style="width: 50px;"><input type="text" class="form-control" value="{{list.quantity}}" disabled /></td>
+
+                                                    <td style="width: 50px;"><input type="text" value="{{list.remainingqty}}" class="form-control" disabled /></td>
+                                                    <td style="width: 50px;"><input type="text" value="{{list.packingreqquantity}}" class="form-control" disabled /></td>
+                                                    
+                                                    <td style="width: 50px;"><input type="date" value="{{list.expproductionorderdate | date:'yyyy-MM-dd'}}" class="form-control" disabled /></td>
+                                                    <td style="width: 50px;"><input class="form-control" type="text" value="{{list.trussNo}}" disabled /></td>
+                                                    <td style="width: 50px;"><input class="form-control" type="text" value="{{list.totalBale}}" disabled /></td>
+                                                    <td style="width: 50px;"><input class="form-control" type="text" value="{{list.totalTare}}" disabled /></td>
+                                                    <td style="width: 50px;"><input class="form-control" type="text" value="{{list.countNo}}" disabled /></td>
+                                                    <td style="width: 50px;"><input class="form-control" type="text" value="{{list.totalPallet}}" disabled /></td>
+                                                    <td style="width: 50px;"><input class="form-control" type="text" value="{{list.totalCartoon}}" disabled /></td>
+                                                    <td style="width: 50px;"><input class="form-control" type="text" value="{{list.addWeight}}" disabled /></td>
+                                                    <td style="width: 100px;"><input class="form-control" type="text" value="{{list.grossWeight}}" disabled /></td>
+                                                    <td style="width: 150px;"><input class="form-control" type="text" value="{{list.measurement}}" disabled /></td>
+                                                    <td style="width: 100px;"><input class="form-control" type="text" value="{{list.siNo}}" disabled /></td>
+                                                    <td style="width: 100px;"><input class="form-control" type="text" value="{{list.totalSpool}}" disabled /></td>
+                                                    <td style="width: 100px;"><input class="form-control" type="text" value="{{list.millname || list.millid}}" disabled /></td>
+                                                    <td style="width: 100px;"><input class="form-control" type="text" value="{{list.markInk}}" disabled /></td>
+                                                    <td style="width: 100px;"><input class="form-control" type="text" value="{{list.spoolOrPalat}}" disabled /></td>
+                                                    <td style="width: 100px;"><input type="text" value="{{list.remarks}}" class="form-control" disabled /></td>
+                                                    <td style="width: 100px;"><input type="text" value="{{list.descriptions}}" class="form-control" disabled /></td>
+                                                    
+                                                </tr>
+
+                                            </table>
+                                        </div>
+
+                                    
+
+                                </div>
+                            </div>
+                           </div>
+                        </div>
+
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+
+                        
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+

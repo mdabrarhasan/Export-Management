@@ -1,0 +1,348 @@
+﻿<script src="~/customjs/lc/lcapproval.js"></script>
+
+<div ng-app="App" ng-controller="Ctl">
+    <div ng-show="loading">
+        <img style="width:50%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+
+                <!-- HEADER -->
+                <div class="card-header">
+                    <h4>LC Approval</h4>
+                </div>
+
+                <div class="card-body" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+
+                    <!-- TOP CONTROLS -->
+                    <div class="row align-items-center mb-3 g-2">
+
+                        <!-- STATUS -->
+                        <div class="col-md-3">
+                            <select class="form-select"
+                                    ng-model="statusid"
+                                    ng-init="StatusList()"
+                                    ng-change="LCList()">
+                                <option value="">-- Status --</option>
+                                <option ng-repeat="list in statuslist" value="{{list.code}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- MESSAGE -->
+                        <div class="col-md-3">
+                            <p id="Msg" class="mb-0 text-muted"></p>
+                        </div>
+
+                        <!-- SEARCH (EXPANDS) -->
+                        <div class="col">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search LC No, Customer...">
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" ng-init="GetLCData()">
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="display:none;">ID</th>
+
+                                    <th ng-click='sortBy("lcnumber")'>LC No</th>
+                                    <th ng-click='sortBy("lcissuedate")'>Issue Date</th>
+                                    <th ng-click='sortBy("lcexpiredate")'>Expire Date</th>
+                                    <th ng-click='sortBy("lccreatedplace")'>Created Place</th>
+                                    <th ng-click='sortBy("toelrancecramtpercentage")'>Tolerance (%)</th>
+                                    <th ng-click='sortBy("cusname")'>Customer</th>
+                                    <th ng-click='sortBy("paymentterm")'>Payment Term</th>
+
+                                    <th>Status</th>
+                                    <th style="width:180px;">Remarks</th>
+                                    <th class="text-center" style="width:220px;">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr dir-paginate="list in LClist | orderBy:sortColumn:reverse | filter:search | itemsPerPage:pageSize"
+                                    current-page="currentPage">
+
+                                    <td style="display:none;">{{list.id}}</td>
+
+                                    <td>{{list.lcnumber}}</td>
+                                    <td>{{list.lcissuedate}}</td>
+                                    <td>{{list.lcexpiredate}}</td>
+                                    <td>{{list.lccreatedplace}}</td>
+                                    <td>{{list.toelrancecramtpercentage}}</td>
+                                    <td>{{list.cusname}}</td>
+                                    <td>{{list.paymentterm}}</td>
+
+                                    <!-- STATUS -->
+                                    <td>
+                                        <span class="badge bg-info" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-success" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-danger" ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-primary" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                    </td>
+
+                                    <!-- REMARKS -->
+                                    <td>
+                                        <input type="text"
+                                               id="{{'description'+$index}}"
+                                               ng-model="list.descriptions"
+                                               class="form-control"
+                                               placeholder="Remarks">
+                                    </td>
+
+                                    <!-- ACTION -->
+                                    <td class="text-center">
+
+                                        <button type="button"
+                                                class="btn btn-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#EditexampleModalFullscreen"
+                                                ng-click="ViewCData(list.id)">
+                                            <i class="fas fa-search-plus"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm"
+                                                ng-disabled='list.code!="PEND"'
+                                                ng-click="Rejected(list.histryid,$index)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-success btn-sm"
+                                                ng-disabled='list.code!="PEND"'
+                                                ng-click="Approved(list.histryid,$index)">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm"
+                                                ng-show="list.code !== 'PEND'"
+                                                ng-click="Cancled(5,list.pischeaderid)">
+                                            <i class="fa fa-ban"></i>
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <!-- PAGINATION INIT -->
+                    <div ng-init="currentPage=1; pageSize=8"></div>
+
+                    <!-- PAGINATION STYLE -->
+                    <style>
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            gap: 6px;
+                            margin-top: 20px;
+                            padding-left: 0;
+                        }
+
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            dir-pagination-controls li a {
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                transition: 0.25s;
+                            }
+
+                                dir-pagination-controls li a:hover {
+                                    background: #e7f1ff;
+                                }
+
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                            }
+
+                            dir-pagination-controls li.disabled a {
+                                background: #e9ecef;
+                                color: #adb5bd;
+                            }
+                    </style>
+
+                    <!-- FOOTER -->
+                    <div class="row mt-2 align-items-center">
+
+                        <!-- TOTAL -->
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; opacity:0.75;">
+                                Total Records:
+                                <b>{{ (LClist | filter:search).length }}</b>
+                            </span>
+                        </div>
+
+                        <!-- PAGINATION -->
+                        <div class="col-md-4 text-center">
+                            <dir-pagination-controls direction-links="true"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+                        </div>
+
+                        <div class="col-md-4"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="EditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">LC Info (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        @*<div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>LC Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>*@
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h4>LC Info</h4>
+                                <table id="tblinfo" class="table table-responsive">
+                                    <tr>
+                                        <th style="display:none;">ID</th>
+                                        <th ng-click='sortBy("lcnumber")'>
+                                            LC Number
+                                            <span ng-show="sortColumn=='lcnumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("lcissuedate")'>
+                                            LC Issue Date
+                                            <span ng-show="sortColumn=='lcissuedate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("lcexpiredate")'>
+                                            LC Expire Date
+                                            <span ng-show="sortColumn=='lcexpiredate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("lccreatedplace")'>
+                                            LC Created Place
+                                            <span ng-show="sortColumn=='lccreatedplace'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("toelrancecramtpercentage")'>
+                                            Tolerance Ramt Percentage
+                                            <span ng-show="sortColumn=='toelrancecramtpercentage'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("cusname")'>
+                                            Customer Name
+                                            <span ng-show="sortColumn=='cusname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+
+                                        <th ng-click='sortBy("paymentterm")'>
+                                            Agreement Type
+                                            <span ng-show="sortColumn=='paymentterm'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("paymentterm")'>
+                                            HS Code
+                                            <span ng-show="sortColumn=='paymentterm'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("paymentterm")'>
+                                            Payment Term
+                                            <span ng-show="sortColumn=='paymentterm'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                       @* <th ng-click='sortBy("docstatus")'>
+                                            Status
+                                            <span ng-show="sortColumn=='docstatus'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>*@
+                                    </tr>
+
+                                    <tr dir-paginate="list in LClistView | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+                                        <td style="display:none;">{{list.id}}</td>
+                                        <td>{{list.lcnumber}}</td>
+                                        <td>{{list.lcissuedate}}</td>
+                                        <td>{{list.lcexpiredate}}</td>
+                                        <td>{{list.lccreatedplace}}</td>
+                                        <td>{{list.toelrancecramtpercentage}}</td>
+                                        <td>{{list.cusname}}</td>
+                                        <td>{{list.agreementtype}}</td>
+                                        <td>{{list.hscode}}</td>
+                                        <td>{{list.paymentterm}}</td>
+                                        @*<td>
+                                            <span class="badge rounded-pill badge-soft-info font-size-11" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-primary font-size-11" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                        </td>*@
+                                       
+                                       
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Attachment</h5>
+                                <table class="table table-responsive">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>File Name</th>
+                                        <th>File Type</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr ng-repeat="list in imageitem">
+                                        <td>{{$index+1}}</td>
+                                        <td>{{list.fileName}}</td>
+                                        <td>{{list.extension}}</td>
+                                        <td><button class="btn btn-info btn-sm" ng-click="Download(list.id)">Download</button></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

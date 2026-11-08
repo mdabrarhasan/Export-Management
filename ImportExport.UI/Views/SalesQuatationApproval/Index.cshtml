@@ -1,0 +1,302 @@
+﻿<script src="~/customjs/SalesQuatationApproval.js"></script>
+<script src="~/customjs/common.js"></script>
+
+<style>
+    #tblview{
+        text-align:center
+    }
+</style>
+
+<div ng-app="App" ng-controller="Ctl">
+    <div ng-show="loading">
+        <img style="width:50%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Sales Quotation Approval</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="row mb-4">
+                                <label for="horizontal-email-input" class="col-sm-3 col-form-label">Status :</label>
+                                <div class="col-sm-9">
+                                    <select class="vatid form-control" ng-model="statusid" ng-init="StatusList()" ng-change="SQList()"
+                                            id="vatid">
+                                        <option value="">--Select--</option>
+                                        <option ng-repeat="list in statuslist" value="{{list.code}}">
+                                            {{list.name}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="col-sm-4">
+                            <p id="Msg"></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="row mb-4">
+                                <label for="horizontal-email-input" class="col-sm-3 col-form-label">Search :</label>
+                                <div class="col-sm-9">
+                                    <input type="text" ng-model="search" class="form-control" placeholder="Search.." />
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div><br />
+                    <div class="row">
+                        <div class="row table-responsive">
+                            <table id="tblinfo" class="table table-bordered">
+                                <tr>
+                                    <th style="display:none;">ID</th>
+                                    <th ng-click='sortBy("sqNumber")'>
+                                        SQ Number
+                                        <span ng-show="sortColumn=='sqNumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    @* <th ng-click='sortBy("customerName")'>
+                                        Customer Code
+                                        <span ng-show="sortColumn=='cusID'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th> *@
+                                    <th ng-click='sortBy("customerName")'>
+                                        Customer Name
+                                        <span ng-show="sortColumn=='customerName'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("unitID")'>
+                                        Buyer Code
+                                        <span ng-show="sortColumn=='unitID'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("customerName")'>
+                                        Buyer Name
+                                        <span ng-show="sortColumn=='customerName'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th ng-click='sortBy("documentcreateddate")'>
+                                        Created Date
+                                        <span ng-show="sortColumn=='documentcreateddate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>
+                                        Remarks
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                                <tr dir-paginate="list in SQlist | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                    <td style="display:none;">{{list.histryid}}</td>
+                                    <td id="sqnumber" style="display:none;">{{list.id}}</td>
+                                    <td>{{list.sqnumber}}</td>
+                                 @*    <td>{{list.cusID}}</td> *@
+                                    <td>{{list.customername}}</td>
+                      
+                                    <td>{{list.unitname}}</td>
+                                    <td>{{list.unitdescription}}</td>
+                                    <td>{{list.documentcreateddate}}</td>
+
+                                    <td>
+                                        <span class="badge rounded-pill badge-soft-info font-size-11" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                        <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                        <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+                                        <span class="badge rounded-pill badge-soft-primary font-size-11" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                    </td>
+                                    <td><input type="text" id="{{'description'+$index}}" value="{{list.descriptions}}" class="form-control" /></td>
+                                    <td>
+                                        <button @* ng-disabled='list.code!="PEND"' *@ type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.id)"><span class="fas fa-search-plus"></span></button>
+                                        <button ng-disabled='list.code!="PEND"' type="button" class="btn btn-danger btn-sm delete" ng-click="Rejected(list.histryid,$index)"><span class="fas fa-times"></span></button>
+                                        <button ng-disabled='list.code!="PEND"' type="button" class="btn btn-success btn-sm" ng-click="Approved(list.histryid,list.id,$index)"><span class="fa fa-check"></span></button>
+                                        <button ng-show="list.code !== 'PEND'" type="button" class="btn btn-soft-warning btn-sm " ng-click="Cancled(1,list.id)"><span class="fa fa-ban"></span></button>
+                                        <button ng-show="list.code !== 'PEND'" type="button" class="btn btn-success btn-xs" ng-click="Ropen(1,list.id)"><span class="fa fa-undo"></span></button>
+                                       
+                                    </td>
+                            </table>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-6">
+                            <dir-pagination-controls max-size="10" style="font-size:16px;"
+                                                     direction-links="true"
+                                                     boundary-links="true">
+                            </dir-pagination-controls>
+
+                        </div>
+                        <div class="col-sm-2">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="EditexampleModalFullscreen" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+
+                <!-- HEADER -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Sales Quotation (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+
+                        <!-- ================= Basic Information ================= -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6>Basic Information</h6>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table ng-repeat="list in masterdata" class="table table-bordered" style="font-weight:bold">
+
+                                    <tr>
+                                        <td align="right">Payment Term :</td>
+                                        <td>{{list.paymenttermsname}}</td>
+                                        <td align="right">Payment Terms Others :</td>
+                                        <td>{{list.paymenttermsothers}}</td>
+                                        <td align="right">Expire Date :</td>
+                                        <td>{{list.expiredate}}</td>
+                                        <td align="right">SQ Type :</td>
+                                        <td>{{list.sqtypename}}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="right">From Shipment :</td>
+                                        <td>{{list.fromshipmentname}}</td>
+                                        <td align="right">To Shipment :</td>
+                                        <td>{{list.toshipment}}</td>
+                                        <td align="right">Loading Place :</td>
+                                        <td>{{list.loadingplace}}</td>
+                                        <td align="right">Currency :</td>
+                                        <td>{{list.currencyname}}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="right">From Loading Port :</td>
+                                        <td>{{list.fromloadingpart}}</td>
+                                        <td align="right">Incoterms :</td>
+                                        <td>{{list.incotermname}}</td>
+                                        <td align="right">Shipping Period :</td>
+                                        <td>{{list.shippingperiod}}</td>
+                                        <td align="right">Transport Mode :</td>
+                                        <td>{{list.transportationmodename}}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="right">Description :</td>
+                                        <td>{{list.descriptions}}</td>
+                                        <td align="right">Terms & Condition :</td>
+                                        <td>{{list.termscondition}}</td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ================= Items ================= -->
+                        <div class="table-responsive mb-3">
+                            <h4>List of Item's</h4>
+
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Sl No.</th>
+                                    <th>Item Code</th>
+                                    <th>Item Name</th>
+                                    <th>UOM</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Discount%</th>
+                                    <th>Dis. Amount</th>
+                                    <th>Total Amount</th>
+                                    <th>Remarks</th>
+                                    <th>Short Details</th>
+                                </tr>
+
+                                <tr ng-repeat="list in detailsbyid">
+                                    <td>{{$index+1}}</td>
+                                    <td>{{list.itemid}}</td>
+                                    <td>{{list.itemname}}</td>
+                                    <td>{{list.uom}}</td>
+                                    <td>{{list.quantity}}</td>
+                                    <td>{{list.price}}</td>
+                                    <td>{{list.disname}}</td>
+                                    <td>{{list.discount}}</td>
+                                    <td>{{list.totalamount}}</td>
+                                    <td>{{list.remarks}}</td>
+                                    <td>{{list.descriptions}}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- ================= Document Status ================= -->
+                        <div class="table-responsive mb-3">
+                            <h4>Document Status Level</h4>
+
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Sl No.</th>
+                                    <th>Code</th>
+                                    <th>Initiator</th>
+                                    <th>Approver</th>
+                                    <th>Action Date</th>
+                                    <th>Status</th>
+                                    <th>Details</th>
+                                </tr>
+
+                                <tr ng-repeat="vlist in docstatusview">
+                                    <td>{{$index+1}}</td>
+                                    <td>{{vlist.processcode}}</td>
+                                    <td>{{vlist.vinitiator}}</td>
+                                    <td>{{vlist.approvar}}</td>
+                                    <td>{{vlist.documentcreateddate}}</td>
+                                    <td>{{vlist.docstatus}}</td>
+                                    <td>{{vlist.descriptions}}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- ================= Attachment ================= -->
+                        <div class="mb-3">
+                            <h5>Attachment</h5>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Sl No</th>
+                                    <th>File Name</th>
+                                    <th>Action</th>
+                                </tr>
+                                <tr>
+                                    <td><label id="vSINO"></label></td>
+                                    <td><label id="vFileName"></label></td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm" id="downloadButton" style="display:none;">
+                                            Download File
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- FOOTER -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+

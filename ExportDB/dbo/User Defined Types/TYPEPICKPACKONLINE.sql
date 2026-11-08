@@ -1,0 +1,11 @@
+﻿CREATE TYPE [dbo].[TYPEPICKPACKONLINE] AS TABLE (
+    [ITEMID]             INT             NULL,
+    [QUANTITY]           DECIMAL (18, 2) NULL,
+    [PACKINGREQQUANTITY] DECIMAL (18, 2) NULL,
+    [GROSSMEASURE]       DECIMAL (18, 2) NULL,
+    [TRUCKNO]            VARCHAR (500)   NULL,
+    [CONTAINERSIZE]      INT             NULL,
+    [CONTAINERNO]        VARCHAR (500)   NULL,
+    [REMARKS]            VARCHAR (500)   NULL,
+    [DESCRIPTIONS]       VARCHAR (500)   NULL);
+

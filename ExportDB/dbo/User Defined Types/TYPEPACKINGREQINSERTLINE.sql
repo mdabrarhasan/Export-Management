@@ -1,0 +1,21 @@
+﻿CREATE TYPE [dbo].[TYPEPACKINGREQINSERTLINE] AS TABLE (
+    [ID]                     INT             NULL,
+    [ITEMID]                 INT             NULL,
+    [QUANTITY]               DECIMAL (18, 2) NULL,
+    [PACKINGREQQUANTITY]     DECIMAL (18, 2) NULL,
+    [EXPPRODUCTIONORDERDATE] VARCHAR (50)    NULL,
+    [TRUSSNO]                INT             NULL,
+    [CountNo]                VARCHAR (500)   NULL,
+    [TotalPallet]            INT             NULL,
+    [TotalCartoon]           INT             NULL,
+    [AddWeight]              DECIMAL (18, 2) NULL,
+    [GrossWeight]            DECIMAL (18, 2) NULL,
+    [MEASUREMENT]            NVARCHAR (200)  NULL,
+    [SINo]                   VARCHAR (50)    NULL,
+    [TotalSpool]             INT             NULL,
+    [MarkInk]                VARCHAR (500)   NULL,
+    [SpoolOrPalat]           VARCHAR (500)   NULL,
+    [REMARKS]                VARCHAR (500)   NULL,
+    [DESCRIPTIONS]           VARCHAR (500)   NULL,
+    [MILLID]                 INT             NULL);
+

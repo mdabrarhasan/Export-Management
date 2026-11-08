@@ -1,0 +1,27 @@
+﻿CREATE TABLE [dbo].[TBLNOTIFICATION] (
+    [ID]                  INT            IDENTITY (1, 1) NOT NULL,
+    [SUBMENUID]           INT            NOT NULL,
+    [CODE]                NVARCHAR (50)  NOT NULL,
+    [NOTIFICATIONDETAILS] NVARCHAR (MAX) NOT NULL,
+    [EMAILADD]            NVARCHAR (200) NULL,
+    [SUBJECT]             NVARCHAR (200) NULL,
+    [CCEMAILADD]          NVARCHAR (500) NULL,
+    [MAILTYPE]            NVARCHAR (100) NULL,
+    [MAILTYPEID]          INT            NULL,
+    [TYPE]                NVARCHAR (50)  NOT NULL,
+    [DESCRIPTION]         NVARCHAR (MAX) NULL,
+    [ALLOWTOSEND]         BIT            NOT NULL,
+    [RECEIPENTDETAILS]    NVARCHAR (500) NULL,
+    [ISACTIVE]            BIT            NOT NULL,
+    [CREATEDBY]           INT            NOT NULL,
+    [CREATEDDATE]         DATETIME       NOT NULL,
+    [UPDATEDBY]           INT            NOT NULL,
+    [UPDATEDDATE]         DATETIME       NOT NULL,
+    CONSTRAINT [PK_TBLNOTIFICATION] PRIMARY KEY CLUSTERED ([ID] ASC) WITH (FILLFACTOR = 90)
+);
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_TBLNOTIFICATION]
+    ON [dbo].[TBLNOTIFICATION]([CODE] ASC);
+

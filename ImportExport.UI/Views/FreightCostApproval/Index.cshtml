@@ -1,0 +1,201 @@
+﻿<script src="~/customjs/Freight/FreightCostApproval.js"></script>
+<script src="~/customjs/common.js"></script>
+
+<div ng-app="App" ng-controller="Ctl" ng-init="StatusList(); PCList()">
+
+    <div ng-show="loading">
+        <img style="width:50%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4>Freight Cost Approval</h4>
+                </div>
+
+                <div class="card-body" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+
+                    <!-- Top Controls -->
+                    <div class="row align-items-end mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Status</label>
+                            <select class="form-select"
+                                    ng-model="statusid"
+                                    ng-change="PCList()"
+                                    ng-options="s.code as s.name for s in statuslist">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3"></div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Search</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="mdi mdi-magnify"></i></span>
+                                <input type="text" ng-model="search" class="form-control"
+                                       placeholder="Search Sales Contract, Invoice, Customer, Supplier...">
+                                <button class="btn btn-outline-secondary" type="button"
+                                        ng-click="search=''" ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th ng-click='sortBy("erppoid")'>PO No</th>
+                                    <th ng-click='sortBy("scname")'>Sales Contract</th>
+                                    <th ng-click='sortBy("prname")'>Invoice Number</th>
+                                    <th ng-click='sortBy("customername")'>Customer</th>
+                                    <th ng-click='sortBy("suppliername")'>Supplier</th>
+                                    <th ng-click='sortBy("amount")'>Final Amount</th>
+                                    <th ng-click='sortBy("documentcreateddate")'>Created</th>
+                                    <th>Status</th>
+                                    <th style="width:200px;">Remarks</th>
+                                    <th class="text-center" style="width:120px;">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr dir-paginate="list in getalldata | orderBy:sortColumn:reverse | filter:search | itemsPerPage:pageSize"
+                                    current-page="currentPage">
+                                    <td>{{list.erppoid || ''}}</td>
+                                    <td>{{list.scname}}</td>
+                                    <td>{{list.prname}}</td>
+                                    <td>{{list.customername}}</td>
+                                    <td>{{list.suppliername}}</td>
+                                    <td>{{list.amount | upto4}}</td>
+                                    <td>{{list.documentcreateddate}}</td>
+
+                                    <td>
+                                        <span class="badge bg-info" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-success" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-primary" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-secondary" ng-if='list.code=="INIT"'>{{list.docstatus}}</span>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm"
+                                               ng-model="list.description"
+                                               ng-disabled='list.code!="PEND"'
+                                               placeholder="Enter remarks">
+                                    </td>
+
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#ViewApprovalModal"
+                                                ng-click="ViewData(list)">
+                                            <i class="fas fa-search-plus"></i>
+                                        </button>
+
+                                        <button type="button" class="btn btn-success btn-sm"
+                                                ng-disabled='list.code!="PEND" || list.busy'
+                                                ng-click="Approved(list)">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div ng-init="currentPage=1; pageSize=10"></div>
+
+                    <!-- Paste the same dir-pagination <style> block from Views/FreightCost/Index.cshtml here -->
+
+                    <div class="row mt-2 align-items-center">
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; color:#444; opacity:0.75;">
+                                Total Records:
+                                <b>{{ (getalldata | filter:search).length }}</b>
+                            </span>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <dir-pagination-controls direction-links="true"
+                                                     max-size="10"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+                        </div>
+                        <div class="col-md-4"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div id="ViewApprovalModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Freight Cost (Approval Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-header"><h6>Expense</h6></div>
+                        <div class="card-body">
+                            <table class="table table-bordered" ng-repeat="m in masterdata" style="font-weight:bold">
+                                <tr>
+                                    <td>PO No: {{m.erppoid || ''}}</td>
+                                    <td>Sales Contract: {{m.scname}}</td>
+                                    <td>Invoice Number: {{m.prname}}</td>
+                                    <td>Customer Name: {{m.customername}}</td>
+                                    <td>Supplier Name: {{m.suppliername || ''}}</td>
+                                    <td>Final Amount: {{m.amount | upto4}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-3">List of Cost Items</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:5%">Sl No.</th>
+                                    <th>Cost Type</th>
+                                    <th>Cost Name</th>
+                                    <th>Cost</th>
+                                    <th>Total Amount Line</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="d in detailsbyid">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{d.costtypename}}</td>
+                                    <td>{{d.costname}}</td>
+                                    <td>{{d.cost | upto4}}</td>
+                                    <td>{{d.totalamount | upto4}}</td>
+                                    <td>{{d.remarks}}</td>
+                                </tr>
+                                <tr ng-if="detailsbyid.length === 0">
+                                    <td colspan="6" class="text-center text-muted">No cost items.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

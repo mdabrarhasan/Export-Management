@@ -1,0 +1,447 @@
+﻿<script src="~/customjs/PackingReqConfirm/PickingPackingApproval.js"></script>
+<script src="~/customjs/common.js"></script>
+
+<div ng-app="App" ng-controller="Ctl">
+
+    <div ng-show="loading">
+        <img style="width:50%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+
+                <!-- HEADER -->
+                <div class="card-header">
+                    <h4>Invoice Approval</h4>
+                </div>
+
+                <div class="card-body" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+
+                    <!-- TOP CONTROLS -->
+                    <div class="row align-items-center mb-3">
+
+                        <!-- STATUS FILTER -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Status</label>
+                            <select class="form-select"
+                                    ng-model="statusid"
+                                    ng-init="StatusList()"
+                                    ng-change="GetAllData()">
+                                <option value="">-- Select --</option>
+                                <option ng-repeat="list in statuslist" value="{{list.code}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- EMPTY SPACE (for alignment like other pages) -->
+                        <div class="col-md-4"></div>
+
+                        <!-- SEARCH -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Search</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search Packing, PI/SC, Customer...">
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="display:none;">ID</th>
+                                    <th ng-click='sortBy("invoiceno")'>Invoice No</th>
+                                    <th ng-click='sortBy("pickpacknumber")'>Packing No</th>
+                                    <th ng-click='sortBy("pickpackdate")'>Packing Date</th>
+                                    <th ng-click='sortBy("packreqnumber")'>Req No</th>
+                                    <th ng-click='sortBy("piscnumber")'>PI / SC</th>
+                                    <th ng-click='sortBy("customername")'>Customer</th>
+                                    <th ng-click='sortBy("packreqdate")'>Req Date</th>
+                                    <th ng-click='sortBy("currency")'>Currency</th>
+                                    <th ng-click='sortBy("documentcreateddate")'>Created</th>
+
+                                    <th>Status</th>
+                                    <th style="width:200px;">Remarks</th>
+                                    <th class="text-center" style="width:200px;">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr dir-paginate="list in getalldata | orderBy:sortColumn:reverse | filter:search | itemsPerPage:pageSize"
+                                    current-page="currentPage">
+
+                                    <td style="display:none;">{{list.id}}</td>
+                                    <td>{{list.invoiceno}}</td>
+                                    <td>{{list.pickpacknumber}}</td>
+                                    <td>{{list.pickpackdate}}</td>
+                                    <td>{{list.packreqnumber}}</td>
+                                    <td>{{list.piscnumber}}</td>
+                                    <td>{{list.customername}}</td>
+                                    <td>{{list.packreqdate}}</td>
+                                    <td>{{list.currency}}</td>
+                                    <td>{{list.documentcreateddate}}</td>
+
+                                    <!-- STATUS -->
+                                    <td>
+                                        <span class="badge bg-info" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-success" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-danger" ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+                                        <span class="badge bg-primary" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                    </td>
+
+                                    <!-- REMARKS -->
+                                    <td>
+                                        <input type="text"
+                                               class="form-control"
+                                               id="{{'description'+$index}}"
+                                               placeholder="Enter remarks..." />
+                                    </td>
+
+                                    <!-- ACTION -->
+                                    <td class="text-center">
+
+                                        <button type="button"
+                                                class="btn btn-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#ViewEditexampleModalFullscreen"
+                                                ng-click="ViewData(list.id)">
+                                            <i class="fas fa-search-plus"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm"
+                                                ng-disabled='list.code!="PEND"'
+                                                ng-click="Rejected(list.id,$index)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm"
+                                                ng-disabled='list.code!="PEND"'
+                                                ng-click="Approved(list.id,$index)">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <!-- PAGINATION INIT -->
+                    <div ng-init="currentPage=1; pageSize=15"></div>
+
+                    <!-- PAGINATION STYLE -->
+                    <style>
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            gap: 6px;
+                            margin-top: 20px;
+                            padding-left: 0;
+                        }
+
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            dir-pagination-controls li a {
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                transition: 0.25s;
+                            }
+
+                                dir-pagination-controls li a:hover {
+                                    background: #e7f1ff;
+                                }
+
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                            }
+
+                            dir-pagination-controls li.disabled a {
+                                background: #e9ecef;
+                                color: #adb5bd;
+                            }
+                    </style>
+
+                    <!-- FOOTER -->
+                    <div class="row mt-2 align-items-center">
+
+                        <!-- TOTAL -->
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; opacity:0.75;">
+                                Total Records:
+                                <b>{{ (getalldata | filter:search).length }}</b>
+                            </span>
+                        </div>
+
+                        <!-- PAGINATION -->
+                        <div class="col-md-4 text-center">
+                            <dir-pagination-controls direction-links="true"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+                        </div>
+
+                        <div class="col-md-4"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ViewEditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Invoice Approval (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>Picking/Packing Request Info</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id="tblview" ng-repeat="list in masterdata" class="table table-bordered" style="font-weight:bold">
+                                            <tr>
+                                                <td style="text-align:right">Mill Declaration No. :</td>
+                                                <td style="text-align:left">{{list.milldeclarationno}}</td>
+                                                <td style="text-align:right">Mill Declaration Date :</td>
+
+                                                <td style="text-align:left">
+                                                    {{ list.milldeclarationdate | date:'yyyy-MM-dd' }}
+                                                </td>
+                                                <td style="text-align:right">Customer Details :</td>
+                                                <td style="text-align:left">
+                                                    {{list.customerdetails
+                                                    }}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="text-align:right">Invoice No. :</td>
+                                                <td style="text-align:left">
+                                                    {{list.invoiceno}}
+                                                </td>
+                                                <td style="text-align:right">Invoice Date :</td>
+                                                <td style="text-align:left">
+                                                    {{ list.invoicedate | date:'yyyy-MM-dd' }}
+                                                </td>
+                                                <td style="text-align:right">Invoice To. :</td>
+                                                <td style="text-align:left">
+                                                    {{list.invoiceto}}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="text-align:right">Shipped from  :</td>
+                                                <td style="text-align:left">
+                                                    {{list.shippedfrom}}
+                                                </td>
+                                                <td style="text-align:right">Shipped To. :</td>
+                                                <td style="text-align:left">
+                                                    {{list.shippedto}}
+                                                </td>
+                                                <td style="text-align:right">Vehicle No. :</td>
+                                                <td style="text-align:left">{{list.vehicalno}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="text-align:right">Driver Name  :</td>
+                                                <td style="text-align:left">
+                                                    {{list.drivername
+                                                    }}
+                                                </td>
+                                                <td style="text-align:right">Driver Contact No. :</td>
+                                                <td style="text-align:left">{{list.driverphone}}</td>
+                                                <td style="text-align:right">Exchange Rate :</td>
+                                                <td style="text-align:left">{{list.exchangerate}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td style="text-align:right">Gate No. :</td>
+                                                <td style="text-align:left">{{list.gateno}}</td>
+                                                <td style="text-align:right">Gate Person Details :</td>
+                                                <td style="text-align:left">
+                                                    {{list.gateperson}}
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h4>List of Item's</h4>
+                                <table id="tblinfo" class="table table-responsive">
+                                    <tr>
+                                        <th style="display:none;">ID</th>
+                                        <th ng-click='sortBy("itemid")'>
+                                            Item ID
+                                            <span ng-show="sortColumn=='itemid'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("itemname")'>
+                                            Item Name
+                                            <span ng-show="sortColumn=='itemname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("quantity")'>
+                                            Quantity
+                                            <span ng-show="sortColumn=='quantity'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+
+                                        <th ng-click='sortBy("packingreqquantity")'>
+                                            Qty. Taken
+                                            <span ng-show="sortColumn=='offerprice'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+
+                                        <th ng-click='sortBy("packingreqquantity")'>
+                                            Remaining Qty
+                                            <span ng-show="sortColumn=='packingreqquantity'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+
+                                        <th ng-click='sortBy("containerno")'>
+                                            Container No
+                                            <span ng-show="sortColumn=='containerno'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("containersize")'>
+                                            Container Size
+                                            <span ng-show="sortColumn=='containersize'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("grossmeasure")'>
+                                            Gross Measure
+                                            <span ng-show="sortColumn=='grossmeasure'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("truckno")'>
+                                            Truck No
+                                            <span ng-show="sortColumn=='truckno'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                    </tr>
+
+                                    <tr ng-repeat="list in listdetails">
+                                        <td style="display:none;">{{list.id}}</td>
+                                        <td>{{list.itemid}}</td>
+                                        <td>{{list.itemname}}</td>
+                                        <td>{{list.quantity}}</td>
+                                        <td>{{list.packingreqquantity}}</td>
+                                        <td>{{list.remainingqty}}</td>
+
+                                        <td>{{list.containerno}}</td>
+                                        <td>{{list.containersize}}</td>
+                                        <td>{{list.grossmeasure}}</td>
+                                        <td>{{list.truckno}}</td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+                       @* <div class="row">
+                            <div class="col-sm-12">
+                                <h4>Document Status Level</h4>
+                                <table class="table">
+                                    <tr>
+                                        <th>Sl No.</th>
+                                        <th>Codeno</th>
+                                        <th>Inititator</th>
+                                        <th>Approver</th>
+                                        <th>Action Date</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+
+                                    <tr ng-repeat="vlist in docstatusview">
+                                        <td>
+                                            {{$index+1}}
+                                        </td>
+                                        <td>
+                                            {{vlist.processcode}}
+                                        </td>
+                                        <td>
+                                            {{vlist.vinitiator}}
+                                        </td>
+
+                                        <td>
+                                            {{vlist.approvar}}
+                                        </td>
+
+                                        <td>
+                                            {{vlist.documentcreateddate}}
+                                        </td>
+                                        <td>
+                                            {{vlist.docstatus}}
+                                        </td>
+                                        <td>
+                                            {{vlist.descriptions}}
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>*@
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Attachment</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>File Name</th>
+                                        @*  <th>File Type</th> *@
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr>
+                                        <td><label id="vSINO"></label></td>
+                                        <td><label id="vFileName"></label></td>
+                                        @*   <td><label id="vFileType"></label></td> *@
+                                        <td>  <button type="button" class="btn btn-primary btn-sm insert" id="downloadButton">Download File</button>  </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

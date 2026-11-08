@@ -1,0 +1,9 @@
+﻿--Exec GETSQTYPE 178
+		CREATE PROCEDURE [dbo].[GETSQTYPE]
+		@UNIT INT
+		AS
+		BEGIN
+		--SELECT intTypeID AS ID, strTypeName AS  NAME FROM ERP_SAD.DBO.tblCustomerType WHERE intUnitId in(178,182,91)
+		SELECT intTypeID AS ID, strTypeName AS  NAME FROM ERP_SAD.DBO.tblCustomerType WHERE intUnitId =@UNIT
+	--	SELECT ID AS ID, NAME AS  NAME FROM TBLSQTYPE
+		END;

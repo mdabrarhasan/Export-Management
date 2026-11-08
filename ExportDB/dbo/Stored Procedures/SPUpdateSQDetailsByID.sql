@@ -1,0 +1,95 @@
+﻿CREATE PROCEDURE [dbo].[SPUpdateSQDetailsByID]
+(
+    @ID INT,
+    @SALESQUOTATIONHEADERID INT,
+    @ITEMTYPEID INT,
+    @ITEMID INT,
+    @UOMID INT,
+    @SIZE VARCHAR(MAX),
+    @CONSTRUCTION VARCHAR(MAX),
+    @WEIGHT VARCHAR(MAX),
+    @SLIT VARCHAR(MAX),
+    @SCRIM VARCHAR(MAX),
+    @QUANTITY DECIMAL(18,2),
+    @ITEMTITLE VARCHAR(MAX),
+	@PACKINGDETAILS VARCHAR(MAX),
+    @QUALITY VARCHAR(MAX),
+    @PRICE DECIMAL(18,2),
+    @DISCOUNTID INT,
+    @DISCOUNT VARCHAR(MAX),
+    @TOTALAMOUNT DECIMAL(18,2),
+    @REMARKS VARCHAR(MAX),
+    @DESCRIPTIONS VARCHAR(MAX),
+    @UNITID INT,
+    @MODULECODE VARCHAR(100),
+    @ENROLL INT,
+    @PROCESSNAME VARCHAR(100),
+    @MESSAGENAME VARCHAR(100), 
+    @MSG VARCHAR(100) OUTPUT
+)
+AS
+BEGIN
+    BEGIN TRY
+
+        -- CHECK IF RECORD EXISTS
+        IF NOT EXISTS (SELECT 1 FROM TBLSALESQUOTATIONLINE WHERE ID = @ID)
+        BEGIN
+            SET @MSG = 'Invalid Line ID';
+            RETURN;
+        END
+
+        -- BASIC VALIDATION
+        IF (@ITEMTYPEID <= 0 OR @ITEMID <= 0 OR @UOMID <= 0)
+        BEGIN
+            SET @MSG = 'Invalid Item / UOM / ItemType';
+            RETURN;
+        END
+
+        -- UPDATE (SAFE VERSION)
+        UPDATE TBLSALESQUOTATIONLINE
+        SET 
+            --  DO NOT UPDATE HEADER ID (VERY IMPORTANT)
+            -- SALESQUOTATIONHEADERID = @SALESQUOTATIONHEADERID,
+
+            ITEMTYPEID = @ITEMTYPEID,
+            ITEMID = @ITEMID,
+            UOMID = @UOMID,
+            SIZE = @SIZE,
+            CONSTRUCTION = @CONSTRUCTION,
+            WEIGHT = @WEIGHT,
+            SLIT = @SLIT,
+            SCRIM = @SCRIM,
+            QUALITY = @QUALITY,
+            ITEMTITLE = @ITEMTITLE,
+			PACKINGDETAILS = @PACKINGDETAILS,
+            QUANTITY = @QUANTITY,
+            PRICE = @PRICE,
+            DISCOUNTID = @DISCOUNTID,
+            DISCOUNT = @DISCOUNT,
+            TOTALAMOUNT = @TOTALAMOUNT,
+            DESCRIPTIONS = @DESCRIPTIONS,
+            REMARKS = @REMARKS
+        WHERE ID = @ID;
+
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @MSG = 'Update failed';
+            RETURN;
+        END
+
+
+        SET @MSG = (
+            SELECT TOP 1 NAME 
+            FROM TBLMESSAGE 
+            WHERE SUBMENUID = (
+                SELECT ID FROM TBLSUBMENU WHERE CODE = @MODULECODE
+            ) 
+            AND CODE = @MESSAGENAME
+        );
+
+    END TRY
+    BEGIN CATCH
+        SET @MSG = ERROR_MESSAGE();
+    END CATCH
+END

@@ -1,0 +1,48 @@
+﻿
+CREATE procedure [dbo].[SPUPDATEPRICECONFIRMLINE]
+(
+@ID						int,
+@ITEMID					int,
+@QUANTITY				decimal(18,2),
+@PRICE					decimal(18,2),
+@OFFERPRICE				decimal(18,2),
+@CONFIRMPRICE			decimal(18,2),
+@DISCOUNTID             INT,
+@DISCOUNT               VARCHAR(50),
+@TOTALAMOUNT            DECIMAL(18,4),
+@UOMID                  INT,
+@THIKNESS               DECIMAL(18,4),
+@WIDTH                  DECIMAL(18,4),
+@LENGTH                 DECIMAL(18,4),
+@TREATMENTLEVEL         VARCHAR(100),
+@TREATMENTDIRECTIONID     INT,
+@COREID                  INT,
+@DISEREDDATEOFDELIVERY     VARCHAR(100),
+@TENTATIVEDATEOFDELIVERY      VARCHAR(100)  ,
+@REMARKS                 VARCHAR(100),
+@DESCRIPTIONS            VARCHAR(100),
+@REALOD                   VARCHAR(100),
+@UnitID					int,
+@ModuleCode				varchar(50),
+@Enroll					int,
+@ProcessCode			varchar(50),
+@MessageName			varchar(50),
+@Msg					varchar(100)    out
+)
+as
+DECLARE @LOG VARCHAR(500)
+begin try
+/*UPDATE TBLPRICECONFIRMLINE
+SET OFFERPRICE=@OFFERPRICE,CONFIRMPRICE=@CONFIRMPRICE WHERE ID=@ID*/
+
+--UPDATE TBLPRICECONFIRMLINE
+--SET OFFERPRICE=@OFFERPRICE,CONFIRMPRICE=@OFFERPRICE,ITEMID=@ITEMID,QUANTITY=@QUANTITY WHERE ID=@ID
+UPDATE TBLPRICECONFIRMLINE
+SET OFFERPRICE=@OFFERPRICE,LENGTH=@LENGTH,WIDTH=@WIDTH,THIKNESS=@THIKNESS,CONFIRMPRICE=@OFFERPRICE,ITEMID=@ITEMID,QUANTITY=@QUANTITY WHERE ID=@ID
+set @Msg=(select NAME from TBLMESSAGE where SUBMENUID=(select ID from TBLSUBMENU where CODE=@ModuleCode) and CODE=@MessageName)
+	set @Log='UPDATE TBLPRICECONFIRMLINE SET OFFERPRICE='+cast(@OFFERPRICE as varchar(50))+' CONFIRMPRICE='+cast(@CONFIRMPRICE as varchar(50))
+	exec SPActivityLog @Log,'',@ProcessCode,@ModuleCode,@ProcessCode,@UNITID,@Enroll
+end try
+begin catch
+set @Msg=ERROR_MESSAGE()
+end catch

@@ -1,0 +1,11 @@
+﻿CREATE TABLE [dbo].[TBLCONSTRUCTION] (
+    [ID]           INT           IDENTITY (1, 1) NOT NULL,
+    [CONSTRUCTION] VARCHAR (MAX) NULL,
+    [ISACTIVE]     BIT           NULL,
+    [CREATEDBY]    INT           NULL,
+    [CREATEDDATE]  DATE          NULL,
+    [UPDATEDBY]    INT           NULL,
+    [UPDATEDDATE]  DATE          NULL,
+    CONSTRAINT [PK_TBLCONSTRUCTION_ID] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

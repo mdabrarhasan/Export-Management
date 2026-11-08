@@ -1,0 +1,2502 @@
+﻿<script src="~/customjs/common.js"></script>
+<script src="~/customjs/quotation/quotation.js"></script>
+<link href="~/customcss/print.css" rel="stylesheet" />
+
+<style>
+    #print > th > td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    .tag-container {
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 5px; 
+       /*  border: 1px solid #ccc; */
+        padding: 5px; 
+    }
+
+    .rocket {
+        width: 500px;
+        /* border: 1px solid #ccc; */
+        font-weight: bold;
+        padding: 0px;
+        overflow-wrap: break-word; /* Ensure words wrap */
+    }
+
+</style>
+
+
+<div ng-app="App" ng-controller="Ctl">
+    <div ng-show="loading">
+        <img style="width:80%;height:12px;position:absolute;z-index:1;margin-top:8px;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row table-responsive">
+        <div class="col-sm-12">
+
+            <div class="card">
+                <div class="card-header">
+                    <h4>Quotation Landing</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <br />
+                            <button type="button" class="btn btn-primary btn-sm insert" ng-click="Clear()" data-bs-toggle="modal" data-bs-target="#exampleModalFullscreen"><i class="mdi mdi-plus me-1"></i></button>
+                        </div>
+                        <div class="col-sm-4">
+                                <label>Quotation Type :</label>
+                                    <select class="form-select" ng-model="quotationid" ng-init="GetQuotationList()" ng-change="GetData()"
+                                            id="quotationid">
+                                        <option value="">--Select--</option>
+                                        <option ng-repeat="list in quotationlist" value="{{list.id}}">
+                                            {{list.name}}
+                                        </option>
+                                    </select>
+                        </div>
+                        <div class="col-sm-4">
+                                <label>Search :</label>
+                                <input type="text" ng-model="search" class="form-control" placeholder="Search.." />
+                        </div>
+
+                    </div><br />
+                    <div class="row table-responsive">
+                        <div class="col-sm-12">
+                            @*FOR QUOTATION*@
+                            <div class="sqlandingview">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th style="display:none;">ID</th>
+                                        <th ng-click='sortBy("sqtype")'>
+                                            SQ Type
+                                            <span ng-show="sortColumn=='sqtype'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th style="display:none" ng-click='sortBy("customerid")'>
+                                            CustomerID
+                                            <span ng-show="sortColumn=='customerid'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("cusname")'>
+                                            Customer Name
+                                            <span ng-show="sortColumn=='cusname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("quotationnumber")'>
+                                            Quotation Number
+                                            <span ng-show="sortColumn=='quotationnumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("expiredate")'>
+                                            Expire Date
+                                            <span ng-show="sortColumn=='expiredate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("empname")'>
+                                            Created By
+                                            <span ng-show="sortColumn=='empname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("docstatusname")'>
+                                            Status
+                                            <span ng-show="sortColumn=='docstatusname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr dir-paginate="list in sqlist | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                        <td style="display:none;">{{list.id}}</td>
+                                        <td style="display:none"><a href="" ng-click="Report(list.id)"> {{list.id}}</a></td>
+                                        <td>{{list.sqtype}}</td>
+                                        <td style="display:none">{{list.customerid}}</td>
+                                        <td>{{list.cusname}}</td>
+                                        <td>{{list.quotationnumber}}</td>
+                                        <td>{{list.expiredate}}</td>
+                                        <td>{{list.empname}}</td>
+                                        <td>
+                                            <span class="badge rounded-pill badge-soft-info font-size-11" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-primary font-size-11" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#ViewexampleModalFullscreen" ng-click="ViewByMasterID(list.id)"><span class="fas fa-search-plus"></span></button>
+                                            <button  type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.id,list.quotationnumber,list.quotationtypeid)"><span class="fa fa-edit"></span></button>
+                                            <button  type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id,list.quotationnumber)"><span class="fa fa-trash"></span></button>
+                                          @*  <button ng-disabled='list.flag == 1' type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.id,list.quotationnumber,list.quotationtypeid)"><span class="fa fa-edit"></span></button>
+                                            <button ng-disabled='list.flag == 1' type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id,list.quotationnumber)"><span class="fa fa-trash"></span></button>*@
+                                            @*<button ng-disabled='list.isprocessedwithapproval==true' type="button" class="btn btn-soft-primary btn-sm print" ng-click="Cancled(2,list.agreementid)">
+                                                <span class="fa fa-ban"></span>
+                                            </button>*@
+
+                                            <button type="button" class="btn btn-soft-primary btn-sm print" data-bs-toggle="modal" data-bs-target="#PrintexampleModalFullscreen" ng-click="Print(list.id)">
+                                                <span class="fas fa-print "></span>
+                                            </button>
+
+                                        </td>
+                                </table>
+                            </div>
+                            
+                            @*FOR PI*@
+                            <div class="pilandingview">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th style="display:none;">ID</th>
+
+                                        <th ng-click='sortBy("pitype")'>
+                                            PI Type
+                                            <span ng-show="sortColumn=='pitype'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("customername")'>
+                                            Customer Name
+                                            <span ng-show="sortColumn=='customername'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("quotationnumber")'>
+                                            PI Number
+                                            <span ng-show="sortColumn=='quotationnumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("hscode")'>
+                                            HS Code
+                                            <span ng-show="sortColumn=='hscode'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                       @* <th ng-click='sortBy("buyerregnobuyerregno")'>
+                                            Buyer Reg. No
+                                            <span ng-show="sortColumn=='quotationnumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>*@
+                                        <th ng-click='sortBy("quotationnumber")'>
+                                            Currency
+                                            <span ng-show="sortColumn=='quotationnumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("quotationnumber")'>
+                                            PI Date
+                                            <span ng-show="sortColumn=='quotationnumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+
+                                        <th ng-click='sortBy("expiredate")'>
+                                            PI Expire Date
+                                            <span ng-show="sortColumn=='expiredate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("shipmentdate")'>
+                                            Shipment Date
+                                            <span ng-show="sortColumn=='shipmentdate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("docstatusname")'>
+                                            Status
+                                            <span ng-show="sortColumn=='docstatusname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr dir-paginate="list in pilist | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                        <td style="display:none;">{{list.id}}</td>
+                                        <td style="display:none"><a href="" ng-click="Report(list.id)"> {{list.id}}</a></td>
+                                        <td>{{list.pitype}}</td>
+                                        <td>{{list.customername}}</td>
+                                        <td>{{list.pinumber}}</td>
+                                        <td>{{list.hscode}}</td>
+                                        @*<td>{{list.buyerregno}}</td>*@
+                                        <td>{{list.currency}}
+                                            <input type="text" hidden value="{{list.incoid}}" id="sqtypeidhid" />
+
+                                        </td>
+                                        <td>{{list.pidate}}</td>
+                                        <td>{{list.piexpiredate}}</td>
+                                        <td>{{list.shipmentdate}}</td>
+                                        <td>
+                                            <span class="badge rounded-pill badge-soft-info font-size-11" ng-if='list.code=="PEND"'>{{list.dosstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.code=="APPR"'>{{list.dosstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.code=="REJC"'>{{list.dosstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-primary font-size-11" ng-if='list.code=="COMP"'>{{list.dosstatus}}</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#ViewexampleModalFullscreen" ng-click="ViewByMasterID(list.agreementid,list.agreementtypeid)"><span class="fas fa-search-plus"></span></button>
+                                           @* <button ng-disabled='list.flag == 1' type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.agreementid,list.pinumber,list.agreementtypeid)"><span class="fa fa-edit"></span></button>
+                                            <button ng-disabled='list.flag == 1' type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.agreementid,list.agreementtypeid)"><span class="fa fa-trash"></span></button>*@
+                                            <button type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.agreementid,list.pinumber,list.agreementtypeid)"><span class="fa fa-edit"></span></button>
+                                            <button type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.agreementid,list.agreementtypeid)"><span class="fa fa-trash"></span></button>
+                                            <button ng-disabled='list.isprocessedwithapproval==true' type="button" class="btn btn-soft-primary btn-sm print" ng-click="Cancled(2,list.agreementid)">
+                                                <span class="fa fa-ban"></span>
+                                            </button>
+
+                                            <button type="button" class="btn btn-soft-primary btn-sm print" data-bs-toggle="modal" data-bs-target="#PrintexampleModalFullscreen" ng-click="Print(list.agreementid)">
+                                                <span class="fas fa-print "></span>
+                                            </button>
+
+                                        </td>
+                                </table>
+                            </div>
+                            
+                            
+                            @*FOR CONDITIONAL APPROVAL*@
+                            <div class="conapplandingview">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th style="display:none;">ID</th>
+                                        <th ng-click='sortBy("whname")'>
+                                            Ware House Name
+                                            <span ng-show="sortColumn=='whname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("quotationnumber")'>
+                                            C. Approval No
+                                            <span ng-show="sortColumn=='quotationnumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("cusname")'>
+                                            Start Date
+                                            <span ng-show="sortColumn=='conappstartdate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("conappendtdate")'>
+                                            End Date
+                                            <span ng-show="sortColumn=='conappendtdate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("empname")'>
+                                            Created By
+                                            <span ng-show="sortColumn=='empname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("docstatusname")'>
+                                            Status
+                                            <span ng-show="sortColumn=='docstatusname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr dir-paginate="list in conditionalapplistview | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                        <td style="display:none;">{{list.id}}</td>
+                                        <td style="display:none"><a href="" ng-click="Report(list.id)"> {{list.id}}</a></td>
+                                        <td>{{list.whname}}</td>
+                                        <td>{{list.quotationnumber}}</td>
+                                        <td>{{list.conappstatrdate}}</td>
+                                        <td>{{list.conappenddate}}</td>
+                                        <td>{{list.empname}}</td>
+                                        <td>
+                                            <span class="badge rounded-pill badge-soft-info font-size-11" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-primary font-size-11" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#ViewexampleModalFullscreen" ng-click="ViewByMasterID(list.id)"><span class="fas fa-search-plus"></span></button>
+                                           @* <button ng-disabled='list.flag == 1' type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.id,list.quotationnumber,list.quotationtypeid)"><span class="fa fa-edit"></span></button>
+                                            <button ng-disabled='list.flag == 1' type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id,list.quotationnumber)"><span class="fa fa-trash"></span></button>*@
+                                            <button  type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.id,list.quotationnumber,list.quotationtypeid)"><span class="fa fa-edit"></span></button>
+                                            <button  type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id,list.quotationnumber)"><span class="fa fa-trash"></span></button>
+                                            <button ng-disabled='list.isprocessedwithapproval==true' type="button" class="btn btn-soft-primary btn-sm print" ng-click="Cancled(2,list.agreementid)">
+                                                <span class="fa fa-ban"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-soft-primary btn-sm print" data-bs-toggle="modal" data-bs-target="#PrintexampleModalFullscreen" ng-click="Print(list.id)">
+                                                <span class="fas fa-print "></span>
+                                            </button>
+
+                                        </td>
+                                </table>
+                            </div>
+                            
+                            @*FOR SPOT ORDER*@
+                            <div class="spotlandingview">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th style="display:none;">ID</th>
+                                        <th style="display:none" ng-click='sortBy("customerid")'>
+                                            CustomerID
+                                            <span ng-show="sortColumn=='customerid'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("cusname")'>
+                                            Customer Name
+                                            <span ng-show="sortColumn=='cusname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("quotationnumber")'>
+                                            Quotation Number
+                                            <span ng-show="sortColumn=='quotationnumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("spotdate")'>
+                                            Date
+                                            <span ng-show="sortColumn=='spotdate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("lastdateofdo")'>
+                                            Last DO Date
+                                            <span ng-show="sortColumn=='lastdateofdo'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("empname")'>
+                                            Created By
+                                            <span ng-show="sortColumn=='empname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th ng-click='sortBy("docstatusname")'>
+                                            Status
+                                            <span ng-show="sortColumn=='docstatusname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                        </th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr dir-paginate="list in spotlist | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                        <td style="display:none;">{{list.id}}</td>
+                                        <td style="display:none"><a href="" ng-click="Report(list.id)"> {{list.id}}</a></td>
+                                      
+                                        <td style="display:none">{{list.customerid}}</td>
+                                        <td>{{list.cusname}}</td>
+                                        <td>{{list.quotationnumber}}</td>
+                                        <td>{{list.spotdate}}</td>
+                                        <td>{{list.lastdateofdo}}</td>
+                                        <td>{{list.empname}}</td>
+                                        <td>
+                                            <span class="badge rounded-pill badge-soft-info font-size-11" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+                                            <span class="badge rounded-pill badge-soft-primary font-size-11" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#ViewexampleModalFullscreen" ng-click="ViewByMasterID(list.id)"><span class="fas fa-search-plus"></span></button>
+                                            <button  type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.id,list.quotationnumber,list.quotationtypeid)"><span class="fa fa-edit"></span></button>
+                                            <button  type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id,list.quotationnumber)"><span class="fa fa-trash"></span></button>
+                                           @* <button ng-disabled='list.flag == 1' type="button" class="btn btn-info btn-sm edit" data-bs-toggle="modal" data-bs-target="#EditexampleModalFullscreen" ng-click="EditbyMasterID(list.id,list.quotationnumber,list.quotationtypeid)"><span class="fa fa-edit"></span></button>
+                                            <button ng-disabled='list.flag == 1' type="button" class="btn btn-danger btn-sm delete" ng-click="DeleteMaster(list.id,list.quotationnumber)"><span class="fa fa-trash"></span></button>*@
+                                            @*<button ng-disabled='list.isprocessedwithapproval==true' type="button" class="btn btn-soft-primary btn-sm print" ng-click="Cancled(2,list.agreementid)">
+                                            <span class="fa fa-ban"></span>
+                                            </button>*@
+
+                                            <button type="button" class="btn btn-soft-primary btn-sm print" data-bs-toggle="modal" data-bs-target="#PrintexampleModalFullscreen" ng-click="Print(list.id)">
+                                                <span class="fas fa-print "></span>
+                                            </button>
+
+                                        </td>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                </div>
+                                <div class="col-sm-6">
+                                    <dir-pagination-controls max-size="10" style="font-size:16px;"
+                                                             direction-links="true"
+                                                             boundary-links="true">
+                                    </dir-pagination-controls>
+
+                                </div>
+                                <div class="col-sm-2">
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="exampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Quotation (Insertion Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Quote To </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label>Quotation Type :</label>
+                                                <select class="quotationtypeid form-select" ng-model="selectedItemValue" ng-init="GetQuotationList()" ng-change="EnabledDisabled()"
+                                                        id="quotationtypeid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in quotationlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Quotation Type</span>
+                                            </div>
+
+                                          
+
+                                            <div class="col-sm-3">
+                                                <label>Buyer Name :</label>
+                                                <input type="hidden" id="hcusid" />
+                                                <input type="text" class="form-control" ng-keyup="SearchHeaderBuyer()" placeholder="Search Buyer..." id="txtBuyerName" autocomplete="off" />
+                                                <span class="error">Select Buyer</span>
+                                            </div>
+
+                                            <div class="col-sm-3">
+                                                <label>Uploaded By</label>
+                                            <select class="excel form-select" ng-change="EnabledDisabledExcel()" ng-model="excel"
+                                                    id="excel">
+                                                <option value="">--Select--</option>
+                                                <option value="1">Upload Via Excel</option>
+                                                <option value="2">Uploaded Manually</option>
+                                                <option value="3">Ocf Create</option>
+                                            </select>
+                                            </div>
+
+                                            <div class="col-sm-3">
+                                                <input type="hidden" id="ocfid" />
+                                                <label>OCF No :</label>
+                                                <input type="text" class="form-control" ng-paste="SearchOCF()" ng-keyup="SearchOCF()" placeholder="OCF Search..." id="txtOCFNO" />
+                                                <span class="error">Select OCF Number</span>
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="row">
+                                                <div class="col-sm-3">
+                                                    <label>Sales Type :</label>
+                                                    <select class="salestypeid form-select" ng-model="selectedSalesItemValue" ng-init="GetSalesType()"
+                                                            id="salestypeid">
+                                                        <option value="0">--Select--</option>
+                                                        <option ng-repeat="list in salestypelist" value="{{list.id}}">
+                                                            {{list.name}}
+                                                        </option>
+                                                    </select>
+                                                    <span class="error">Select Type</span>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <label>Credit Type :</label>
+                                                    <select class="credittypeid form-select" ng-model="selectedCreditItemValue" ng-init="GetCreditType()" 
+                                                            id="credittypeid">
+                                                        <option value="">--Select--</option>
+                                                        <option ng-repeat="list in credittypelist" value="{{list.id}}">
+                                                            {{list.name}}
+                                                        </option>
+                                                    </select>
+                                                    <span class="error">Select Quotation Type</span>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <label>Credit Days :</label>
+                                                    <input type="text" class="form-control" placeholder="Credit Days..." id="txtCreditDays" />
+                                                </div>
+
+                                          
+
+                                            <div class="col-sm-3">
+                                                <label>Seller Bank :</label>
+
+                                                <select class="sellerbankid form-select" ng-model="sellerbankid" ng-init="SellerBankInfo()"
+                                                        id="sellerbankid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in sellerbanklist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Seller Bank</span>
+                                            </div>
+
+                                          @*   <div class="col-sm-3">
+                                                <label>Buyer Bank :</label>
+
+                                                <select class="buyerbankid form-select" ng-model="buyerbankid" ng-init="BuyerBankInfo()"
+                                                        id="buyerbankid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in buyerbanklist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Buyer Bank</span>
+                                            </div> *@
+
+                                           
+
+                                            </div>
+                                      
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*===========================================SQ Start=============================================*@
+                        <div class="sq row">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Quotation</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label> Type</label>
+                                            <select class="sqtypeid form-select" ng-model="sqtypeid" ng-init="SQType()"
+                                                    id="sqtypeid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in sqtypelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Sales Type</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Expire Date</label>
+                                            <input type="date" id="txtExpireDate" class="form-control" />
+                                            <span class="error">Select Expire Date</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*===========================================SQ End=============================================*@
+                        @*===========================================PI Start=============================================*@
+                        <div class="pi row">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Proforma Invoice</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <input type="hidden" id="sqidhidden" />
+                                        <div class="col-sm-3">
+                                            <label>Date :</label>
+                                            <input type="date" class="form-control date" id="txtDate">
+                                            <span class="error">Date Required</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Expire Date :</label>
+                                            <input type="date" class="form-control" id="txtPIExpireDate">
+                                            @*<input type="text" id="txtExpireDate" class="form-control datepicker-basic-today dteDate" />*@
+                                            <span class="error">Expire Date Required</span>
+                                        </div>
+                                        
+                                        <div class="col-sm-3">
+                                            <label> Type</label>
+                                            <select class="sqtypeid form-select" ng-model="sqtypeid" ng-change="Getchangetype()" ng-init="SQType()"
+                                                    id="pitypeid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in sqtypelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select  Type</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Currency :</label>
+                                            <select class="txtcurrencyid form-select" ng-model="txtcurrencyid" ng-init="GetCurrency()"
+                                                    id="txtcurrencyid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in currencylist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Currency</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label>Shipment Mode :</label>
+                                            <select class="sqid form-select" ng-model="txtshipmentmodeid" ng-init="GetShipmentMode()"
+                                                    id="txtshipmentmodeid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in shipmentmodelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Shipment Mode</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label id="tfromshiplable">From Shipment :</label>
+                                            <select class="txtFromshipmentcountryid form-select" ng-model="txtFromshipmentcountryid" ng-init="GetShipmentCountry()" ng-change="VatCal()"
+                                                    id="txtFromshipmentcountryid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in shipmentcountrylist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select From Shipment</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>To Shipment :</label>
+                                            <select class="txtToshipmentcountryid form-select" ng-model="txtToshipmentcountryid" ng-init="GetShipmentCountry()" ng-change="VatCal()"
+                                                    id="txtToshipmentcountryid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in shipmentcountrylist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select To Shipment Country</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Shipment Date :</label>
+                                            <input type="date" id="txtShipmentDate" class="form-control" />
+                                            <span class="error">Select Shipment Date</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label>Loading Port :</label>
+                                            <select class="txtloadingport form-select" ng-model="txtloadingport" ng-init="GetLoadingport()"
+                                                    id="txtloadingport">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in loadingportlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Loading Port</span>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Discharge Port :</label>
+                                            <select class="txtdischargeloadingport form-select" ng-model="txtdischargeloadingport" ng-init="GetLoadingport()" 
+                                                    id="txtdischargeloadingport">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in loadingportlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Discharge Port</span>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Seller HS Code :</label>
+                                            
+                                               <input class="hscode form-control " type="text" id="txtHSCode" ng-keyup="GetHSCode(0)" placeholder="Search HS Code..." autocomplete="off">
+                                            
+                                            
+                                                <span class="error">HS Code Required</span>
+
+                                            <div class="tag-container" id="tagContainer">
+                                               
+                                            </div>
+                                           
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Buyer HS Code :</label>
+                                            <input class="hbuyerscode form-control" type="text" id="txtBuyerHSCode">
+                                            <span class="error">HS Code Required</span>
+                                        </div>
+                                            
+                                      
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label>Loading Place :</label>
+                                            <input class="loadingplace form-control" type="text" id="loadingplace" disabled value="Trishal,Mymensingh">
+                                            <span class="error">loadingplace Required</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Delivery By :</label>
+
+                                            <select class="deliveryby form-select" ng-model="deliveryby" ng-init="GETLOADINGBY()"
+                                                    id="deliveryby">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in deliverybylist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">deliveryby Required</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label id="txtLorderrefno">Order Ref. No : :</label>
+                                        <input type="text" id="txtorderrefno" class="form-control" />
+                                        @* <input type="text" hidden id="txtTariffCodehidden" class="form-control" /> *@
+                                        <span class="error">Select Tarrif Code</span>
+                                        </div>
+                                        
+                                       
+                                    </div>
+
+                                     <div class="row">
+                                        <div class="col-sm-4">
+                                            <label>Incoterm :</label>
+                                            <input class="loadingplace form-control" type="text" id="txtfreeincoterm">
+                                            <span class="error">loadingplace Required</span>
+                                        </div>
+
+                                         <div class="col-sm-4">
+                                            <label>Payment Term :</label>
+                                            <input class="loadingplace form-control" type="text" id="txtfreepaymentterm" value="20% advance against PI and balance before landing">
+                                            <span class="error">loadingplace Required</span>
+                                        </div>
+
+                                        <div class="col-sm-4">
+                                            <label>Tolerance By :</label>
+
+                                            <select class="toleranceid form-select" ng-model="txttoleranceid" ng-init="delToleranceList()"
+                                                    id="txttoleranceid">
+                                                    <option value="">--Select--</option>
+                                                <option ng-repeat="list in todelllist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                            <span class="error">Select Tolerance</span>
+                                        </div>
+                                    </div>
+                                    <div class="row" ng-show="showRow">
+                                        <div class="col-sm-3">
+                                            <label>Del Point:</label>
+                                            <input type="hidden" id="delPointId" /> 
+                                            <input class="name form-control"
+                                                   type="text"
+                                                   id="delPointname"
+                                                   ng-keyup="SearchDelHeader()"
+                                                   placeholder="Search Del point..."
+                                                   autocomplete="off" />
+                                            <span class="error">Select Del. point</span>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Contract At :</label>
+                                            <input class="loadingplace form-control" disabled type="text" id="txtContractPerson">
+                                            
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Phone No :</label>
+                                            <input class="loadingplace form-control" disabled type="text" id="txtContractNo">
+                                         
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Address :</label>
+                                            <input class="loadingplace form-control" disabled type="text" id="txtAdress">
+                                           
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label>Discharge Place :</label>
+                                            <input class=" form-control" type="text" id="txtDischargeplace">
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        @*===========================================PI End=============================================*@
+                        @*===========================================Conditional Approval Start=============================================*@
+                        <div class="capp row">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Quotation</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>Ware House Name</label>
+                                            <select class="whid form-select" ng-model="whid" ng-init="GetWHName()"
+                                                    id="whid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in whlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Wear House.</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Start Date</label>
+                                            <input type="date" id="txtCAppStartDate" class="form-control" />
+                                            <span class="error">Select Start Date</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>End Date</label>
+                                            <input type="date" id="txtCAppEndDate" class="form-control" />
+                                            <span class="error">Select End Date</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*===========================================Conditional Approval End=============================================*@
+                        @*===========================================Spot Order Start=============================================*@
+                        <div class="spot row">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Quotation</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>Date</label>
+                                            <input type="date" id="txtSpotDate" class="form-control" />
+                                            <span class="error">Select Start Date</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Last Date of DO</label>
+                                            <input type="date" id="txtSpotDODate" class="form-control" />
+                                            <span class="error">Select End Date</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*===========================================Spot Order End=============================================*@
+
+                        
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>Add Item</h4>
+                                <div class="row table-responsive">
+                                    <table class="table">
+                                        <tr>
+                                            <th hidden>Item Code</th>
+                                            <th>Item Name</th>
+                                            @*<th></th>*@
+                                            <th>UOM</th>
+
+                                            <th>Thickness (µ)</th>
+                                            <th>Width (mm)</th>
+                                            <th>Length(meter)</th>
+
+                                            <th>Treatment Lavel</th>
+                                            <th>Treatment Direction</th>
+                                            <th>Core ID</th>
+                                            <th>Real OD</th>
+                                            <th>Total wt(kg)</th>
+                                            <th>Roll Length(m)</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Tolarance%</th>
+                                            <th>Desired Date of Delivery</th>
+                                            <th>Tentative Date of Delivery</th>
+
+                                            
+                                            <th style="display:none">Vat%</th>
+                                            <th style="display:none">Vat Amount</th>
+                                            <th>Discount%</th>
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Remarks</th>
+                                            <th>Short Details</th>
+                                            <th>Action</th>
+                                        </tr>
+
+                                        <tr class="mycontainer" id="mainrow">
+                                            <td hidden>
+                                                <input type="text" id="itemcode" hidden class="itemcode form-control"  style="width:80px" />
+                                                <span class="error">*</span>
+                                            </td>
+                                            <td style="width:300px">
+                                                <input type="hidden" id="hname" />
+                                                <input style="width:300px" class="name form-control"  type="text" id="name" ng-keyup="SearchFGHeader()" placeholder="Search Item..." autocomplete="off">
+                                                <span class="error">Select Item</span>
+                                            </td>
+                                            @*<td>
+                                                <a data-toggle="modal" id="imodel" href="#itemmodel" class="itemmodel  btn btn-primary" data-keyboard="true"><span class="mdi mdi-plus me-1"></span></a>
+                                            </td>*@
+                                            <td>
+                                                <select class="uomid form-select"  style="width:100px" ng-model="uomid" ng-init="GetFGUOM()"
+                                                        id="uomid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in fguomlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select UOM</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="thikness"  value="0" class="thikness form-control" style="width:80px" />
+                                                <span class="error">Thikness Required.</span>
+                                            </td>
+                                            <td><input type="text" id="width"  value="0" class="width form-control" style="width:80px" /></td>
+                                            <td><input type="text" id="length"  value="0" class="length form-control" style="width:80px" /></td>
+                                            <td><input type="text" id="treatmentlevel"  value="0" class="treatmentlevel form-control" style="width:80px" /></td>
+                                            <td>
+                                                <select class="treatmentdirectionid form-select"  style="width:100px" ng-model="treatmentdirectionid" ng-init="GetTreatmentDirection()"
+                                                        id="treatmentdirectionid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in treatmentdirectionlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Treatment Direction</span>
+                                            </td>
+
+                                            <td>
+                                                <select class="coreid form-select"  style="width:100px" ng-model="coreid" ng-init="GetBiaxFlimCore()"
+                                                        id="coreid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in flimcorelist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                            </td>
+
+                                            <td><input type="text" id="realod"  value="0" class="realod form-control" style="width:80px" /></td>
+                                            <td><input type="text" id="totalwt" value="0" class="totalwt form-control" style="width:80px" /></td>
+                                            <td><input type="text" id="rolllength" value="0" class="rolllength form-control" style="width:80px" /></td>
+                                            <td>
+                                                <input type="text" id="quantity"  value="0" class="quantity form-control" style="width:80px" ng-keyup="Calculate()" onkeypress="return isNumber($event)" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+                                             <td>
+                                                <input type="hidden" id="hvatvalue" class="hunitprice form-control" />
+                                                <input type="text" id="unitprice" value="0" class="unitprice form-control" ng-keyup="Calculate()" onkeypress="return isNumber($event)" style="width:80px" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                            <td style="width:100px">
+                                                <select class="toleranceid form-select" ng-model="toleranceid" ng-init="ToleranceList()" 
+                                                        id="toleranceid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in tollist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Tolerance</span>
+                                            </td>
+
+                                            <td><input type="date" id="dateofdelivery" class="dateofdelivery form-control" /></td>
+                                            <td><input type="date" id="tentativedelivery" class="tentativedelivery form-control" /></td>
+
+                                            
+                                            <td style="width:100px;display:none">
+                                                <select class="vatid form-select" ng-model="VatID" ng-init="Vatlist()" ng-change="VatCal()"
+                                                        id="vatid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in Vatlist" value="{{list.id}}">
+                                                        {{list.vatName}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Vat</span>
+                                            </td>
+
+                                            <td style="width:100px;display:none">
+                                                <input type="text" id="vatamount" value="0" class="vatamount form-control" ng-keyup="Calculate()" />
+                                            </td>
+
+                                            <td style="width:100px">
+                                                <select class="discountid form-select" ng-model="DiscountID" ng-init="Dislist()" ng-change="DisCal()" style="width:100px"
+                                                        id="discountid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in Dislist" value="{{list.id}}">
+                                                        {{list.disName}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Discount</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="discountamount" value="0" class="discountamount form-control" ng-keyup="Calculate()" disabled style="width:80px"/>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="totalamount" value="0" class="totalamount form-control" disabled style="width:100px" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="remarks" class="remarks form-control" style="width:100px"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="shortdetails" class="shortdetails form-control" style="width:100px" />
+                                            </td>
+                                            <td>
+                                                <button type="button" id="add" value="add" ng-click="Add()" class="btn btn-info btn-sm"><i class="fas fa-ad"></i></button>
+                                                <button type="button" ng-click="Excel()" style="background-color:seagreen" data-toggle="modal" id="imodel" href="#itemmodel" class="itemmodel  btn btn-primary" data-keyboard="true"><i class=" fas fa-file-excel"></i></button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <table class="table" id="detailsItems">
+                                </table>
+                                <span id="ItemsError" style="color: red;font-weight: bolder;font-family: Calibri;" class="ItemsError"></span>
+                                <div class="row table-responsive" id="Items">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>List of Item</h4>
+                                <div class="row table-responsive" >
+                                    <table class="table" id="ocflist">
+                                        <thead>
+                                            <tr>
+                                                <th>Item Code</th>
+                                                <th>Item Name</th>
+                                                @*<th></th>*@
+                                                <th>UOM</th>
+
+                                                <th>Thickness (µ)</th>
+                                                <th>Width (mm)</th>
+                                                <th>Length(meter)</th>
+
+                                                <th>Treatment Lavel</th>
+                                                <th>Treatment Direction</th>
+                                                <th>Core ID</th>
+                                                <th>Real OD</th>
+                                                <th>Total wt(kg)</th>
+                                                <th>Roll Length(m)</th>
+                                                <th>Quantity</th>
+                                                <th>Unit Price</th>
+                                                <th>Tolerance%</th>
+                                                <th>Desired Date of Delivery</th>
+                                                <th>Tentative Date of Delivery</th>
+
+
+                                                @* <th style="display:none">Vat%</th>
+                                                <th style="display:none">Vat Amount</th>*@
+                                                <th>Discount%</th>
+                                                <th>Dis. Amount</th>
+                                                <th>Total Amount</th>
+                                                <th>Remarks</th>
+                                                <th>Short Details</th>
+                                                @*<th>Action</th>*@
+                                            </tr>
+                                        </thead>
+                                       
+
+                                        <tbody>
+                                            <tr ng-repeat="list in ocflist">
+
+                                                <td style="display:none">
+                                                    <input type="text" hidden class="eid form-control" id="{{'eid'+$index}}" value="{{list.id}}" disabled />
+                                                   
+
+                                                    <span class="error">*</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" hidden id="{{'eitemcode'+$index}}" value="{{list.itemid}}" class="itemcode form-control" disabled style="width:90px" />
+                                                    <input type="text" style="width:90px" class=" form-control" id="" value="{{list.productcode}}" disabled />
+                                                    <span class="error">*</span>
+                                                </td>
+
+                                                <td style="width:300px">
+                                                    <input type="hidden" id="ehname" />
+                                                    <input class="ename form-control" type="text" id="{{'ename'+$index}}" value="{{list.itemname}}" disabled ng-keypress="SearchFGLine($index)" placeholder="Search Item..." autocomplete="off" style="width:300px">
+                                                    <span class="error">Select Item</span>
+                                                </td>
+
+                                                <td>
+                                                    <input type="hidden" id="{{'euomidinput'+$index}}" value="{{list.uomid}}" />
+                                                    <select class="form-select" disabled id="{{'euomid'+$index}}" style="width:100px"
+                                                            ng-model="list.uomid" ng-options="val.id as val.name for val in fguomlist" ng-selected="vlist.id==list.uomid">
+                                                        <option value="">--Select--</option>
+                                                    </select>
+
+                                                    <span class="error">Select UOM</span>
+                                                    <span class="error">*</span>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" disabled id="{{'ethikness'+$index}}" value="{{list.thikness}}" class="ethikness form-control" style="width:60px" />
+                                                    <span class="error">Thikness Required.</span>
+                                                </td>
+                                                <td><input type="text" disabled id="{{'ewidth'+$index}}" value="{{list.width}}" class="ewidth form-control" style="width:60px" /></td>
+                                                <td><input type="text" disabled id="{{'elength'+$index}}" value="{{list.length}}" class="elength form-control" style="width:60px" /></td>
+                                                <td><input type="text" disabled id="{{'etreatmentlevel'+$index}}" value="{{list.treatmentlevel}}" class="etreatmentlevel form-control" style="width:60px" /></td>
+                                                <td>
+                                                    <input type="hidden" id="{{'etreatmentdirectionidinput'+$index}}" value="{{list.treatmentdirectionid}}" />
+                                                    <select class="form-select" disabled id="{{'etreatmentdirectionid'+$index}}" style="width:100px"
+                                                            ng-model="list.treatmentdirectionid" ng-options="val.id as val.name for val in treatmentdirectionlist" ng-selected="vlist.id==list.treatmentdirectionid">
+                                                        <option value="">--Select--</option>
+                                                    </select>
+
+                                                    @*   <select class="etreatmentdirectionid form-select" style="width:100px" ng-model="etreatmentdirectionid" ng-init="GetTreatmentDirection()"
+                                                    id="etreatmentdirectionid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in treatmentdirectionlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                    </option>
+                                                    </select>*@
+                                                    <span class="error">Treatment Direction</span>
+                                                </td>
+
+                                                <td>
+                                                    <input type="hidden" id="{{'ecoreidinput'+$index}}" value="{{list.coreid}}" />
+                                                    <select class="form-select" disabled id="{{'ecoreid'+$index}}" style="width:100px"
+                                                            ng-model="list.coreid" ng-options="val.id as val.name for val in flimcorelist" ng-selected="vlist.id==list.coreid">
+                                                        <option value="">--Select--</option>
+                                                    </select>
+                                                    @* <select class="ecoreid form-select" style="width:100px" ng-model="ecoreid" ng-init="GetBiaxFlimCore()"
+                                                    id="ecoreid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in flimcorelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                    </option>
+                                                    </select>*@
+                                                </td>
+
+                                                <td><input type="text" disabled id="{{'erealod'+$index}}" value="{{list.realod}}" class="erealod form-control" style="width:60px" /></td>
+                                                <td><input type="text" id="etotalwt" value="0" class="etotalwt form-control" style="width:80px" /></td>
+                                                <td><input type="text" id="erolllength" value="0" class="erolllength form-control" style="width:80px" /></td>
+                                                <td>
+                                                    <input type="text" id="{{'equantity'+$index}}" disabled value="{{list.quantity}}" class="equantity form-control" ng-keyup="EditCalculateLine($index,list.discountid)" onkeypress="return isNumber(event)" />
+                                                    <span class="error">could not be zero</span>
+                                                </td>
+                                                <td>
+
+                                                    <input type="text" id="{{'eunitprice'+$index}}"  value="{{list.price}}" class="eunitprice form-control" ng-keyup="EditCalculateLine($index,list.discountid)" style="width:60px" onkeypress="return isNumber(event)" />
+                                                    <span class="error">could not be zero</span>
+                                                </td>
+
+                                                <td>
+                                                    <select class="form-select" id="{{'etoleranceid'+$index}}" disabled style="width:100px"
+                                                            ng-model="list.toleranceid" ng-options="val.id as val.name for val in tollist" ng-selected="vlist.id==list.toleranceid">
+                                                        <option value="">--Select--</option>
+                                                    </select>
+
+                                                    @* <select class="toleranceid form-select" ng-model="toleranceid" ng-init="ToleranceList()"
+                                                    id="toleranceid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in tollist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                    </option>
+                                                    </select>*@
+                                                </td>
+
+                                                <td><input type="date" id="{{'edateofdelivery'+$index}}"  value="{{list.disereddateofdelivery}}" class="edateofdelivery form-control" /></td>
+                                                <td><input type="date" id="{{'etentativedelivery'+$index}}"  value="{{list.tentativedateofdelivery}}" class="etentativedelivery form-control" /></td>
+
+                                                <td style="width:100px">
+                                                    <input type="hidden" id="{{'ediscountidinput'+$index}}" value="{{list.discountid}}" />
+                                                    <select class="form-select"  id="{{'ediscountid'+$index}}" style="width:100px" ng-change="EditCalculateLine($index,list.discountid)"
+                                                            ng-model="list.discountid" ng-options="val.id as val.disName for val in Dislist" ng-selected="vlist.id==list.discountid">
+                                                        <option value="">--Select--</option>
+                                                    </select>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text"  id="{{'ediscountamount'+$index}}" value="{{list.discount}}" class="ediscountamount form-control" style="width:60px" ng-keyup="EditCalculateLine($index,list.discountid)" disabled />
+                                                </td>
+
+                                                <td>
+                                                    <input type="text"  id="{{'etotalamount'+$index}}" value="{{list.totalamount}}" class="etotalamount form-control" style="width:60px" disabled />
+                                                    <span class="error">could not be zero</span>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text"  id="{{'eremarks'+$index}}" value="{{list.remarks}}" class="eremarks form-control" style="width:100px" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="{{'eshortdetails'+$index}}" value="{{list.descriptions}}" class="eshortdetails form-control" style="width:100px" />
+                                                </td>
+                                               @* <td style="width:100px">
+                                                    <button type="button" ng-click="UpdateByLineID($index,list.id,list.uomid,list.treatmentdirectionid,list.coreid,list.discountid,list.toleranceid)" class="btn btn-info btn-sm"><i class="fas fa-arrow-circle-up"></i></button>
+                                                    <button ng-click="DeleteByLineID(list.id)" type="button" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                                </td>*@
+                                            </tr>
+                                        </tbody>
+                                        
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms and Condition</label>
+                                <textarea class="form-control" style="height:150px" id="termscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description</label>
+                                <textarea class="form-control" style="height:150px" id="description"></textarea>
+                            </div>
+                        </div>
+
+                  @*      <div class="row">
+                            <div class="col-sm-12">
+                                <label>Attachment</label>
+                                <input id="fileInput" name="fileInput" class="form-control" type="file" multiple>
+                            </div>
+                        </div> *@
+
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Save()" id="savebutton" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+
+                       
+                            <div class="modal" id="itemmodel" data-backdrop="static">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content" style="background-color:lightgray">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Upload Excel</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    </div><div class="container"></div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Attachment</label>
+                                                <input id="fileInput" name="fileInput" class="form-control" type="file">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input type="hidden" id="isexcel" />
+                                        <a href="#" data-dismiss="modal" class="btn">Close</a>
+                                        <a href="#" data-dismiss="modal" class="btn btn-primary" ng-click="UploadExcel()">Upload</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ViewexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Quotation (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 id="lblquotationtype"></h6>
+                                    </div>
+                                   @* <input type="hidden" id="eagreementid" />*@
+                                    
+                                    <div class="card-body">
+                                        <div class="piview">
+                                            <table id="tblpiview" ng-repeat="list in pilistview" class="table table-bordered" style="font-weight:bold">
+                                                <tr>
+                                                    <td style="text-align:right">Customer Name :</td>
+                                                    <td style="text-align:left">{{list.customername}}</td>
+                                                    <td style="text-align:right"> Loading port  :</td>
+                                                    <td style="text-align:left">{{list.fromshipmentcountry}}</td>
+                                                    <td style="text-align:right">Hscode</td>
+                                                    <td style="text-align:left">{{list.hscode}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">To Shipment  :</td>
+                                                    <td style="text-align:left">{{list.toshipmentcountry}}</td>
+                                                    <td style="text-align:right" id=""><label id="txtshipmentlabelchange">From/Through Shipment :</label></td>
+                                                    <td style="text-align:left">{{list.fromshipmentport}}</td>
+                                                   @*  <td style="text-align:right">Tariff Code :</td>
+                                                    <td style="text-align:left">{{list.tarrifcode}}</td> *@
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">Discharge port :</td>
+                                                    <td style="text-align:left">{{list.toshipmentport}}</td>
+                                                    <td style="text-align:right">PI/SC Number :</td>
+                                                    <td style="text-align:left">{{list.pinumber}}</td>
+                                                    <td style="text-align:right">Date :</td>
+                                                    <td style="text-align:left">{{list.pidate}}</td>
+                                                </tr>
+                                               
+                                                <tr>
+                                                    <td style="text-align:right">Shipment Mode :</td>
+                                                    <td style="text-align:left">{{list.shipment}}</td>
+                                                    <td style="text-align:right">Currency :</td>
+                                                    <td style="text-align:left">{{list.currency}}</td>
+                                                    <td style="text-align:right">Expire Date :</td>
+                                                    <td style="text-align:left">{{list.piexpiredate}}</td>
+                                                    <td style="text-align:right">OCF No :</td>
+                                                    <td style="text-align:left">{{list.ocfno}}</td>
+
+            
+                                                </tr>
+                                               <tr>
+                                                  @*     <td style="text-align:right">Buyer Bank :</td>
+                                                    <td style="text-align:left">{{list.buyerbankid}}</td>
+                                                    <td style="text-align:right">Seller Bank :</td>
+                                                    <td style="text-align:left">{{list.sellerbankid}}</td> *@
+                                                    @* <td style="text-align:right">Buyer Reg. No :</td>
+                                                    <td style="text-align:left">{{list.buyerregno}}</td>
+                                                    <td style="text-align:right">Payment Term</td>
+                                                    <td style="text-align:left">{{list.paymentterm}}</td>
+                                                    <td style="text-align:right">Inco Term :</td>
+                                                    <td style="text-align:left">{{list.intoterm}}</td>
+                                                 <td style="text-align:right">Delivery Term :</td>
+                                                <td style="text-align:left">{{list.deliveryterm}}</td>*@
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="sqview">
+                                            <table id="tblsqview" ng-repeat="list in sqlistview" class="table table-bordered" style="font-weight:bold">
+                                                <tr>
+                                                    <td style="text-align:right">Sales Quotation Type :</td>
+                                                    <td style="text-align:left">{{list.sqtype}}</td>
+                                                    <td style="text-align:right">Customer Name :</td>
+                                                    <td style="text-align:left">{{list.cusname}}</td>
+                                                    <td style="text-align:right">Quotation Number</td>
+                                                    <td style="text-align:left">{{list.quotationnumber}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">Expire Date :</td>
+                                                    <td style="text-align:left">{{list.expiredate}}</td>
+                                                    <td style="text-align:right">Created By :</td>
+                                                    <td style="text-align:left">{{list.empname}}</td>
+                                                    <td style="text-align:right">OCF No :</td>
+                                                    <td style="text-align:left">{{list.ocfno}}</td>
+                                                </tr>
+                                                
+                                            </table>
+                                        </div>
+                                        <div class="conappview">
+                                            <table id="tblconappview" ng-repeat="list in conditionalapplist" class="table table-bordered" style="font-weight:bold">
+                                                <tr>
+                                                    <td style="text-align:right">Ware House Name :</td>
+                                                    <td style="text-align:left">{{list.whname}}</td>
+                                                    <td style="text-align:right">C. Approval No :</td>
+                                                    <td style="text-align:left">{{list.quotationnumber}}</td>
+                                                    <td style="text-align:right">Start Date</td>
+                                                    <td style="text-align:left">{{list.conappstatrdate}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">End Date :</td>
+                                                    <td style="text-align:left">{{list.conappenddate}}</td>
+                                                    <td style="text-align:right">Created By :</td>
+                                                    <td style="text-align:left">{{list.empname}}</td>
+                                                    <td style="text-align:right">OCF No :</td>
+                                                    <td style="text-align:left">{{list.ocfno}}</td>
+                                      
+                                                </tr>
+
+                                            </table>
+                                        </div>
+                                        <div class="spotview">
+                                            <table id="tblspotview" ng-repeat="list in spotlistview" class="table table-bordered" style="font-weight:bold">
+                                                <tr>
+                                                    <td style="text-align:right">Customer Name :</td>
+                                                    <td style="text-align:left">{{list.cusname}}</td>
+                                                    <td style="text-align:right">Quotation Number</td>
+                                                    <td style="text-align:left">{{list.quotationnumber}}</td>
+                                                    <td style="text-align:right">Last Date of DO :</td>
+                                                    <td style="text-align:left">{{list.lastdateofdo}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">Spot Date :</td>
+                                                    <td style="text-align:left">{{list.spotdate}}</td>
+                                                    <td style="text-align:right">Created By :</td>
+                                                    <td style="text-align:left">{{list.empname}}</td>
+                                                    <td style="text-align:right">OCF No :</td>
+                                                    <td style="text-align:left">{{list.ocfno}}</td>
+                                                </tr>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>List of Item's</h4>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td style="display:none">ID</td>
+                                        <th>Item Code</th>
+                                        <th>Item Name</th>
+                                        <th style="display:none">UOMID</th>
+                                        <th>UOM</th>
+
+                                        <th>Thickness (µ)</th>
+                                        <th>Width (mm)</th>
+                                        <th>Length(meter)</th>
+
+                                        <th>Treatment Lavel</th>
+                                        <th style="display:none">Treatment Direction ID</th>
+                                        <th>Treatment Direction</th>
+                                        <th style="display:none">Core ID</th>
+                                        <th>Core</th>
+                                        <th>Real OD</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th style="display:none">Discount%</th>
+                                        <th>Dis. Amount</th>
+                                        <th>Total Amount</th>
+                                        <th>Desired Date of Delivery</th>
+                                        <th>Tentative Date of Delivery</th>
+
+
+                                        <th>Remarks</th>
+                                        <th>Short Details</th>
+
+                                    </tr>
+
+                                    <tr class="mycontainer" id="mainrow" ng-repeat="list in viewdetailsbyid">
+                                        <td style="display:none">{{list.id}}</td>
+                                        <td>{{list.productcode}}</td>
+                                        <td>{{list.itemname}}</td>
+                                        <td style="display:none">{{list.uomid}}</td>
+                                        <td>{{list.uom}}</td>
+
+                                        <td>{{list.thikness}}</td>
+                                        <td>{{list.width}}</td>
+                                        <td>{{list.length}}</td>
+                                        <td>{{list.treatmentlevel}}</td>
+                                        <td style="display:none">{{list.treatmentdirectionid}}</td>
+                                        <td>{{list.treatmentdirection}}</td>
+                                        <td style="display:none">{{list.coreid}}</td>
+                                        <td>{{list.corename}}</td>
+                                        <td>{{list.realod}}</td>
+                                        <td>{{list.quantity}}</td>
+                                        <td>{{list.price}}</td>
+                                        <td style="display:none">{{list.discountid}}</td>
+                                        <td>{{list.discount}}</td>
+                                        <td>{{list.totalamount}}</td>
+                                        <td>{{list.disereddateofdelivery}}</td>
+                                        <td>{{list.tentativedateofdelivery}}</td>
+                                        <td>{{list.remarks}}</td>
+                                        <td>{{list.description}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+
+                       @* <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>Document Status Level</h4>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No.</th>
+                                        <th>Codeno</th>
+                                        <th>Inititator</th>
+                                        <th>Approver</th>
+                                        <th>Action Date</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+
+                                    <tr ng-repeat="vlist in docstatusview">
+                                        <td>
+                                            {{$index+1}}
+                                        </td>
+                                        <td>
+                                            {{vlist.processcode}}
+                                        </td>
+                                        <td>
+                                            {{vlist.vinitiator}}
+                                        </td>
+
+                                        <td>
+                                            {{vlist.approvar}}
+                                        </td>
+
+                                        <td>
+                                            {{vlist.documentcreateddate}}
+                                        </td>
+                                        <td>
+                                            {{vlist.docstatus}}
+                                        </td>
+                                        <td>
+                                            {{vlist.descriptions}}
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br />
+
+
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h5>Attachment</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>File Name</th>
+                                        <th>File Type</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr ng-repeat="list in imageitem">
+                                        <td>{{$index+1}}</td>
+                                        <td>{{list.fileName}}</td>
+                                        <td>{{list.extension}}</td>
+                                        <td><button class="btn btn-info btn-sm" ng-click="Download(list.id)">Download</button></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>*@
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="EditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Quotation (Edit Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                      
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Quote To</h6>
+                                    </div>
+                                    <input type="hidden" id="eagreementid" />
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <input type="hidden" id="editsqnumber" />
+                                            <div class="col-sm-6">
+                                                <label>Quotation Type :</label>
+                                                <select class="equotationtypeid form-select" ng-model="eselectedItemValue" ng-init="GetQuotationList()" ng-change="EnabledDisabled()" disabled
+                                                        id="equotationtypeid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in quotationlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Quotation Type</span>
+                                            </div>
+
+                                            <div class="col-sm-6">
+                                                <label>Buyer Name :</label>
+                                                <input type="hidden" id="ehcusid" />
+                                                <input type="text" class="form-control" ng-keyup="SearchHeaderBuyer()" placeholder="Search Buyer..." id="etxtBuyerName" autocomplete="off" disabled />
+                                                <span class="error">Select Buyer</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                                <div class="col-sm-3">
+                                                    <label>Sales Type :</label>
+                                                    <select class="esalestypeid form-select" ng-init="GetSalesType()"
+                                                            id="esalestypeid">
+                                                        <option value="">--Select--</option>
+                                                        <option ng-repeat="list in salestypelist" value="{{list.id}}">
+                                                            {{list.name}}
+                                                        </option>
+                                                    </select>
+                                                    <span class="error">Select Type</span>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <label>Credit Type :</label>
+                                                    <select class="ecredittypeid form-select" ng-init="GetCreditType()"
+                                                            id="ecredittypeid">
+                                                        <option value="">--Select--</option>
+                                                        <option ng-repeat="list in credittypelist" value="{{list.id}}">
+                                                            {{list.name}}
+                                                        </option>
+                                                    </select>
+                                                    <span class="error">Select Quotation Type</span>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <label>Credit Days :</label>
+                                                    <input type="text" class="form-control" placeholder="Credit Days..." id="etxtCreditDays" />
+                                                </div>
+                                            <div class="col-sm-3">
+                                                <input type="hidden" id="eocfid" />
+                                                <label>OCF No :</label>
+                                                <input type="text" class="form-control" ng-paste="SearchOCF()" ng-keyup="SearchOCF()" placeholder="OCF Search..." id="etxtOCFNO" />
+                                            </div>
+
+                                          @*   <div class="col-sm-3">
+                                                <label>Buyer Bank :</label>
+
+                                                <select class="buyerbankid form-select" ng-model="ebuyerbankid" ng-init="BuyerBankInfo()"
+                                                        id="ebuyerbankid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in buyerbanklist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Buyer Bank</span>
+                                            </div> *@
+
+                                            <div class="col-sm-3">
+                                                <label>Seller Bank :</label>
+
+                                                <select class="sellerbankid form-select" ng-model="esellerbankid" ng-init="SellerBankInfo()"
+                                                        id="esellerbankid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in sellerbanklist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Seller Bank</span>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*===========================================SQ Start=============================================*@
+                        <div class="sq row">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Quotation</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>SQ Type</label>
+                                            <select class="esqtypeid form-select" ng-model="esqtypeid" ng-init="SQType()"
+                                                    id="esqtypeid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in sqtypelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Sales Type</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Expire Date</label>
+                                            <input type="date" id="etxtExpireDate" class="form-control" />
+                                            <span class="error">Select Expire Date</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*===========================================SQ End=============================================*@
+
+                         @*===========================================SQ Start=============================================*@
+                        <div class="spot row">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Quotation</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>Date</label>
+                                            <input type="date" id="etxtSpotDate" class="form-control" />
+                                            <span class="error">Select Start Date</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Last Date of DO</label>
+                                            <input type="date" id="etxtSpotDODate" class="form-control" />
+                                            <span class="error">Select Spot Date</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*===========================================SQ End=============================================*@
+
+                        @*===========================================PI Start=============================================*@
+                        <div class="pi row">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Proforma Invoice</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <input type="hidden" id="esqidhidden" />
+                                        <div class="col-sm-4">
+                                            <label>Date :</label>
+                                            <input type="date" class="form-control date" id="etxtDate">
+                                            <span class="error">Date Required</span>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label>Expire Date :</label>
+                                            <input type="date" class="form-control" id="etxtPIExpireDate">
+                                            @*<input type="text" id="txtExpireDate" class="form-control datepicker-basic-today dteDate" />*@
+                                            <span class="error">Expire Date Required</span>
+                                        </div>
+                                       @*  <div class="col-sm-3">
+                                            <label>Tarrif Code :</label>
+                                            <input type="text" id="etxtTariffCode" class="form-control" />
+                                            <input type="text" hidden id="txtTariffCodehidden" class="form-control" />
+                                            <span class="error">Select Tarrif Code</span>
+                                        </div> *@
+
+                                        <div class="col-sm-4">
+                                            <label>Currency :</label>
+                                            <select class="etxtcurrencyid form-select" ng-model="etxtcurrencyid" ng-init="GetCurrency()"
+                                                    id="etxtcurrencyid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in currencylist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Currency</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label>Shipment Mode :</label>
+                                            <select class="esqid form-select" ng-model="etxtshipmentmodeid" ng-init="GetShipmentMode()"
+                                                    id="etxtshipmentmodeid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in shipmentmodelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Shipment Mode</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                           
+
+                                            <label> Type</label>
+                                            <select class="sqtypeid form-select" ng-change="EGetchangetype()" ng-model="sqtypeid" ng-init="SQType()"
+                                                    id="epitypeid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in sqtypelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Sales Type</span>
+
+
+
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>To Shipment :</label>
+                                            <select class="etxtToshipmentcountryid form-select" ng-model="etxtToshipmentcountryid" ng-init="GetShipmentCountry()" ng-change="VatCal()"
+                                                    id="etxtToshipmentcountryid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in shipmentcountrylist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select To Shipment Country</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Shipment Date :</label>
+                                            <input type="date" id="etxtShipmentDate" class="form-control" />
+                                            <span class="error">Select Shipment Date</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label>Loading Port :</label>
+                                            <select class="etxtloadingport form-select" ng-model="etxtloadingport" ng-init="GetLoadingport()" 
+                                                    id="etxtloadingport">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in loadingportlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Loading Port</span>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Discharge Port :</label>
+                                            <select class="etxtdischargeloadingport form-select" ng-model="etxtdischargeloadingport" ng-init="GetLoadingport()" 
+                                                    id="etxtdischargeloadingport">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in loadingportlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Discharge Port</span>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Seller HS Code :</label>
+                                            <input class="ehscode form-control" type="text" id="etxtHSCode" ng-keyup="GetHSCode(0)" placeholder="Search HS Code..." autocomplete="off">
+                                            <span class="error">HS Code Required</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Buyer HS Code :</label>
+                                            <input class="ehbuyerscode form-control" type="text" id="etxtBuyerHSCode">
+                                            <span class="error">HS Code Required</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label>Loading Place :</label>
+                                            <input class="eloadingplace form-control" type="text" id="eloadingplace">
+                                            <span class="error">loadingplace Required</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Mode of Transportation :</label>
+
+                                            <select class="edeliveryby form-select" ng-model="edeliveryby" ng-init="GETLOADINGBY()"
+                                                    id="edeliveryby">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in deliverybylist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">deliveryby Required</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label id="etextlabelchage">From Shipment :</label>
+                                            <select class="etxtFromshipmentcountryid form-select" ng-model="etxtFromshipmentcountryid" ng-init="GetShipmentCountry()" ng-change="VatCal()"
+                                                    id="etxtFromshipmentcountryid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in shipmentcountrylist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select From Shipment</span>
+                                        </div>
+                                    </div>
+
+                                     <div class="row"  ng-show="eshowRow">
+                                        <div class="col-sm-4">
+                                            <label>Incoterm :</label>
+                                            <input class="loadingplace form-control" type="text" id="etxtfreeincoterm">
+                                            <span class="error">loadingplace Required</span>
+                                        </div>
+
+                                         <div class="col-sm-4">
+                                            <label>Payment Term :</label>
+                                            <input class="loadingplace form-control" type="text" id="etxtfreepaymentterm">
+                                            <span class="error">loadingplace Required</span>
+                                        </div>
+
+                                        <div class="col-sm-4">
+                                            <label>Tolerance :</label>
+
+                                           <select class="toleranceid form-select" ng-model="toleranceid" ng-init="ToleranceList()" 
+                                                        id="etxttoleranceid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in tollist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                            <span class="error">Select Tolerance</span>
+                                        </div>
+                                        
+                                      
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <label>Del Point:</label>
+                                            <input type="hidden" id="edelPointId" />
+                                            <input class="name form-control"
+                                                   type="text"
+                                                   id="edelPointname"
+                                                   ng-keyup="EDITSearchDelHeader()"
+                                                   placeholder="Search Del point..."
+                                                   autocomplete="off" />
+                                            <span class="error">Select Del. point</span>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Contract At:</label>
+                                            <input class="loadingplace form-control" disabled type="text" id="etxtContractPerson" />
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Phone No:</label>
+                                            <input class="loadingplace form-control" disabled type="text" id="etxtContractNo" />
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label>Address:</label>
+                                            <input class="loadingplace form-control" disabled type="text" id="etxtAddress" />
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        @*===========================================PI End=============================================*@
+                        @*===========================================CON. APPROVAL Start=============================================*@
+                        <div class="cp row">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Quotation</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>Wear House Name</label>
+                                            <select class="ewhid form-select" ng-model="ewhid" ng-init="GetWHName()"
+                                                    id="ewhid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in whlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+                                            </select>
+                                            <span class="error">Select Wear House.</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>Start Date</label>
+                                            <input type="date" id="etxtCAppStartDate" class="form-control" />
+                                            <span class="error">Select Start Date</span>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>End Date</label>
+                                            <input type="date" id="etxtCAppEndDate" class="form-control" />
+                                            <span class="error">Select End Date</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*===========================================CON. APPROVAL END=============================================*@
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>Add Item</h4>
+                                <div class="row table-responsive">
+                                    <table class="table">
+                                        <tr>
+                                           @*  <th>Item Code</th> *@
+                                            <th>Item Name</th>
+                                            @*<th></th>*@
+                                            <th>UOM</th>
+
+                                            <th>Thickness (µ)</th>
+                                            <th>Width (mm)</th>
+                                            <th>Length(meter)</th>
+
+                                            <th>Treatment Lavel</th>
+                                            <th>Treatment Direction</th>
+                                            <th>Core ID</th>
+                                            <th>Real OD</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Tolerance%</th>
+                                            <th>Desired Date of Delivery</th>
+                                            <th>Tentative Date of Delivery</th>
+
+                                            
+                                            <th style="display:none">Vat%</th>
+                                            <th style="display:none">Vat Amount</th>
+                                            <th>Discount%</th>
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Remarks</th>
+                                            <th>Short Details</th>
+                                            <th>Action</th>
+                                        </tr>
+
+                                        <tr class="mycontainer" id="mainrow">
+                                            @* <td>
+                                                <input type="text" id="eitemcode" class="itemcode form-control" disabled style="width:70px" />
+                                                <span class="error">*</span>
+                                            </td> *@
+                                            <td style="width:300px">
+                                                <input type="hidden" id="ehname" />
+                                                <input type="text" hidden id="eeitemcode" value="" class="eeitemcode form-control" disabled style="width:90px" />
+                                                <input class="name form-control"  style="width:300px" type="text" id="ename" ng-keyup="SearchFGHeader()" placeholder="Search Item..." autocomplete="off">
+                                                <span class="error">Select Item</span>
+                                            </td>
+                                            @*<td>
+                                                <a data-toggle="modal" id="imodel" href="#itemmodel" class="itemmodel  btn btn-primary" data-keyboard="true"><span class="mdi mdi-plus me-1"></span></a>
+                                            </td>*@
+                                            <td>
+                                                <select class="euomid form-select"  style="width:100px" ng-model="euomid" ng-init="GetFGUOM()"
+                                                        id="euomid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in fguomlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select UOM</span>
+                                                <span class="error">*</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="ethikness" value="0"  class="ethikness form-control" style="width:60px" />
+                                                <span class="error">Thikness Required.</span>
+                                            </td>
+                                            <td><input type="text" id="ewidth" value="0"  class="ewidth form-control" style="width:60px" /></td>
+                                            <td><input type="text" id="elength" value="0"  class="elength form-control" style="width:60px" /></td>
+                                            <td><input type="text" id="etreatmentlevel"  value="0" class="etreatmentlevel form-control" /></td>
+                                            <td>
+                                                <select class="etreatmentdirectionid form-select"  style="width:100px" ng-model="etreatmentdirectionid" ng-init="GetTreatmentDirection()"
+                                                        id="etreatmentdirectionid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in treatmentdirectionlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Treatment Direction</span>
+                                            </td>
+
+                                            <td>
+                                                <select class="ecoreid form-select"  style="width:100px" ng-model="ecoreid" ng-init="GetBiaxFlimCore()"
+                                                        id="ecoreid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in flimcorelist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                            </td>
+
+                                            <td><input type="text" id="erealod"  value="0" class="erealod form-control" style="width:60px" /></td>
+                                            <td>
+                                                <input type="text" id="equantity"  value="0" class="equantity form-control" ng-keyup="EditCalculate()" onkeypress="return isNumber(event)" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+                                             <td>
+                                                <input type="hidden" id="ehvatvalue" class="ehunitprice form-control" />
+                                                <input type="text" id="eunitprice" value="0" style="width:60px" class="eunitprice form-control" ng-keyup="EditCalculate()" onkeypress="return isNumber(event)" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                             <td style="width:100px">
+                                                <select class="etoleranceid form-select" ng-model="etoleranceid" ng-init="ToleranceList()" style="width:100px"
+                                                        id="etoleranceid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in tollist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Tolerance</span>
+                                            </td>
+
+                                            <td><input type="date" id="edateofdelivery" class="edateofdelivery form-control" /></td>
+                                            <td><input type="date" id="etentativedelivery" class="etentativedelivery form-control" /></td>
+
+                                            
+                                            <td style="width:100px;display:none">
+                                                <select class="evatid form-select" ng-model="eVatID" ng-init="Vatlist()" ng-change="VatCal()"
+                                                        id="evatid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in Vatlist" value="{{list.id}}">
+                                                        {{list.vatName}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Vat</span>
+                                            </td>
+
+                                            <td style="width:100px;display:none">
+                                                <input type="text" id="evatamount" value="0" class="evatamount form-control" ng-keyup="Calculate()" />
+                                            </td>
+
+                                            <td style="width:100px">
+                                                <select class="ediscountid form-select" ng-model="eDiscountID" ng-init="Dislist()" ng-change="EditDisCal()" style="width:100px"
+                                                        id="ediscountid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in Dislist" value="{{list.id}}">
+                                                        {{list.disName}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Discount</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="ediscountamount" value="0" class="ediscountamount form-control" ng-keyup="EditCalculate()" disabled />
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="etotalamount" value="0" class="etotalamount form-control" disabled style="width:90px" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="eremarks" class="eremarks form-control" style="width:90px"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="eshortdetails" class="eshortdetails form-control" style="width:90px" />
+                                            </td>
+                                            <td>
+                                                <button type="button" id="eadd" value="add" ng-click="eAdd()" class="btn btn-info btn-sm"><i class="fas fa-ad"></i></button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row table-responsive">
+                            <div class="col-sm-12">
+                                <h4>List of Item</h4>
+                                <div class="row table-responsive">
+                                    <table class="table">
+                                        <tr>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            @*<th></th>*@
+                                            <th>UOM</th>
+
+                                            <th>Thickness (µ)</th>
+                                            <th>Width (mm)</th>
+                                            <th>Length(meter)</th>
+
+                                            <th>Treatment Lavel</th>
+                                            <th>Treatment Direction</th>
+                                            <th>Core ID</th>
+                                            <th>Real OD</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Tolerance%</th>
+                                            <th>Desired Date of Delivery</th>
+                                            <th>Tentative Date of Delivery</th>
+
+
+                                           @* <th style="display:none">Vat%</th>
+                                            <th style="display:none">Vat Amount</th>*@
+                                            <th>Discount%</th>
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Remarks</th>
+                                            <th>Short Details</th>
+                                            <th>Action</th>
+                                        </tr>
+
+                                        <tr ng-repeat="list in edetailsbyid">
+                                            <td style="display:none">
+                                                <input type="text" hidden class="eid form-control" id="{{'eid'+$index}}" value="{{list.id}}" disabled  />
+                                                
+                                                <span class="error">*</span>
+                                            </td>
+                                            <td>
+                                                <input type="text" hidden id="{{'eitemcode'+$index}}" value="{{list.itemid}}" class="itemcode form-control" disabled style="width:90px" />
+                                                
+                                                <input type="text" style="width:90px" class=" form-control" id="" value="{{list.productcode}}" disabled />
+                                                <span class="error">*</span>
+                                            </td>
+
+                                            <td style="width:300px">
+                                                <input type="hidden" id="ehname" />
+                                                <input class="ename form-control" disabled type="text" id="{{'ename'+$index}}" value="{{list.itemname}}" ng-keypress="SearchFGLine($index)" placeholder="Search Item..." autocomplete="off" style="width:300px">
+                                                <span class="error">Select Item</span>
+                                            </td>
+                                           
+                                            <td>
+                                                <select class="form-select" id="{{'euomid'+$index}}" disabled style="width:100px"
+                                                        ng-model="list.uomid" ng-options="val.id as val.name for val in fguomlist" ng-selected="vlist.id==list.uomid">
+                                                    <option value="">--Select--</option>
+                                                </select>
+                                              
+                                                <span class="error">Select UOM</span>
+                                                <span class="error">*</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="{{'ethikness'+$index}}" disabled value="{{list.thikness}}" class="ethikness form-control" style="width:60px" />
+                                                <span class="error">Thikness Required.</span>
+                                            </td>
+                                            <td><input type="text" id="{{'ewidth'+$index}}" disabled value="{{list.width}}" class="ewidth form-control" style="width:60px" /></td>
+                                            <td><input type="text" id="{{'elength'+$index}}" disabled value="{{list.length}}" class="elength form-control" style="width:60px" /></td>
+                                            <td><input type="text" id="{{'etreatmentlevel'+$index}}" disabled value="{{list.treatmentlevel}}" class="etreatmentlevel form-control" style="width:60px" /></td>
+                                            <td>
+                                                <select class="form-select" disabled id="{{'etreatmentdirectionid'+$index}}" style="width:100px"
+                                                        ng-model="list.treatmentdirectionid" ng-options="val.id as val.name for val in treatmentdirectionlist" ng-selected="vlist.id==list.treatmentdirectionid">
+                                                    <option value="">--Select--</option>
+                                                </select>
+
+                                             @*   <select class="etreatmentdirectionid form-select" style="width:100px" ng-model="etreatmentdirectionid" ng-init="GetTreatmentDirection()"
+                                                        id="etreatmentdirectionid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in treatmentdirectionlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>*@
+                                                <span class="error">Treatment Direction</span>
+                                            </td>
+
+                                            <td>
+                                                <select class="form-select" disabled id="{{'ecoreid'+$index}}" style="width:100px"
+                                                        ng-model="list.coreid" ng-options="val.id as val.name for val in flimcorelist" ng-selected="vlist.id==list.coreid">
+                                                    <option value="">--Select--</option>
+                                                </select>
+                                               @* <select class="ecoreid form-select" style="width:100px" ng-model="ecoreid" ng-init="GetBiaxFlimCore()"
+                                                        id="ecoreid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in flimcorelist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>*@
+                                            </td>
+
+                                            <td><input type="text" id="{{'erealod'+$index}}" disabled value="{{list.realod}}" class="erealod form-control" style="width:60px" /></td>
+                                            <td>
+                                                <input type="text" id="{{'equantity'+$index}}" disabled value="{{list.quantity}}" class="equantity form-control" ng-keyup="EditCalculateLine($index,list.discountid)" onkeypress="return isNumber(event)" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+                                            <td>
+         
+                                                <input type="text" id="{{'eunitprice'+$index}}" value="{{list.price}}" class="eunitprice form-control" ng-keyup="EditCalculateLine($index,list.discountid)" style="width:60px" onkeypress="return isNumber(event)" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                             <td>
+                                                <select class="form-select" id="{{'etoleranceid'+$index}}" style="width:100px"
+                                                        ng-model="list.toleranceid" ng-options="val.id as val.name for val in tollist" ng-selected="vlist.id==list.toleranceid">
+                                                    <option value="">--Select--</option>
+                                                </select>
+
+                                               @* <select class="toleranceid form-select" ng-model="toleranceid" ng-init="ToleranceList()"
+                                                        id="toleranceid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in tollist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>*@
+                                            </td>
+
+                                            <td><input type="date" id="{{'edateofdelivery'+$index}}" value="{{list.disereddateofdelivery}}" class="edateofdelivery form-control" /></td>
+                                            <td><input type="date" id="{{'etentativedelivery'+$index}}" value="{{list.tentativedateofdelivery}}" class="etentativedelivery form-control" /></td>
+
+                                            <td style="width:100px">
+                                                <select class="form-select" id="{{'ediscountid'+$index}}" style="width:100px" ng-change="EditCalculateLine($index,list.discountid)"
+                                                        ng-model="list.discountid" ng-options="val.id as val.disName for val in Dislist" ng-selected="vlist.id==list.discountid">
+                                                    <option value="">--Select--</option>
+                                                </select>
+                                            </td>
+                                               
+                                            <td>
+                                                <input type="text" id="{{'ediscountamount'+$index}}" value="{{list.discount}}" class="ediscountamount form-control" style="width:60px" ng-keyup="EDITDiscountPercentageCalculate($index)" disabled />
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="{{'etotalamount'+$index}}" value="{{list.totalamount}}" class="etotalamount form-control" style="width:60px" disabled />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="{{'eremarks'+$index}}" value="{{list.remarks}}" class="eremarks form-control" style="width:100px"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="{{'eshortdetails'+$index}}" value="{{list.descriptions}}" class="eshortdetails form-control" style="width:100px" />
+                                            </td>
+                                            <td>
+                                                <button type="button" ng-click="UpdateByLineID($index,list.id,list.uomid,list.treatmentdirectionid,list.coreid,list.discountid,list.toleranceid)" class="btn btn-info btn-sm"><i class="fas fa-arrow-circle-up"></i></button>
+                                                <button ng-click="DeleteByLineID(list.id)" type="button" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms and Condition</label>
+                                <textarea class="form-control" id="etermscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description</label>
+                                <textarea class="form-control" id="edescription"></textarea>
+                            </div>
+                        </div>
+
+                      @*  <div class="row">
+                            <div class="col-sm-12">
+                                <label>Attachment</label>
+                                <input id="efileInput" name="fileInput" class="form-control" type="file" multiple>
+                            </div>
+                        </div>*@
+
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Update()" id="esavebutton" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+
+                      
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="PrintexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="PrintexampleModalFullscreenLabel" aria-hidden="true">
+        
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                 @*    <button type="button" class="btn btn-soft-primary btn-sm print" ng-click="PrintDoc()"><i class="fas fa-times-circle"></i></button> *@
+                    <button type="button" class="btn btn-soft-primary btn-sm print" data-bs-toggle="modal" ng-click="PrintDoc()">
+                        <span class="fas fa-print "></span>
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="printThis">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <img src="~/assets/images/brand/91.png" height="90px;width:130px;" />
+                            </div>
+                            <div class="col-sm-6">
+                            </div>
+                        </div>
+                        <div class="row" style="border:1px solid;font-size:9px;">
+                              <div class="row">
+                                <div class="col-sm-6" style="font-size:9px;">
+                                        <h6 style="background-color:lightgray;width:550px;">CUSTOMER</h6>
+                                        <br />
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                   
+                                                    <div style="height:10px;font-weight:bold;">
+                                                        
+                                                        <label id="cusname"></label>
+                                                    </div>
+                                                    <br />
+                                                    <label id="cusaddress"></label>
+                                                    <br />
+                                                    <label>BIN/VAT Reg No :</label>
+                                                    <label id="regno"></label>
+                                                    <br />
+                                                    @* <label><br />Product:</label> <label id="productname"></label> *@
+
+                                                    <div class="rocket" style="width:350px;">
+                                                    <span style="overflow:auto" id="productname"></span>
+
+
+                                                </div>
+                                                   
+                                                    <br />
+                                                    <label>HS Code:</label> 
+                                                    <label id="hscode"></label>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                 
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="row">
+                                            <div class="col-sm-6"></div>
+                                            <div class="col-sm-6">
+                                                @* <h6 style="background-color:lightgray;text-align:center">PROFORMA INVOICE</h6> *@
+                                                <h6 style="background-color:lightgray;text-align:center">
+                                                    {{GetQuotationHeading() | uppercase}}
+                                                </h6>
+
+
+                                            </div>
+                                        </div>
+                                
+                                
+                                        <br />
+                                        <div class="row" style="font-size:9px;">
+                                            <div class="col-sm-6"></div>
+                                            <div class="col-sm-" style="text-align:right">
+                                                <div class="row" style="text-align:right">
+                                                    <div class="col-sm-6" style="text-align:left"><label>Date</label></div>
+                                                    <div class="col-sm-6" style="text-align:right;background-color:lightgray"><label id="date"></label></div>
+                                                </div>
+                                                <div class="row" style="text-align:right">
+                                                    <div class="col-sm-6" style="text-align:left"><label>Expiration Date</label></div>
+                                                    <div class="col-sm-6" style="text-align:right;background-color:lightgray"><label id="expdate"></label></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-6" style="text-align:left"><label>Invoice </label></div>
+                                                    <div class="col-sm-6" style="text-align:right;background-color:lightgray"><label style="text-align:right" id="invoiceno"></label></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-6" style="text-align:left"><label>Customer ID </label></div>
+                                                    <div class="col-sm-6" style="text-align:right;background-color:lightgray"><label id="cusid"></label></div>
+                                                </div>
+                                                 <div class="row">
+                                                   <label style="background-color:lightgray;text-align:left;padding:4px;">SHIPPING DETAILS</label>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-6" style="text-align:left"><label>Shipping Mode :</label></div>
+                                                    <div class="col-sm-6" style="text-align:right;"><label id="shippingmode"></label></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-6" style="text-align:left"><label>Mode of Transportation : </label></div>
+                                                    <div class="col-sm-6" style="text-align:right;"><label id="modeoftransportation"></label></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-6" style="text-align:left"><label>Net Weight (Kg) </label></div>
+                                                    <div class="col-sm-6" style="text-align:right;"><label id="netweight"></label></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                    </div>
+
+                              </div> 
+                            <div class="row">
+                                <div class="col-sm-12">
+
+                                    <div>
+                                <table id="print" style="width:100%;font-size:9px;">
+                                    <tr style="background-color:lightgray;font-weight:bold; text-align:center;border:1px solid lightgray">
+                                        <th style="font-weight:bold">Product code</th>
+                                        <th style="font-weight:bold">Description</th>
+                                        <th style="font-weight:bold">Thickness (μ)</th>
+                                        <th style="font-weight:bold">Width (mm)</th>
+                                        <th style="font-weight:bold">Quantity (Kg)</th>
+                                        <th style="font-weight:bold">Base Price</th>
+                                        <th style="font-weight:bold">VAT</th>
+                                        <th style="font-weight:bold">Unit Price</th>
+                                        <th style="font-weight:bold">Total Amount</th>
+                                    </tr>
+                                    <tr ng-repeat="list in lineprint" >
+                                        <td style="text-align:center;border:1px solid lightgray;font-weight:bold;">{{list.productcode}}</td>
+                                        <td style="text-align:center;border:1px solid lightgray;font-weight:bold;">{{list.productname}}</td>
+                                        <td style="text-align:center;border:1px solid lightgray;font-weight:bold;">{{list.thikness}}</td>
+                                        <td style="text-align:center;border:1px solid lightgray;font-weight:bold;">{{list.width}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;font-weight:bold;">{{list.quantity}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;font-weight:bold;">{{list.bascprice}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;font-weight:bold;">{{list.vat}}</td>
+                                        <td style="text-align:center;border:1px solid lightgray;font-weight:bold;">{{list.unitprice}}</td>
+                                        <td style="text-align:right;border:1px solid lightgray;font-weight:bold;">{{list.totalamount}}</td>
+                                    </tr>
+                                    <tr style="border:1px solid gray;font-size:11px;font-weight:bolder;">
+                                                <td colspan="8" style="text-align:right"><label>Total Amount -</label> </td>
+                                        <td><label style="text-align:right;color:red;" id="totalamt"></label></td>
+                                    </tr>
+                                     <tr style="border:1px solid gray;font-size:12px;text-align:left;">
+                                                <td colspan="8" style="text-align:left;font-weight:bolder;">
+                                                    Total Amount In Words -
+                                                    <label style="text-align:left;color:red" id="totalamtwords"></label>
+                                        </td>
+
+                                        @* <td style="text-align:left;"  ><label style="text-align:left;color:red;margin-top:8px;" id="totalamtwords"></label></td> *@
+                                    </tr>
+                                </table>
+                            </div>
+
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h6 style="font-size:14px;margin-top:8px;">Terms and Condition</h6>
+                                    <td><label style="text-align:left;color:black;margin-top:3px;font-size:8px;" id="terms"></label></td>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                </div>
+                            </div>
+
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h6 style="font-size:9px;">Accepted by buyer</h6>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6 style="text-align:right;font-size:9px;">Akij BIAX Films Ltd.</h6>
+                                </div>
+                            </div>
+                            <br /><br /><br />
+                            <div class="row" style="margin-top:20px;">
+                                <div class="col-sm-6">
+                                    <h6 style="font-size:9px;">(Authorised signatory)</h6>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6 style="text-align:right;font-size:9px;">(Authorised signatory)</h6>
+                                </div>
+                            </div>
+                            <br />
+                        </div>
+                      @*   <br />
+                         <br />
+                          <br />
+                           <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br /> *@
+
+                      @*   <pre>
+                         
+                            </div> *@
+
+                        
+                    </form>
+                  
+                </div>
+                </div>
+            </div>
+        </div>
+
+    </div>

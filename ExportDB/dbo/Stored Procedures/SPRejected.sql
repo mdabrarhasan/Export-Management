@@ -1,0 +1,83 @@
+﻿
+CREATE procedure [dbo].[SPRejected]
+(
+@unitid			int,
+@ModuleCode		varchar(100),
+@Enroll			int,
+@ID				int,
+@Remarks		varchar(100),
+@ProcessName	varchar(50),
+@RejectCode		varchar(100),
+@RejectedMsg	varchar(100),
+@Notification	varchar(50),
+@Msg			varchar(100) output
+)
+as
+begin try
+declare  @checkrej int,@hid int,@messege varchar(100),@ProcessCode varchar(50)
+
+	set @checkrej=(select id from TBLDOCUMENTSTATUS where CODE=@RejectCode)
+	set @hid=(select ID from TBLAPPROVERMATRIXHEADER where SUBMENUID=(select ID from TBLSUBMENU where CODE=@ModuleCode) and UNITID=@unitid)
+	set @messege=(select NAME from TBLMESSAGE where SUBMENUID=(select ID from TBLSUBMENU where CODE=@ModuleCode) and CODE=@RejectedMsg)
+	set @ProcessCode=@ProcessName+cast(@ID as varchar(100))
+	update TBLAPPROVERMATRIXHISTORY
+	set DOCUMENTSTATUSID=@checkrej,DOCUMENTCREATEDDATE=GETDATE(),DOCUMENTCREATEDBY=@Enroll,DESCRIPTIONS=@Remarks where ID=@ID --APPROVERMATRIXHEADERID=@hid and SUBMENUID=(select ID from TBLSUBMENU where CODE=@ModuleCode) and PROCESSID=@ID and ACTIONTAKERID=@Enroll;
+	
+	IF @ProcessName='SQ'
+		BEGIN
+		UPDATE TBLSALESQUOTATIONHEADER
+		SET DOCUMENTSTATUSID=@checkrej,FLAG=1 WHERE ID=(SELECT PROCESSID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID)
+		END
+	ELSE IF @ProcessName='PI' OR @ProcessName='SC'
+		BEGIN
+		UPDATE TBLPISCHEADER
+		SET DOCUMENTSTATUSID=@checkrej,FLAG=1 WHERE ID=(SELECT PROCESSID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID)
+		END
+	ELSE IF @ProcessName='PC'
+		BEGIN
+		UPDATE TBLPRICECONFIRMHEADER
+		SET DOCUMENTSTATUSID=@checkrej,FLAG=1 WHERE ID=(SELECT PROCESSID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID)
+		END
+	ELSE IF @ProcessName='LC'
+		BEGIN
+		UPDATE TBLLCDETAILS
+		SET DOCUMENTSTATUSID=@checkrej,FLAG=1 WHERE ID=(SELECT PROCESSID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID)
+		END
+	ELSE IF @ProcessName='IC'  --TREASURY
+		BEGIN
+		UPDATE TBLINTERESTCALCULATION
+		SET DOCSTATUSID=@checkrej,FLAG=1 WHERE ID=(SELECT PROCESSID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID)
+		END
+	ELSE
+		BEGIN
+		SET @MODULECODE=(SELECT CODE FROM TBLSUBMENU WHERE ID=(SELECT SUBMENUID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID))
+		set @checkrej=(select id from TBLDOCUMENTSTATUS where CODE=@RejectCode)
+		--set @hid=(select ID from TBLAPPROVERMATRIXHEADER where SUBMENUID=(select ID from TBLSUBMENU where CODE=@ModuleCode) and UNITID=@unitid)
+		
+		SET @ProcessName=(SELECT PROCESSNAME FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID)
+		set @ProcessCode=@ProcessName+cast(@ID as varchar(100))
+
+			  IF @MODULECODE='PRE00001'
+			  BEGIN
+			  SET @PROCESSNAME='PRE'
+			  SET @RejectedMsg='PREREJC'
+			  set @messege=(select NAME from TBLMESSAGE where SUBMENUID=(SELECT SUBMENUID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID) and CODE=@RejectedMsg)
+			  END;
+			  ELSE IF @MODULECODE='POST00001'
+			  BEGIN
+			  SET @PROCESSNAME='POST'
+			  SET @RejectedMsg='POSTSAVE'
+			  set @messege=(select NAME from TBLMESSAGE where SUBMENUID=(SELECT SUBMENUID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID) and CODE=@RejectedMsg)
+			  END;
+
+		UPDATE TBLDOCHEADER
+		SET DOCUMENTSTATUSID=@checkrej,FLAG=1 WHERE ID=(SELECT PROCESSID FROM TBLAPPROVERMATRIXHISTORY WHERE ID=@ID)
+		END;
+		
+		set @Msg=@messege
+
+	EXEC SPEmailSend @id,@MODULECODE,@ProcessCode,@ProcessName,@Notification
+end try
+begin catch
+set @Msg=ERROR_MESSAGE()
+end catch

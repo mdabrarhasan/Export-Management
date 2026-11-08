@@ -1,0 +1,26 @@
+﻿CREATE TABLE [dbo].[TBLITEMORDERSPECSTAGINGHISTORY] (
+    [ID]                     INT            IDENTITY (1, 1) NOT NULL,
+    [ITEMORDERSPECSTAGINGID] INT            NULL,
+    [DOCUMENTCREATEDBY]      INT            NULL,
+    [ITEMID]                 INT            NULL,
+    [LENGTH]                 NVARCHAR (50)  NULL,
+    [WIDTH]                  NVARCHAR (50)  NULL,
+    [HEIGHT]                 NVARCHAR (50)  NULL,
+    [THICKNESS]              NVARCHAR (50)  NULL,
+    [WEIGHT]                 NVARCHAR (50)  NULL,
+    [COLOR]                  NVARCHAR (50)  NULL,
+    [SIZE]                   NVARCHAR (50)  NULL,
+    [DESIGN]                 NVARCHAR (50)  NULL,
+    [PACKAGING]              NVARCHAR (50)  NULL,
+    [MATERIAL]               NVARCHAR (50)  NULL,
+    [CONSTRUCTION]           NVARCHAR (50)  NULL,
+    [PLY]                    NVARCHAR (50)  NULL,
+    [CORE]                   NVARCHAR (50)  NULL,
+    [TREATMENTDIRECTION]     NVARCHAR (50)  NULL,
+    [OTHERS]                 NVARCHAR (50)  NULL,
+    [REMARK]                 NVARCHAR (MAX) NULL,
+    [SESSIONID]              NVARCHAR (MAX) NULL,
+    [DOCUMENTCREATEDDATE]    DATETIME       NULL,
+    CONSTRAINT [PK_TBLITEMORDERSPECSTAGINGHISTORY] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

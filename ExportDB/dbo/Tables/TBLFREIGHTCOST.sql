@@ -1,0 +1,13 @@
+﻿CREATE TABLE [dbo].[TBLFREIGHTCOST] (
+    [ID]                  INT  IDENTITY (1, 1) NOT NULL,
+    [SCID]                INT  NULL,
+    [PRID]                INT  NULL,
+    [UNIT]                INT  NULL,
+    [CUSTOMERID]          INT  NULL,
+    [AMOUNT]              INT  NULL,
+    [DOCUMENTSTATUSID]    INT  NULL,
+    [DOCUMENTCREATEDBY]   INT  NULL,
+    [DOCUMENTCREATEDDATE] DATE NULL,
+    CONSTRAINT [PK_TBLFREIGHTCOST] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

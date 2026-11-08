@@ -1,0 +1,614 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>ExportDB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{2d5a6c8a-a51f-4f6f-8aa9-84845eaba2c2}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>ExportDB</RootNamespace>
+    <AssemblyName>ExportDB</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="Security\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="dbo\User Defined Types\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\TBLWEIGHT.sql" />
+    <Build Include="dbo\Tables\TBLVAT.sql" />
+    <Build Include="dbo\Tables\TBLUSERPERMISSIONLIST.sql" />
+    <Build Include="dbo\Tables\TBLUNITFORTREASURY.sql" />
+    <Build Include="dbo\Tables\TBLUNIT.sql" />
+    <Build Include="dbo\Tables\TBLTRANSPORTATIONMODE.sql" />
+    <Build Include="dbo\Tables\TBLTOSHIPMENTCOUNTRY.sql" />
+    <Build Include="dbo\Tables\TBLTOLERANCE.sql" />
+    <Build Include="dbo\Tables\tblTmpRosa.sql" />
+    <Build Include="dbo\Tables\TBLTERMSCONDITION.sql" />
+    <Build Include="dbo\Tables\TBLTEMPPRICECONFIRMHEADER.sql" />
+    <Build Include="dbo\Tables\tblSupervisor.sql" />
+    <Build Include="dbo\Tables\TBLSUBSUBMENU.sql" />
+    <Build Include="dbo\Tables\TBLSUBMENUPERMISSION.sql" />
+    <Build Include="dbo\Tables\TBLSUBMENU.sql" />
+    <Build Include="dbo\Tables\TBLSQTYPE.sql" />
+    <Build Include="dbo\Tables\TBLSLIT.sql" />
+    <Build Include="dbo\Tables\TBLSIZE.sql" />
+    <Build Include="dbo\Tables\TBLSHIPMENTMODE.sql" />
+    <Build Include="dbo\Tables\TBLSCRIM.sql" />
+    <Build Include="dbo\Tables\TBLSALESTYPE.sql" />
+    <Build Include="dbo\Tables\TBLSALESQUOTATIONLINE.sql" />
+    <Build Include="dbo\Tables\TBLSALESQUOTATIONHEADER.sql" />
+    <Build Include="dbo\Tables\TBLSALESCONTRACTLINE.sql" />
+    <Build Include="dbo\Tables\TBLSALESCONTRACTHEADER.sql" />
+    <Build Include="dbo\Tables\TBLROLES.sql" />
+    <Build Include="dbo\Tables\tblRetailer.sql" />
+    <Build Include="dbo\Tables\TBLQUOTATIONTYPE.sql" />
+    <Build Include="dbo\Tables\TBLQUOTATIONLINE.sql" />
+    <Build Include="dbo\Tables\TBLQUOTATIONHSCODE.sql" />
+    <Build Include="dbo\Tables\TBLQUOTATIONHEADER.sql" />
+    <Build Include="dbo\Tables\TBLQUALITY.sql" />
+    <Build Include="dbo\Tables\TBLPROFORMAINVOICELINE.sql" />
+    <Build Include="dbo\Tables\TBLPROFORMAINVOICEHEADER.sql" />
+    <Build Include="dbo\Tables\tblProduct.sql" />
+    <Build Include="dbo\Tables\TBLPRICECONFIRMLINE.sql" />
+    <Build Include="dbo\Tables\TBLPRICECONFIRMHEADER.sql" />
+    <Build Include="dbo\Tables\TBLPIVOT.sql" />
+    <Build Include="dbo\Tables\TBLPISCLINE.sql" />
+    <Build Include="dbo\Tables\TBLPISCHEADER.sql" />
+    <Build Include="dbo\Tables\TBLPICKINGPACKINGLINE.sql" />
+    <Build Include="dbo\Tables\TBLPICKINGPACKINGHEADER.sql" />
+    <Build Include="dbo\Tables\TBLPAYMENTTERMS.sql" />
+    <Build Include="dbo\Tables\TBLPAYMENTRESCHEDULETYPE.sql" />
+    <Build Include="dbo\Tables\TBLPAYMENTRESCHEDULE.sql" />
+    <Build Include="dbo\Tables\TBLPARAMETERS.sql" />
+    <Build Include="dbo\Tables\TBLPACKINGREQUESTLINE.sql" />
+    <Build Include="dbo\Tables\TBLPACKINGREQUESTHEADER.sql" />
+    <Build Include="dbo\Tables\TBLORGANIZATION.sql" />
+    <Build Include="dbo\Tables\tblOrder.sql" />
+    <Build Include="dbo\Tables\TBLOADINGBY.sql" />
+    <Build Include="dbo\Tables\TBLNOTIFICATION.sql" />
+    <Build Include="dbo\Tables\TBLMILL.sql" />
+    <Build Include="dbo\Tables\TBLMESSAGE.sql" />
+    <Build Include="dbo\Tables\TBLMENU.sql" />
+    <Build Include="dbo\Tables\TBLMASTERSPECIFICATION.sql" />
+    <Build Include="dbo\Tables\TBLLOGIN.sql" />
+    <Build Include="dbo\Tables\tblLog.sql" />
+    <Build Include="dbo\Tables\TBLLOCATION.sql" />
+    <Build Include="dbo\Tables\TBLLOANTYPE.sql" />
+    <Build Include="dbo\Tables\TBLLIMITFACILITY.sql" />
+    <Build Include="dbo\Tables\TBLLCVSBILL.sql" />
+    <Build Include="dbo\Tables\TBLLCDETAILS.sql" />
+    <Build Include="dbo\Tables\TBLLCBANKINFO.sql" />
+    <Build Include="dbo\Tables\TBLITEMTYPE.sql" />
+    <Build Include="dbo\Tables\TBLITEMORDERSPECSTAGINGHISTORY.sql" />
+    <Build Include="dbo\Tables\TBLITEMORDERSPECSTAGING.sql" />
+    <Build Include="dbo\Tables\TBLITEMORDERSPEC.sql" />
+    <Build Include="dbo\Tables\TBLINTERESTCALCULATION.sql" />
+    <Build Include="dbo\Tables\TBLINCOTERM.sql" />
+    <Build Include="dbo\Tables\TBLHSCODE.sql" />
+    <Build Include="dbo\Tables\TBLFROMLOADINGPORT.sql" />
+    <Build Include="dbo\Tables\TBLFREIGHTCOST.sql" />
+    <Build Include="dbo\Tables\TBLFILEUPLOADSETUP.sql" />
+    <Build Include="dbo\Tables\TBLFILEDETAILS.sql" />
+    <Build Include="dbo\Tables\tblExecutive.sql" />
+    <Build Include="dbo\Tables\TBLEXCELUPLOAD.sql" />
+    <Build Include="dbo\Tables\TBLEXCELQUOTATIONLINE.sql" />
+    <Build Include="dbo\Tables\TBLERRORLOG.sql" />
+    <Build Include="dbo\Tables\TBLEMPLOYEE.sql" />
+    <Build Include="dbo\Tables\TBLDOCUMENTTYPE.sql" />
+    <Build Include="dbo\Tables\TBLDOCUMENTSTATUS.sql" />
+    <Build Include="dbo\Tables\TBLDOCUMENTSETUPLINE.sql" />
+    <Build Include="dbo\Tables\TBLDOCUMENTSETUPHEADER.sql" />
+    <Build Include="dbo\Tables\TBLDOCLINE.sql" />
+    <Build Include="dbo\Tables\TBLDOCHEADER.sql" />
+    <Build Include="dbo\Tables\TBLDISCOUNT.sql" />
+    <Build Include="dbo\Tables\TBLDELIVERYTERMS.sql" />
+    <Build Include="dbo\Tables\tblDealer.sql" />
+    <Build Include="dbo\Tables\TBLCUSTOMERINFO.sql" />
+    <Build Include="dbo\Tables\TBLCUSTOMERBANK.sql" />
+    <Build Include="dbo\Tables\TBLCUSTOMER.sql" />
+    <Build Include="dbo\Tables\TBLCURRENCY.sql" />
+    <Build Include="dbo\Tables\TBLCREDITTYPE.sql" />
+    <Build Include="dbo\Tables\TBLCOUNTRY.sql" />
+    <Build Include="dbo\Tables\TBLCOSTTYPE.sql" />
+    <Build Include="dbo\Tables\TBLCOSTITEM.sql" />
+    <Build Include="dbo\Tables\TBLCONSTRUCTION.sql" />
+    <Build Include="dbo\Tables\TBLCONFIRM.sql" />
+    <Build Include="dbo\Tables\TBLCOMMISSION.sql" />
+    <Build Include="dbo\Tables\TBLBANKLOAN.sql" />
+    <Build Include="dbo\Tables\TBLBANKINFO.sql" />
+    <Build Include="dbo\Tables\TBLBANKFORTREASURY.sql" />
+    <Build Include="dbo\Tables\TBLAUDITLOG.sql" />
+    <Build Include="dbo\Tables\TBLAPPROVERMATRIXLINE.sql" />
+    <Build Include="dbo\Tables\TBLAPPROVERMATRIXHISTORY.sql" />
+    <Build Include="dbo\Tables\TBLAPPROVERMATRIXHEADER.sql" />
+    <Build Include="dbo\Tables\TBLAPIMESSAGE.sql" />
+    <Build Include="dbo\Tables\TBLAPILOGINLOG.sql" />
+    <Build Include="dbo\Tables\TBLAPIERRORLOG.sql" />
+    <Build Include="dbo\Tables\TBLAPIACTIVITYLOG.sql" />
+    <Build Include="dbo\Tables\TBLAPIACCESSPERMISSION.sql" />
+    <Build Include="dbo\Tables\TBLAGREEMENTTYPE.sql" />
+    <Build Include="dbo\Tables\TBLACTIVITYLOG.sql" />
+    <Build Include="dbo\Tables\Supervisors.sql" />
+    <Build Include="dbo\Tables\Retailers.sql" />
+    <Build Include="dbo\Tables\Products.sql" />
+    <Build Include="dbo\Tables\Orders.sql" />
+    <Build Include="dbo\Tables\Logs.sql" />
+    <Build Include="dbo\Tables\ExportReport.sql" />
+    <Build Include="dbo\Tables\Executives.sql" />
+    <Build Include="dbo\Tables\Dealers.sql" />
+    <Build Include="dbo\Tables\Customers.sql" />
+    <Build Include="dbo\Tables\Books.sql" />
+    <Build Include="Security\sohan.corpone.sql" />
+    <Build Include="Security\sifat549948.sql" />
+    <Build Include="Security\shahadattestdb.sql" />
+    <Build Include="Security\safwan.sql" />
+    <Build Include="Security\sadia.sql" />
+    <Build Include="Security\rayhanul.sql" />
+    <Build Include="Security\nasir.sql" />
+    <Build Include="Security\miyad.corp.sql" />
+    <Build Include="Security\mdshahid.sql" />
+    <Build Include="Security\mahamuda1.corp.sql" />
+    <Build Include="Security\mahamud.sql" />
+    <Build Include="Security\jubayer.sql" />
+    <Build Include="Security\israil.sql" />
+    <Build Include="Security\fahim.sql" />
+    <Build Include="Security\dbtestpranta.sql" />
+    <Build Include="Security\dbtest.fahim.sql" />
+    <Build Include="Security\chiranjib.sql" />
+    <Build Include="Security\RoleMemberships.sql" />
+    <Build Include="dbo\Functions\towords.sql" />
+    <Build Include="dbo\Functions\NumberToWords.sql" />
+    <Build Include="dbo\Functions\NumberToTakaWords.sql" />
+    <Build Include="dbo\Functions\MoneyToWords_EN.sql" />
+    <Build Include="dbo\Functions\MoneyToWords.sql" />
+    <Build Include="dbo\Functions\IntegerToWords2.sql" />
+    <Build Include="dbo\Functions\IntegerToWords.sql" />
+    <Build Include="dbo\Functions\fnNumberToWords.sql" />
+    <Build Include="dbo\Functions\fnDecimalNumberToWords.sql" />
+    <Build Include="dbo\Functions\ConvertLessThan1000.sql" />
+    <Build Include="dbo\Functions\ConvertLessThan100.sql" />
+    <Build Include="dbo\Functions\AmountToWords.sql" />
+    <Build Include="dbo\Stored Procedures\TestPurpose.sql" />
+    <Build Include="dbo\Stored Procedures\spxSupervisorCrud.sql" />
+    <Build Include="dbo\Stored Procedures\spxRetailerCrud.sql" />
+    <Build Include="dbo\Stored Procedures\spxProductCrud.sql" />
+    <Build Include="dbo\Stored Procedures\spxOrderCrud.sql" />
+    <Build Include="dbo\Stored Procedures\spxLogCrud.sql" />
+    <Build Include="dbo\Stored Procedures\spxExecutiveCrud.sql" />
+    <Build Include="dbo\Stored Procedures\spxDealerCrud.sql" />
+    <Build Include="dbo\Stored Procedures\SPVIEWPISC.sql" />
+    <Build Include="dbo\Stored Procedures\SPUpdateSQDetailsByID.sql" />
+    <Build Include="dbo\Stored Procedures\SPUpdateSalesQuatation.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEQUOTATIONLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEPRODPACKINGREQLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEPRODPACKINGREQ.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEPRICECONFIRMLINEAPPROVAL.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEPRICECONFIRMLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEPRICECONFIRM.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEPISC.sql" />
+    <Build Include="dbo\Stored Procedures\SPUpdatePIDetailsByID.sql" />
+    <Build Include="dbo\Stored Procedures\spUpdatePickPackerByID.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEPICKINGPACKINGLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEPAYMENTRESCHEDULEDLOAN.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATELIMITFACILITY.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEITEMSPECIFICFORSQ.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEITEMSPECIFIC.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEDOCUMENT.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATECUSTOMERINFOSafwan.sql" />
+    <Build Include="dbo\Stored Procedures\SPUPDATEBANKLOAN.sql" />
+    <Build Include="dbo\Stored Procedures\SPTHEPACKINGLIST.sql" />
+    <Build Include="dbo\Stored Procedures\SPSPCUSTOMERBANKUPDATE.sql" />
+    <Build Include="dbo\Stored Procedures\SPSPCUSTOMERBANKSAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPSPCUSTOMERBANKGETBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPSPCUSTOMERBANKGETALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPSPCUSTOMERBANKDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEPRODPACKINGREQ.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEPRICECONFIRMUPDATE.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEPRICECONFIRMBIAX.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEPRICECONFIRM.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEPISC.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEPICKPACKOCFCONFIRM.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEPICKPACKCONFIRM.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEPICKINGPACKING.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVEITEMSPECIFIC.sql" />
+    <Build Include="dbo\Stored Procedures\SPSaveFileUploadForDocument.sql" />
+    <Build Include="dbo\Stored Procedures\SPSaveFileUpload.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVECUSTOMERINFOSafwan.sql" />
+    <Build Include="dbo\Stored Procedures\SPSAVECONDITIONALAPPROVAL.sql" />
+    <Build Include="dbo\Stored Procedures\SPSALESCONTRACTREPORT.sql" />
+    <Build Include="dbo\Stored Procedures\sprTmpRosaCrud.sql" />
+    <Build Include="dbo\Stored Procedures\sprSupervisorCrud.sql" />
+    <Build Include="dbo\Stored Procedures\sprSQNEWINSERTAFTERREOPEN.sql" />
+    <Build Include="dbo\Stored Procedures\sprSalesQuotationReport.sql" />
+    <Build Include="dbo\Stored Procedures\sprSalesPISCReport.sql" />
+    <Build Include="dbo\Stored Procedures\sprSalesContactReport.sql" />
+    <Build Include="dbo\Stored Procedures\sprRetailerCrud.sql" />
+    <Build Include="dbo\Stored Procedures\sprReportPakingAndWList.sql" />
+    <Build Include="dbo\Stored Procedures\sprReportGatePass.sql" />
+    <Build Include="dbo\Stored Procedures\sprReportDeliveryChallan.sql" />
+    <Build Include="dbo\Stored Procedures\sprReportDeliverChallan.sql" />
+    <Build Include="dbo\Stored Procedures\sprReportComInvoice.sql" />
+    <Build Include="dbo\Stored Procedures\sprReportCOfOrigin.sql" />
+    <Build Include="dbo\Stored Procedures\sprReportBOE2.sql" />
+    <Build Include="dbo\Stored Procedures\sprReportBOE1.sql" />
+    <Build Include="dbo\Stored Procedures\sprProductCrud.sql" />
+    <Build Include="dbo\Stored Procedures\sprPostshipmentReportPermission.sql" />
+    <Build Include="dbo\Stored Procedures\sprPostshipmentReportPackingList.sql" />
+    <Build Include="dbo\Stored Procedures\sprPostshipmentReportdocumentlist.sql" />
+    <Build Include="dbo\Stored Procedures\sprPostshipmentReportComInvoice.sql" />
+    <Build Include="dbo\Stored Procedures\sprPostshipmentBillofLanding.sql" />
+    <Build Include="dbo\Stored Procedures\sprPINEWINSERTAFTERREOPEN.sql" />
+    <Build Include="dbo\Stored Procedures\sprPickingPackingReport.sql" />
+    <Build Include="dbo\Stored Procedures\sprPackingRequestReport.sql" />
+    <Build Include="dbo\Stored Procedures\sprOrderCrud.sql" />
+    <Build Include="dbo\Stored Procedures\sprLogin.sql" />
+    <Build Include="dbo\Stored Procedures\sprLogCrud.sql" />
+    <Build Include="dbo\Stored Procedures\sprjutepostshipmentPackinglist.sql" />
+    <Build Include="dbo\Stored Procedures\sprjutepostshipmentInvoice.sql" />
+    <Build Include="dbo\Stored Procedures\sprjutepostshipmentBilllanding.sql" />
+    <Build Include="dbo\Stored Procedures\sprGetLocationist.sql" />
+    <Build Include="dbo\Stored Procedures\sprExportocfcreate.sql" />
+    <Build Include="dbo\Stored Procedures\sprExecutiveCrud.sql" />
+    <Build Include="dbo\Stored Procedures\spReportExportProcess.sql" />
+    <Build Include="dbo\Stored Procedures\SPRejected.sql" />
+    <Build Include="dbo\Stored Procedures\sprDealerCrud.sql" />
+    <Build Include="dbo\Stored Procedures\sprDasboard.sql" />
+    <Build Include="dbo\Stored Procedures\sprCommonReportDye_Test.sql" />
+    <Build Include="dbo\Stored Procedures\sprCommonReportContact.sql" />
+    <Build Include="dbo\Stored Procedures\sprCommonReportBIl_of_Exchange.sql" />
+    <Build Include="dbo\Stored Procedures\sprCommonReportBeneficiary_Certificate.sql" />
+    <Build Include="dbo\Stored Procedures\sprcancle.sql" />
+    <Build Include="dbo\Stored Procedures\SPRAY_SPCUSTOMERBANKUPDATE.sql" />
+    <Build Include="dbo\Stored Procedures\SPRAY_SPCUSTOMERBANKSAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPRAY_SPCUSTOMERBANKGETBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPRAY_SPCUSTOMERBANKGETALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPRAY_SPCUSTOMERBANKDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONUPDATESQ.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONUPDATESPOT.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONUPDATEPI.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONUPDATECONAPP.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONSAVESQ.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONSAVESPOT.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONSAVEPI.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONDELETEBYMASTERID.sql" />
+    <Build Include="dbo\Stored Procedures\SPQUOTATIONDELETEBYDETAILS.sql" />
+    <Build Include="dbo\Stored Procedures\SPQuo.sql" />
+    <Build Include="dbo\Stored Procedures\SPPriceApprovalReportForExcel.sql" />
+    <Build Include="dbo\Stored Procedures\SPPriceApprovalQuotation.sql" />
+    <Build Include="dbo\Stored Procedures\SPPAYMENTSCHEDULEDDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPPACKINGLISTREPORT.sql" />
+    <Build Include="dbo\Stored Procedures\SPPACKINGINVOICEREPORT.sql" />
+    <Build Include="dbo\Stored Procedures\SPMASTERTYPESAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPMASTERTYPEGETALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPMASTERTYPEDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPLogin.sql" />
+    <Build Include="dbo\Stored Procedures\SPLIMITFACILITYDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCVSBILLSAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCVSBILLDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCUPDATE.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCSAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCEDITDETAILSBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCDELETEBYMASTERBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCBANKINFOSAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCBANKINFOGETALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPLCBANKINFODELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPLASTTENITEM.sql" />
+    <Build Include="dbo\Stored Procedures\SPJannataJuteMillsReportForTableHeader.sql" />
+    <Build Include="dbo\Stored Procedures\SPJannataJuteMillsReportForTable.sql" />
+    <Build Include="dbo\Stored Procedures\SPIUPDATEINTERESTCALCULATION.sql" />
+    <Build Include="dbo\Stored Procedures\SPINTERESTCALCULATIONDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTSALESQUATATION.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTQUOTATIONLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTPISCLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTPAYMENTRESCHEDULEDLOAN.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTLIMITFACILITY.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTINTERESTCALCULATION.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTDOCUMENT.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTCUSTOMERINFO.sql" />
+    <Build Include="dbo\Stored Procedures\SPINSERTBANKLOAN.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETWAREHOUSENAME.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETVIEWDOCSTATUSFORDOCUMENT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETVIEWDOCSTATUS.sql" />
+    <Build Include="dbo\Stored Procedures\spGetVatDetails.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetUserLogin.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetUploadedFiles.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETUOMFORALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETUOM.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETUNITALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETUNIT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETTYPE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETTREATMENTDIRECTION.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETTRANSPORTATIONMODE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETTOSHIPMENT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetTolerance.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetTextFromShipmentAndCountry.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetTermsAndCondition.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETSHIPMENTMODE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETSHIPMENTCOUNTRY.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETSALESTYPE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETSALESQUOTATION.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetSalesQuatationApprovalByID.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETROOTDOCMENTLIST.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETQUOTATIONLIST.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETQUOTATIONLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETQUOTATIONDATAOCF.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETQUOTATIONDATABIAXVIEW.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETQUOTATIONDATABIAX.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPREVIOUSPRICEHISTORY.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetPreShipmentPackingListTable.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetPreshipmentMilldecHeaders.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPOSTSHIPMENTREPORTHEADERS.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPIINFOLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPIINFOHEADER.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPICKPACKNUMBER.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPICKPACKINGTABLEREPORT.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetPickPackerIdbyMaster.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetPickPackerId.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPICKINGPACKINGFORAPPROVAL.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPICKINGPACKING.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetPendingListApproval.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPAYMENTTERM.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPAYMENTRESCHEDULEDBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPAYMENTRESCHEDULED.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetPackingRequestLandingHeader.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPACKINGREQLANDING.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPACKINGREQFORAPPROVAL.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETOCFPILISTVIEW.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETOCFPILISTPENDING.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETOCFPILIST.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETOCFNO.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETOCFITEMS.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETMILLBYUNIT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetMessage.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETMENULIST.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetLocationList.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLOANTYPE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLOANNUMBER.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLOANINFO.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLOANFACILITYBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLOANFACILITY.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLOADINGPORT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLOADINGBY.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLIMITFACILITYREPORT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLENDERSUMMARYAMT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLENDERBORROWERINFOBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLENDERBORROWERINFO.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetLCSalesContractHeader.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetLcRelatedSalesContractItemLine.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetLcRelatedComInvoiceReportHeaders.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetLcRelatedChallanReportHeaders.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetLcRelatedBCORReportHeaders.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetLcRealtedSalesContractHeader.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLCNO.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLCDETAILS.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLCDATAFORAPPROVAL.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLCDATABIAX.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETLCDATA.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetJutePreshipmentPackingListHeader.sql" />
+    <Build Include="dbo\Stored Procedures\spGetJutePreShipmentHeaders.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetJuteMillDecReport.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetJuteInvoiceReportTotalInWords.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetJuteInvoiceReportMerged.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETITEMTYPE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETITEMSPECIFIC.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETINCOTERM.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETHSCODE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetFileUpload.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetFilePermissionDetails.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetFileConfig.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetFGNameWithProductCode.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetFGNameWithoutProductCode.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetFGName.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETEXCELDATA.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetDocumentStatus.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetDocument.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETDOCSTATUS.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETDOCLISTFORAPPROVAL.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETDOCLIST.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETDOCHEADER.sql" />
+    <Build Include="dbo\Stored Procedures\spGetDiscountDetails.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETDELTERM.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETDELPOINTBYUNITANDTYPE.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETDATAFORINTERESTAPPROVAL.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCUSTOMERNAME.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCUSTOMERINFOSafwan.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCUSTOMERINFOBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCUSTOMERINFO.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCUSTOMERBANKS.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCURRENCY.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCREDITTYPE.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetContractTableDetails.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCONFIRM.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetCommissionerMail.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetComInvoiceReportLineBiax.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetChallanReportLineBiax.sql" />
+    <Build Include="dbo\Stored Procedures\spGetBuyerBank.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBOEREPORTDETAILS.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBILLNO.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetBiaxReportPackingAndWeightList.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetBiaxPackingListWeightLine.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBIAXFLIMCOREID.sql" />
+    <Build Include="dbo\Stored Procedures\spGetBiaxDashBoard.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetBCORReportLineBiax.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBANKLOANLISTREPORT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBANKLOANLIST.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBANKLOANBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBANKLOAN.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBANKINFOBYUNIT.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETBANKINFO.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetAPIValidation.sql" />
+    <Build Include="dbo\Stored Procedures\SpGetAllDetailsForJuteInvoiceReport.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetAllCustomers.sql" />
+    <Build Include="dbo\Stored Procedures\SpGeneratePackingRequestJuteInvoiceReportMerged.sql" />
+    <Build Include="dbo\Stored Procedures\SpGenerateJuteInvoiceReportMerged.sql" />
+    <Build Include="dbo\Stored Procedures\SpGenerateJuteInvoiceReport.sql" />
+    <Build Include="dbo\Stored Procedures\SpForFileUpdateAndGet.sql" />
+    <Build Include="dbo\Stored Procedures\SPEXCELUPLOAD.sql" />
+    <Build Include="dbo\Stored Procedures\SPErrorLog.sql" />
+    <Build Include="dbo\Stored Procedures\SPENROLLENTRY.sql" />
+    <Build Include="dbo\Stored Procedures\SPEmailSend.sql" />
+    <Build Include="dbo\Stored Procedures\SPEditDetailsAdd.sql" />
+    <Build Include="dbo\Stored Procedures\SPDOCUMENTGET.sql" />
+    <Build Include="dbo\Stored Procedures\SPDeleteSQMasterByID.sql" />
+    <Build Include="dbo\Stored Procedures\SPDeleteSQDetailsByID.sql" />
+    <Build Include="dbo\Stored Procedures\SPDeletePIMasterByID.sql" />
+    <Build Include="dbo\Stored Procedures\SPDELETEPICKINGPACKINGCONFIRM.sql" />
+    <Build Include="dbo\Stored Procedures\SPDeletePCMaster.sql" />
+    <Build Include="dbo\Stored Procedures\SPDELETEPACKINGREQUESTLINE.sql" />
+    <Build Include="dbo\Stored Procedures\SPDELETEPACKINGREQUEST.sql" />
+    <Build Include="dbo\Stored Procedures\SPDELETEDOCUMENT.sql" />
+    <Build Include="dbo\Stored Procedures\SPDELETECUSTOMERINFOSafwan.sql" />
+    <Build Include="dbo\Stored Procedures\SPDeleteAggrementDetailsByID.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERINFOSAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERINFODELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKUPDATE.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKSAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKINFUPDATE.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKINFSAVE.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKINFOGETALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKINFGETALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKINFDEL.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKGETBYID.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKGETALL.sql" />
+    <Build Include="dbo\Stored Procedures\SPCUSTOMERBANKDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPCHECKTOTALQTY.sql" />
+    <Build Include="dbo\Stored Procedures\SPCHECKLOCAL.sql" />
+    <Build Include="dbo\Stored Procedures\SPBOEREPORT.sql" />
+    <Build Include="dbo\Stored Procedures\SPBANKLOANRESCHEDULEDDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPBANKLOANDELETE.sql" />
+    <Build Include="dbo\Stored Procedures\SPAPPROVEMATRIXHISTORY.sql" />
+    <Build Include="dbo\Stored Procedures\SPApprove.sql" />
+    <Build Include="dbo\Stored Procedures\SPAPILOGINLOG.sql" />
+    <Build Include="dbo\Stored Procedures\SPAPILOG.sql" />
+    <Build Include="dbo\Stored Procedures\SPActivityLog.sql" />
+    <Build Include="dbo\Stored Procedures\SP_UpdateCustomerInfo.sql" />
+    <Build Include="dbo\Stored Procedures\sp_Master_Save.sql" />
+    <Build Include="dbo\Stored Procedures\sp_Master_Paged.sql" />
+    <Build Include="dbo\Stored Procedures\sp_Master_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\SP_InsertCustomer.sql" />
+    <Build Include="dbo\Stored Procedures\SP_GetCustomers.sql" />
+    <Build Include="dbo\Stored Procedures\SP_GetCustomerInfoById.sql" />
+    <Build Include="dbo\Stored Procedures\SP_GetAllRoles.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetAllCustomersIS.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetAllCustomers.sql" />
+    <Build Include="dbo\Stored Procedures\SP_GetAllCustomerInfo.sql" />
+    <Build Include="dbo\Stored Procedures\SP_DeleteCustomerInfo.sql" />
+    <Build Include="dbo\Stored Procedures\SP_DeleteCustomer.sql" />
+    <Build Include="dbo\Stored Procedures\SP_AddCustomerInfo.sql" />
+    <Build Include="dbo\Stored Procedures\Recover_Deleted_Data_Proc.sql" />
+    <Build Include="dbo\Stored Procedures\PriceApprovalQuotation.sql" />
+    <Build Include="dbo\Stored Procedures\GETSQTYPE.sql" />
+    <Build Include="dbo\Stored Procedures\GETSPPISC.sql" />
+    <Build Include="dbo\Stored Procedures\GetShippingPoint.sql" />
+    <Build Include="dbo\Stored Procedures\GetSellerInfoShortPISCEdit.sql" />
+    <Build Include="dbo\Stored Procedures\GetSellerInfoShortPISC.sql" />
+    <Build Include="dbo\Stored Procedures\GetSellerInfoShortGeneral.sql" />
+    <Build Include="dbo\Stored Procedures\GetSellerInfoShortForBusiness.sql" />
+    <Build Include="dbo\Stored Procedures\GetSellerInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetSalesQuatation.sql" />
+    <Build Include="dbo\Stored Procedures\GetQTCustomerInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GETPRICECONFIRMFORAPPROVALBIAX.sql" />
+    <Build Include="dbo\Stored Procedures\GETPRICECONFIRMFORAPPROVAL.sql" />
+    <Build Include="dbo\Stored Procedures\GetPickPackingItemList.sql" />
+    <Build Include="dbo\Stored Procedures\GetPAYMENTTERMS.sql" />
+    <Build Include="dbo\Stored Procedures\GetPackingRequestDetails.sql" />
+    <Build Include="dbo\Stored Procedures\Getpackingmode.sql" />
+    <Build Include="dbo\Stored Procedures\GetJuteInvoiceReportHeaders.sql" />
+    <Build Include="dbo\Stored Procedures\GetCustomerInfoShortPISCExtra.sql" />
+    <Build Include="dbo\Stored Procedures\GetCustomerInfoShortPISCEDIT.sql" />
+    <Build Include="dbo\Stored Procedures\GetCustomerInfoShortPISC.sql" />
+    <Build Include="dbo\Stored Procedures\GetCustomerInfoShortForBusiness.sql" />
+    <Build Include="dbo\Stored Procedures\GetCustomerInfoShort.sql" />
+    <Build Include="dbo\Stored Procedures\GetCustomerInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetCustomerCetegory.sql" />
+    <Build Include="dbo\Stored Procedures\GetCusInfoShortGeneral.sql" />
+    <Build Include="dbo\Stored Procedures\GetCommission.sql" />
+    <Build Include="dbo\Stored Procedures\GetAgreementtype.sql" />
+    <Build Include="dbo\Stored Procedures\GetAgreementInfoPITOSC.sql" />
+    <Build Include="dbo\Stored Procedures\GETAGREEMENTINFOMASTERDETAILSBYID.sql" />
+    <Build Include="dbo\Stored Procedures\GetAgreementInfoForApproval.sql" />
+    <Build Include="dbo\Stored Procedures\GetAgreementInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GETACCOUNTINFOFORTREASURY.sql" />
+    <Build Include="dbo\Stored Procedures\GETACCOUNTINFO.sql" />
+    <Build Include="dbo\Stored Procedures\EditbyID.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteSQDetailsByID.sql" />
+    <Build Include="dbo\User Defined Types\TYPERFPLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEQUOTATIONINSERTLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPRICECONFIRMINSERTLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPISCINSERTLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPICKPACKONLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPICKPACKINGUPDATELINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPICKPACKINGREQINSERTLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPICKPACKINGINSERTLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPCINSERTLINEAPPROVE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPCINSERTLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEPACKINGREQINSERTLINE.sql" />
+    <Build Include="dbo\User Defined Types\TYPEHSQUOTATIONINSERTLINE.sql" />
+    <Build Include="dbo\User Defined Types\TypeFileUploadForDocument.sql" />
+    <Build Include="dbo\User Defined Types\TypeFileUpload.sql" />
+    <Build Include="dbo\User Defined Types\TYPEEXCELUPLOAD.sql" />
+    <Build Include="dbo\User Defined Types\InsertSalesQuatationLine.sql" />
+    <Build Include="dbo\User Defined Types\InsertSalesQuatationHeader.sql" />
+    <Build Include="dbo\Tables\tblSubItemsTest.sql" />
+    <Build Include="dbo\Tables\tblItemsTest.sql" />
+    <Build Include="dbo\Stored Procedures\SPSQGET.sql" />
+    <Build Include="dbo\Stored Procedures\SPSCGET.sql" />
+    <Build Include="dbo\Stored Procedures\sprSubItemsTestCRUD.sql" />
+    <Build Include="dbo\Stored Procedures\sprItemsTestCRUD.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETPACKINGDATA.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETITEMLISTBYSHIPNO.sql" />
+    <Build Include="dbo\Stored Procedures\SPGETCOSTITEMLIST.sql" />
+    <Build Include="dbo\Stored Procedures\SPGetCombineSQitem.sql" />
+    <Build Include="dbo\User Defined Types\TYPESQIDLINE.sql" />
+  </ItemGroup>
+</Project>

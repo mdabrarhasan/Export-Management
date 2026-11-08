@@ -1,0 +1,19 @@
+﻿CREATE PROCEDURE [dbo].[sp_GetAllCustomers]
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        ID,
+        CUSTOMERNAME,
+        CUSTOMERBANKNAME,
+        CUSTOMERBANKBRANCHNAME,
+        CUSTOMERBANKADDRESSLINEONE,
+        ISACTIVE,
+        CREATEDBY,
+        UPDATEDBY,
+        CREATEDDATE,
+        UPDATEDDATE
+    FROM CustomerInfoX
+    ORDER BY CUSTOMERNAME; -- optional sorting
+END

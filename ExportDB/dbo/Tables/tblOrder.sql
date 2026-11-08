@@ -1,0 +1,26 @@
+﻿CREATE TABLE [dbo].[tblOrder] (
+    [intOrderId]             INT             IDENTITY (1, 1) NOT NULL,
+    [strOrderCode]           VARCHAR (50)    NOT NULL,
+    [intRetailerId]          INT             NOT NULL,
+    [intDealerId]            INT             NOT NULL,
+    [intExecutiveId]         INT             NOT NULL,
+    [intSupervisorId]        INT             NOT NULL,
+    [intProductId]           INT             NOT NULL,
+    [intQuantity]            INT             DEFAULT ((1)) NOT NULL,
+    [decTotalAmount]         DECIMAL (18, 2) DEFAULT ((0)) NOT NULL,
+    [strOrderStatus]         VARCHAR (50)    DEFAULT ('PENDING') NOT NULL,
+    [strRetailerNote]        VARCHAR (500)   NULL,
+    [strDealerNote]          VARCHAR (500)   NULL,
+    [strExecutiveNote]       VARCHAR (500)   NULL,
+    [strSupervisorNote]      VARCHAR (500)   NULL,
+    [dtRetailerOrderDate]    DATETIME        NULL,
+    [dtDealerForwardDate]    DATETIME        NULL,
+    [dtExecutivePostDate]    DATETIME        NULL,
+    [dtSupervisorActionDate] DATETIME        NULL,
+    [dtCompletedDate]        DATETIME        NULL,
+    [isActive]               BIT             DEFAULT ((1)) NOT NULL,
+    [dtCreatedDate]          DATETIME        DEFAULT (getdate()) NOT NULL,
+    [dtUpdatedDate]          DATETIME        NULL,
+    PRIMARY KEY CLUSTERED ([intOrderId] ASC)
+);
+

@@ -1,0 +1,296 @@
+﻿
+
+<script src="~/customjs/BiaxDashboard.js"></script>
+<script src="~/assets/js/biaxdashboardchart.js"></script>
+<script src="~/assets/js/biaxdashboardchartextra.js"></script>
+
+<div ng-app="App" ng-controller="ChartController">
+
+              <div class="container-fluid">
+                <br /><br /><br />
+                <div class="row">
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="font-size-15">Sales Quotation</h6>
+                                            <h6 class="mt-3 pt-1 mb-0 font-size-8">Total: 
+                                                <span class="text-success sqt fw-medium font-size-14 align-middle">2.64% </span>
+                                                ,P: <span class="text-success sqp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                                COM: <span class="text-success sqc fw-medium font-size-14 align-middle">2.64%</span> 
+                                                ,REJECT: <span class="text-success fw-medium sqr font-size-14 align-middle">2.64%</span>
+                                            </h6>
+                                        </div>
+                                        <div class="">
+                                            <div class="avatar">
+                                                <div class="avatar-title rounded bg-soft-primary">
+                                                    <i class="bx bx-store-alt font-size-24 mb-0 text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                   @*  <div id="mini-1" data-colors='["#e6ecf9"]' class="apex-charts"></div> *@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-0 font-size-15">Proforma Invoice</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success pit fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success pip fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success pic fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium pir font-size-14 align-middle">2.64%</span>
+                                </h6>
+
+                                        </div>
+
+                                        <div class="">
+                                            <div class="avatar">
+                                                <div class="avatar-title rounded bg-soft-primary">
+                                                    <i class="bx bx-money font-size-24 mb-0 text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                <h6 class="mb-0 font-size-15">Sales Contract</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success sct fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success scp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success scc fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium scr font-size-14 align-middle">2.64%</span>
+                                </h6>
+                                        </div>
+
+                                        <div class="">
+                                            <div class="avatar">
+                                                <div class="avatar-title rounded bg-soft-primary">
+                                                    <i class="bx bx-revision font-size-24 mb-0 text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                   
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-0 font-size-15">LC</h6>
+                                <h6 class="mt-3 pt-1 mb-0 font-size-8">
+                                    Total:
+                                    <span class="text-success lct fw-medium font-size-14 align-middle">2.64% </span>
+                                    ,P: <span class="text-success lcp fw-medium font-size-14 align-middle">2.64%</span><br />
+                                    COM: <span class="text-success lcc fw-medium font-size-14 align-middle">2.64%</span>
+                                    ,REJECT: <span class="text-success fw-medium lcr font-size-14 align-middle">2.64%</span>
+                                </h6>
+                                        </div>
+
+                                        <div class="">
+                                            <div class="avatar">
+                                                <div class="avatar-title rounded bg-soft-primary">
+                                                    <i class="bx bx-chart font-size-24 mb-0 text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="row" ng-init="DashBoard()">
+                            <div class="col-sm-3">
+                                <canvas id="myChart" ng-init="DashBoardGraphBar(2)" width="400" height="400"></canvas>
+                            </div>
+                            <div class="col-sm-3">
+                                <canvas id="chartPIData" ng-init="DashBoardGraphBar2(1)" width="400" height="200"></canvas>
+                            </div>
+                            <div class="col-sm-3">
+                                <canvas id="doughnut" width="400" ng-init="DashBoardGraphBar3(3)" height="200"></canvas>
+                            </div>
+                            <div class="col-sm-3">
+                                <canvas id="myChart2" width="400" ng-init="DashBoardGraphBar4(4)" height="400"></canvas>
+                            </div>
+                        </div>
+                <br /><br />
+                <div class="row">
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="font-size-15">Sales Quotation</h6>
+                                            <h4 class="mt-3 pt-1 mb-0 font-size-22">$12,253 <span class="text-success fw-medium font-size-14 align-middle"> <i class="mdi mdi-arrow-up"></i>2.64% </span> </h4>
+                                        </div>
+                                        <div class="">
+                                            <div class="avatar">
+                                                <div class="avatar-title rounded bg-soft-primary">
+                                                    <i class="bx bx-store-alt font-size-24 mb-0 text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-0 font-size-15">Proforma Invoice</h6>
+                                            <h4 class="mt-3 mb-0 font-size-22">$63,756 <span class="text-danger fw-medium font-size-14 align-middle"> <i class="mdi mdi-arrow-down"></i> 4.84% </span> </h4>
+
+                                        </div>
+
+                                        <div class="">
+                                            <div class="avatar">
+                                                <div class="avatar-title rounded bg-soft-primary">
+                                                    <i class="bx bx-money font-size-24 mb-0 text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-0 font-size-15">Sales Contract</h6>
+                                            <h4 class="mt-3 mb-0 font-size-22">$14,568 <span class="text-success fw-medium font-size-14 align-middle"> <i class="mdi mdi-arrow-up"></i> 6.54% </span> </h4>
+                                        </div>
+
+                                        <div class="">
+                                            <div class="avatar">
+                                                <div class="avatar-title rounded bg-soft-primary">
+                                                    <i class="bx bx-revision font-size-24 mb-0 text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-0 font-size-15">LC</h6>
+                                            <h4 class="mt-3 mb-0 font-size-22">$47,658 <span class="text-danger fw-medium font-size-14 align-middle"> <i class="mdi mdi-arrow-down"></i> 8.15% </span> </h4>
+                                        </div>
+
+                                        <div class="">
+                                            <div class="avatar">
+                                                <div class="avatar-title rounded bg-soft-primary">
+                                                    <i class="bx bx-chart font-size-24 mb-0 text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+              </div>
+</div>
+
+
+    <!-- apexcharts -->
+    @* <script src="assets/libs/apexcharts/apexcharts.min.js"></script> *@
+
+    @* <script src="assets/js/pages/dashboard-sales.init.js"></script> *@
+
+    <script src="assets/js/app.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+           
+            $.ajax({
+                type: "GET",
+                url: "Dashboard/GetDashboardvalue",
+                
+                dataType: "json",
+                success: function (response) {
+                    console.log(response)
+                  
+                    $('.sqp').text(response[0].sqp);
+                    $('.sqc').text(response[0].sqc);
+                    $('.sqr').text(response[0].sqr);
+                    $('.sqt').text(response[0].sqr + response[0].sqc + response[0].sqp);
+                    $('.pip').text(response[0].pip);
+                    $('.pic').text(response[0].pic);
+                    $('.pir').text(response[0].pir );
+                    $('.pit').text(response[0].pir + response[0].pip + response[0].pic);
+                    $('.scp').text(response[0].scp);
+                    $('.scc').text(response[0].scc);
+                    $('.scr').text(response[0].scr);
+                    $('.sct').text(response[0].scr + response[0].scc + response[0].scp);
+                    $('.lcp').text(response[0].lcp);
+                    $('.lcc').text(response[0].lcc);
+                    $('.lcr').text(response[0].lcr);
+                    $('.lct').text(response[0].lcr + response[0].lcc + response[0].lcp);
+                    $('.pcp').text(response[0].pcp);
+                    $('.pcc').text(response[0].pcc);
+                    $('.pcr').text(response[0].pcr);
+                    $('.pct').text(response[0].pcr + response[0].pcp + response[0].pcc);
+                    $('.prc').text(response[0].prc);
+                    $('.prp').text(response[0].prp);
+                    $('.prr').text(response[0].prr);
+                    $('.prt').text(response[0].prr + response[0].prc + response[0].prp);
+                    $('.ppc').text(response[0].ppc);
+                    $('.ppp').text(response[0].ppp);
+                    $('.ppr').text(response[0].ppr);
+                    $('.ppt').text(response[0].ppr + response[0].ppp + response[0].ppc);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    alert("Error: " + errorThrown); 
+                },
+                data: JSON.stringify({ /* Include any data you need to send to the server */ })
+            });
+        });
+    </script>

@@ -1,0 +1,11 @@
+﻿CREATE procedure [dbo].[SPGetDocument]
+(
+@id			int,
+@ModuleCode	varchar(100)
+)
+as
+begin
+	select id,code,PROCESSCODE,PROCESSID,SUBMENUID,PROCESSNAME,FILENAME,FILESIZE,FILETYPE as Extension,FILEURL,UNITID,
+	cast([DOCUMENTCREATEDDATE] as varchar(100)) as DOCUMENTCREATEDDATE,[DOCUMENTCREATEDBY],[DOCUMENTUPDATEDBY] from TBLFILEDETAILS
+	where PROCESSID=@id	 and SUBMENUID=(select id from TBLSUBMENU where CODE=@ModuleCode)
+end;

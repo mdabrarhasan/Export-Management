@@ -1,0 +1,2 @@
+﻿CREATE USER [sifat549948] FOR LOGIN [sifat549948];
+

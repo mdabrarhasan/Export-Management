@@ -1,0 +1,14 @@
+﻿CREATE TABLE [dbo].[TBLMENU] (
+    [ID]          INT             IDENTITY (1, 1) NOT NULL,
+    [CODE]        NVARCHAR (50)   NOT NULL,
+    [NAME]        NVARCHAR (50)   NOT NULL,
+    [DESCRIPTION] NVARCHAR (1000) NULL,
+    [SEQUENCE]    INT             NOT NULL,
+    [ISACTIVE]    BIT             NOT NULL,
+    [CREATEDBY]   INT             NOT NULL,
+    [CREATEDDATE] DATETIME        NOT NULL,
+    [UPDATEDBY]   INT             NOT NULL,
+    [UPDATEDDATE] DATETIME        NOT NULL,
+    CONSTRAINT [PK_TBLMENU] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

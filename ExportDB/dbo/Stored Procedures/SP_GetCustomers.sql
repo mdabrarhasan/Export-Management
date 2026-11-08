@@ -1,0 +1,5 @@
+﻿CREATE PROCEDURE SP_GetCustomers
+AS
+BEGIN
+    SELECT * FROM Customers
+END

@@ -1,0 +1,318 @@
+﻿<script src="~/customjs/lcvsbill/lcvsbill.js"></script>
+<script src="angular-utils-pagination.js"></script>
+<div ng-app="App" ng-controller="Ctl" ng-init="LoadData()">
+    <div ng-show="loading">
+        <img style="width:50%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>LC VS BILL</h4>
+                </div>
+                <div class="card-body" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+                    <div class="row align-items-center mb-3">
+
+                        <!-- Left: Add Button -->
+                        <div class="col-md-6 d-flex align-items-center">
+                            <button type="button"
+                                    class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+                                    ng-click="Clear()"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalFullscreen">
+                                <b><i class="mdi mdi-plus"></i>
+                                <span>Add New</span></b>
+                            </button>
+                        </div>
+
+                        <!-- Right: Search Box -->
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search by Quotation, LC, Customer..."
+                                       ng-change="onSearchChange()">
+
+                                <!-- Clear button -->
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table id="tblinfo" class="table table-bordered table-hover">
+
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th style="display:none;">ID</th>
+
+                                            <th style="width:130px;" ng-click='sortBy("quotationnumber")'>
+                                                Quotation No
+                                            </th>
+
+                                            <th style="width:130px;" ng-click='sortBy("lcnumber")'>
+                                                LC/SC No
+                                            </th>
+
+                                            <th style="width:180px;" ng-click='sortBy("cusname")'>
+                                                Customer
+                                            </th>
+
+                                            <th style="width:100px;">
+                                                Code
+                                            </th>
+
+                                            <th style="width:130px;">
+                                                Invoice No
+                                            </th>
+
+                                            <th style="width:100px; text-align:left;">
+                                                Total
+                                            </th>
+
+                                            <th style="width:200px;">
+                                                Report
+                                            </th>
+
+                                            <!-- Increased width -->
+                                            <th style="width:200px;">
+                                                RM Name
+                                            </th>
+
+                                            <th style="width:150px;">
+                                                RM Date
+                                            </th>
+
+                                            <th style="width:120px; text-align:center;">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr dir-paginate="list in LClist | filter:search | itemsPerPage: pageSize"
+                                            current-page="currentPage">
+
+                                            <td style="display:none;">{{list.id}}</td>
+
+                                            <td>{{list.quotationnumber}}</td>
+                                            <td>{{list.lcnumber}}</td>
+                                            <td>{{list.cusname}}</td>
+                                            <td>{{list.code}}</td>
+                                            <td>{{list.invoiceno}}</td>
+
+                                            <td style="text-align:right;">{{list.total}}</td>
+
+                                            <td>
+                                                <select class="form-select"
+                                                        ng-model="printid"
+                                                        ng-change="ReportGenerate(list.id,$index)"
+                                                        id="{{'printid'+$index}}">
+                                                    <option value="" disabled selected>-- Report --</option>
+                                                    <option value="1">Bill Of Exchange</option>
+                                                    <option value="2">Commercial Invoice</option>
+                                                    <option value="3">Delivery Challan</option>
+                                                    <option value="4">Packing & Weight List</option>
+                                                    <option value="5">Certificate of Origin</option>
+                                                </select>
+                                            </td>
+
+                                            <!-- Wider input with better UX -->
+                                            <td>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       ng-model="list.rmby"
+                                                       />
+                                            </td>
+
+                                            <td>
+                                                <input type="date"
+                                                       class="form-control"
+                                                       ng-model="list.rmdate"
+                                                        />
+                                            </td>
+
+                                            <td class="text-center">
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm"
+                                                        ng-click="DeleteMaster(list.id)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-info btn-sm"
+                                                        ng-click="UpdateRM(list.id, list.rmdate ? list.rmdate : null, list.rmby)">
+                                                    <i class="fas fa-arrow-circle-up"></i>
+                                                </button>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-init="currentPage=1; pageSize=10"></div>
+                    <style>
+                        /* Pagination container */
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 6px;
+                            padding-left: 0;
+                            margin-top: 20px;
+                        }
+
+                        /* Pagination items */
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            /* Links */
+                            dir-pagination-controls li a {
+                                display: inline-block;
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                font-weight: 500;
+                                border: 1px solid transparent;
+                                transition: all 0.25s ease;
+                            }
+
+                                /* Hover effect */
+                                dir-pagination-controls li a:hover {
+                                    background: #e7f1ff;
+                                    border-color: #0d6efd;
+                                    text-decoration: none;
+                                }
+
+                            /* Active page */
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                                border-color: #0d6efd;
+                                box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
+                            }
+
+                            /* Disabled state */
+                            dir-pagination-controls li.disabled a {
+                                background: #e9ecef;
+                                color: #adb5bd;
+                                cursor: not-allowed;
+                            }
+
+                            /* Optional: subtle click animation */
+                            dir-pagination-controls li a:active {
+                                transform: scale(0.95);
+                            }
+                    </style>
+                    <div class="row mt-2 align-items-center">
+
+                        <!-- LEFT: Total Records -->
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; color:#444; letter-spacing:0.3px; opacity:0.75;">
+                                Total Records:
+                                <span style="color:#444; font-weight:700;">
+                                    {{ (LClist | filter:search).length }}
+                                </span>
+                            </span>
+                        </div>
+
+                        <!-- CENTER: Pagination -->
+                        <div class="col-md-4 text-center">
+
+                            <dir-pagination-controls direction-links="true"
+                                                     max-size="10"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+
+                        </div>
+
+                        <!-- RIGHT: empty for balance -->
+                        <div class="col-md-4"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">LC VS BILL (Insertion Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label>Search LC No:</label>
+                                <input type="text" class="form-control" ng-keyup="LCNO()" ng-paste="LCNO()" id="txtLCNo" placeholder="Search LC..." autocomplete="off" />
+                                <input type="text" hidden class="form-control" id="txtLCNOID" />
+                                <span class="error">LC No Required</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <label>Shipment:</label>
+                                <select class="form-select" id="txtShipment" ng-model="shipmentId" ng-init="GetShipment()">
+                                    <option value="">--Select Shipment--</option>
+                                    <option ng-repeat="item in shipmentList" value="{{item.id}}">
+                                        {{item.name}}
+                                    </option>
+                                </select>
+                                <span class="error">Shipment Required</span>
+                            </div>  
+                            <div class="col-sm-3">
+                                <label>Serial No :</label>
+                                <input type="text" class="form-control"   id="txtslno" placeholder="Serial No..." />
+                                
+                                <span class="error">Serial No Required</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <label>Invoice Date :</label>
+                                <input type="date" class="form-control" id="txtindate" placeholder="Serial No..." />
+
+                                <span class="error">Invoice Date Required</span>
+                            </div>
+                            <div class="col-sm-3">
+                                <label>Bill No :</label>
+                                <input type="text" class="form-control" ng-keyup="Billno()" ng-paste="Billno()" id="txtBillno" placeholder="Search Bill No..." autocomplete="off" />
+                                <input type="text" hidden class="form-control" id="txtBillnoid" />
+                                <span class="error">Bill No Required</span>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Save()" id="savebutton" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+

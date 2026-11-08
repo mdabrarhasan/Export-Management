@@ -1,0 +1,21 @@
+﻿CREATE TYPE [dbo].[TYPEEXCELUPLOAD] AS TABLE (
+    [strOCFNo]                   VARCHAR (500)   NULL,
+    [strProductCode]             VARCHAR (500)   NULL,
+    [strProductName]             VARCHAR (500)   NULL,
+    [intProductID]               INT             NULL,
+    [decThickness]               DECIMAL (18, 2) NULL,
+    [decWidth]                   DECIMAL (18, 2) NULL,
+    [decLength]                  DECIMAL (18, 2) NULL,
+    [strTreatmentLavel]          VARCHAR (200)   NULL,
+    [strTreatmentDirection]      VARCHAR (200)   NULL,
+    [intTreatmentDirectionID]    INT             NULL,
+    [strCoreID]                  VARCHAR (200)   NULL,
+    [intCoreID]                  INT             NULL,
+    [strRealOD]                  VARCHAR (200)   NULL,
+    [intOrderQty]                INT             NULL,
+    [dteDesiredDateofDelivery]   VARCHAR (200)   NULL,
+    [dteTentativeDateofDelivery] VARCHAR (200)   NULL,
+    [strUOM]                     VARCHAR (200)   NULL,
+    [intUOM]                     INT             NULL,
+    [strRemarks]                 VARCHAR (200)   NULL);
+

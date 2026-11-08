@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Price List Report";
+}
+
+<script src="~/CustomJS/Report/PriceListReport.js"></script>
+
+<div ng-app="PriceListReportApp"
+     ng-controller="PriceListReportCtl">
+
+    <div class="row">
+        <div class="col-sm-12">
+
+            <div class="card">
+
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        Price List Report
+                    </h4>
+                </div>
+
+                <div class="card-body">
+
+                    <form>
+
+                        <div class="row align-items-end">
+
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        From Date
+                                    </label>
+
+                                    <input type="date"
+                                           class="form-control"
+                                           ng-model="fromDate" />
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        To Date
+                                    </label>
+
+                                    <input type="date"
+                                           class="form-control"
+                                           ng-model="toDate" />
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-2">
+                                <div class="mb-3">
+
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            ng-click="Submit()">
+                                        Submit
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <!-- Report Section -->
+                <div ng-if="iframeUrl">
+
+                    <div class="card-body pt-0">
+
+                        <iframe ng-src="{{iframeUrl}}"
+                                width="100%"
+                                height="900"
+                                frameborder="0"
+                                style="display:block;">
+                        </iframe>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

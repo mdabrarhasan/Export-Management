@@ -1,0 +1,15 @@
+﻿CREATE TABLE [dbo].[TBLSUBMENUPERMISSION] (
+    [ID]            INT             IDENTITY (1, 1) NOT NULL,
+    [TBLSUBMENUID]  INT             NOT NULL,
+    [NAME]          NVARCHAR (50)   NOT NULL,
+    [TBLEMPLOYEEID] INT             NOT NULL,
+    [SEQUENCE]      INT             NOT NULL,
+    [DESCRIPTION]   NVARCHAR (1000) NULL,
+    [ISACTIVE]      BIT             NOT NULL,
+    [CREATEDBY]     INT             NOT NULL,
+    [CREATEDDATE]   DATETIME        NOT NULL,
+    [UPDATEDBY]     INT             NOT NULL,
+    [UPDATEDDATE]   DATETIME        NOT NULL,
+    CONSTRAINT [PK_TBLSUBMENUPERMISSION] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

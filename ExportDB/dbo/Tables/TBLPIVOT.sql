@@ -1,0 +1,13 @@
+﻿CREATE TABLE [dbo].[TBLPIVOT] (
+    [PRODUCTID]   INT             NULL,
+    [PRODUCTCODE] VARCHAR (100)   NULL,
+    [PRODUCTNAME] VARCHAR (MAX)   NULL,
+    [THIKNESS]    DECIMAL (18, 2) NULL,
+    [WIDTH]       DECIMAL (18, 2) NULL,
+    [LENGTH]      DECIMAL (18, 2) NULL,
+    [SELLINGRATE] DECIMAL (18, 2) NULL,
+    [LEVEL]       INT             NULL,
+    [RATEHEADER]  VARCHAR (100)   NULL,
+    [ID]          INT             IDENTITY (1, 1) NOT NULL
+);
+

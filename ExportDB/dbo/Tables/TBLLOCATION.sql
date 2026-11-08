@@ -1,0 +1,12 @@
+﻿CREATE TABLE [dbo].[TBLLOCATION] (
+    [ID]          INT           IDENTITY (1, 1) NOT NULL,
+    [Name]        VARCHAR (MAX) NOT NULL,
+    [UNITID]      INT           NOT NULL,
+    [ISACTIVE]    BIT           CONSTRAINT [DF_TBLLOCATION_ISACTIVE] DEFAULT ((1)) NOT NULL,
+    [CREATEDBY]   INT           NULL,
+    [CREATEDDATE] DATE          NULL,
+    [UPDATEDBY]   INT           NULL,
+    [UPDATEDDATE] DATE          NULL,
+    CONSTRAINT [PK_TBLLOCATION_ID] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

@@ -1,0 +1,15 @@
+﻿CREATE TABLE [dbo].[TBLCOMMISSION] (
+    [ID]          INT             IDENTITY (1, 1) NOT NULL,
+    [CODE]        NVARCHAR (50)   NOT NULL,
+    [NAME]        NVARCHAR (50)   NOT NULL,
+    [VALUE]       DECIMAL (18, 2) NOT NULL,
+    [DESCRIPTION] NVARCHAR (1000) NULL,
+    [UNITID]      INT             NULL,
+    [ISACTIVE]    BIT             NOT NULL,
+    [CREATEDBY]   INT             NOT NULL,
+    [CREATEDDATE] DATETIME        NOT NULL,
+    [UPDATEDBY]   INT             NOT NULL,
+    [UPDATEDDATE] DATETIME        NOT NULL,
+    CONSTRAINT [PK_TBLCOMMISSION] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

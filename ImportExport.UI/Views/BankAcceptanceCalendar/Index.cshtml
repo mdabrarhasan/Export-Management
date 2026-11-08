@@ -1,0 +1,370 @@
+﻿@{
+    ViewData["Title"] = "Bank Acceptance Calendar";
+}
+
+<script src="~/customjs/BankAcceptanceCalendar/BankAcceptanceCalendar.js"></script>
+
+<div ng-app="App" ng-controller="Ctl">
+
+    <div ng-show="loading" class="text-center" style="padding:20px;">
+        <h4>Loading...</h4>
+    </div>
+
+    <div class="row table-responsive" style="margin-top:70px;">
+        <div class="col-sm-12">
+
+            <div class="card">
+
+                <div class="card-header calendar-toolbar">
+
+                    <div class="calendar-toolbar-left"></div>
+
+                    <div class="calendar-toolbar-center">
+
+                        <button type="button" class="btn btn-sm btn-primary month-nav-btn" ng-click="PreviousMonth()">
+                            &lt;
+                        </button>
+
+                        <div class="month-picker-wrapper">
+
+                            <button type="button"
+                                    class="month-title-btn"
+                                    ng-click="ToggleMonthPicker()">
+                                {{monthTitle}}
+                            </button>
+
+                            <div class="month-picker-box" ng-show="showMonthPicker">
+
+                                <input type="number"
+                                       class="form-control input-sm"
+                                       ng-model="pickerYear"
+                                       placeholder="Year" />
+
+                                <div class="month-picker-grid">
+                                    <button type="button"
+                                            class="btn btn-sm btn-light"
+                                            ng-repeat="m in monthNames track by $index"
+                                            ng-click="SelectMonthYear($index, pickerYear)">
+                                        {{m}}
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-primary month-nav-btn" ng-click="NextMonth()">
+                            &gt;
+                        </button>
+
+                    </div>
+
+                    <div class="calendar-toolbar-right">
+                        <button type="button" class="btn btn-sm btn-dark" ng-click="GoToday()">
+                            This Month
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="calendar-wrapper">
+
+                        <div class="calendar-header">
+                            <div>Sunday</div>
+                            <div>Monday</div>
+                            <div>Tuesday</div>
+                            <div>Wednesday</div>
+                            <div>Thursday</div>
+                            <div>Friday</div>
+                            <div>Saturday</div>
+                        </div>
+
+                        <div class="calendar-grid">
+
+                            <div class="calendar-cell"
+                                 ng-repeat="day in calendarDays"
+                                 ng-class="{ 'empty-cell': day.empty }">
+
+                                <div ng-if="!day.empty">
+
+                                    <div class="calendar-day-number">
+                                        {{day.day}}
+                                    </div>
+
+                                    <div class="calendar-event-scroll">
+
+
+
+                                        <div class="event-item"
+                                             ng-repeat="ev in day.events"
+                                             ng-class="{ 'event-item-maturity': (ev.eventtype || ev.EVENTTYPE) == 'MATURITY' }"
+                                             ng-mouseenter="ShowEventPopup(ev, $event)"
+                                             ng-mouseleave="HideEventPopup()">
+
+                                            {{ev.customername || ev.CUSTOMERNAME}}
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="floating-event-popup"
+         ng-show="hoverEvent"
+         ng-style="popupStyle">
+
+        <div><b>Customer:</b> {{hoverEvent.customername || hoverEvent.CUSTOMERNAME}}</div>
+        <div><b>LC:</b> {{hoverEvent.lcnumber || hoverEvent.LCNUMBER}}</div>
+        <div><b>Invoice No:</b> {{hoverEvent.invoiceNo || hoverEvent.invoiceno || hoverEvent.INVOICENO}}</div>
+
+        <div><b>IDPB/IDBC No:</b> {{hoverEvent.idpbidbcno || hoverEvent.IDPBIDBCNO}}</div>
+
+        <div><b>Total:</b> {{hoverEvent.total || hoverEvent.TOTAL}}</div>
+
+        @* <div><b>Maturity Date:</b> {{hoverEvent.maturitydate || hoverEvent.MATURITYDATE}}</div> *@
+
+        <div ng-if="hoverEvent.eventtype == 'ACCEPTANCE'">
+            <b>Maturity Date:</b> {{hoverEvent.maturitydate || hoverEvent.MATURITYDATE}}
+        </div>
+
+        <div ng-if="hoverEvent.eventtype == 'MATURITY'">
+            <b>Bank Acceptance Date:</b> {{hoverEvent.acceptancedate || hoverEvent.ACCEPTANCEDATE}}
+        </div>
+
+        <div><b>Status:</b> {{hoverEvent.status || hoverEvent.STATUS}}</div>
+
+    </div>
+
+</div>
+
+<style>
+    .calendar-wrapper {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .calendar-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background: #1f3b73;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+    }
+
+        .calendar-header div {
+            padding: 15px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .calendar-cell {
+        border: 1px solid #e5e5e5;
+        height: 200px;
+        padding: 7px;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .empty-cell {
+        background: #f9f9f9;
+    }
+
+    .calendar-day-number {
+        font-weight: 700;
+        color: #1f3b73;
+        margin-bottom: 6px;
+        font-size: 16px;
+    }
+
+    .calendar-event-scroll {
+        height: 150px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 3px;
+    }
+
+    .event-item {
+        background: #e8f0ff;
+        color: #1f3b73;
+        border-radius: 6px;
+        padding: 4px 6px;
+        font-size: 11px;
+        line-height: 1.25;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: 0.2s;
+        margin-bottom: 5px;
+    }
+
+
+    .event-item-maturity {
+        background: #ffe8e8;
+        color: #8a1f1f;
+    }
+
+        .event-item-maturity:hover {
+            background: #ffd2d2;
+        }
+
+    .floating-event-popup {
+        position: fixed;
+        width: 300px;
+        max-width: 300px;
+        background: white;
+        border-radius: 10px;
+        padding: 12px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+        z-index: 999999;
+        font-size: 12px;
+        line-height: 1.6;
+        border: 1px solid #dfe6f3;
+        pointer-events: none;
+    }
+
+
+
+
+
+
+    .calendar-event-scroll::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    .calendar-event-scroll::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+
+    .calendar-event-scroll::-webkit-scrollbar-button:single-button {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+
+    .calendar-event-scroll::-webkit-scrollbar-button {
+        width: 0;
+        height: 0;
+        display: none;
+    }
+
+
+
+
+
+    .calendar-event-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .calendar-event-scroll::-webkit-scrollbar-thumb {
+        background: rgba(31, 59, 115, 0.35);
+        border-radius: 20px;
+    }
+
+    .calendar-event-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(31, 59, 115, 0.35) transparent;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    .calendar-toolbar {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+    }
+
+    .calendar-toolbar-center {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .calendar-toolbar-right {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .month-nav-btn {
+        width: 42px;
+    }
+
+    .month-title-btn {
+        min-width: 180px;
+        border: none;
+        background: transparent;
+        color: #1f3b73;
+        font-size: 24px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .month-picker-wrapper {
+        position: relative;
+    }
+
+    .month-picker-box {
+        position: absolute;
+        top: 42px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 420px;
+        background: white;
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+        z-index: 1000;
+    }
+
+    .month-picker-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+
+
+
+
+
+</style>

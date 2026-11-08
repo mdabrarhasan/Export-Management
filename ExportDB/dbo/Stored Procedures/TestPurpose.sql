@@ -1,0 +1,5 @@
+﻿CREATE   PROCEDURE TestPurpose
+AS
+BEGIN
+select Id, Code from TBLAPIACCESSPERMISSION
+END

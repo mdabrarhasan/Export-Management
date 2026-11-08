@@ -1,0 +1,1627 @@
+﻿<script src="~/customjs/PriceConfirm/PriceConfirm.js"></script>
+<script src="~/customjs/common.js"></script>
+<link href="~/customcss/print.css" rel="stylesheet" />
+
+<div ng-app="App" ng-controller="Ctl">
+
+    <div ng-show="loading">
+        <img style="width:50%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Price Confirmation</h4>
+                </div>
+                <div class="card-body" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+                    <div class="row">
+                        <!-- Add Button -->
+                        <div class="col-md-4 d-flex align-items-center">
+                            <button type="button"
+                                    class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+                                    ng-click="Clear()"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalFullscreen">
+                                <b>
+                                    <i class="mdi mdi-plus"></i>
+                                    <span>Add New</span>
+                                </b>
+                            </button>
+                        </div>
+
+                        <!-- Business Unit -->
+                        <div class="col-md-4">
+                            <label class="mb-1">Business Unit</label>
+                            <select class="form-control" ng-model="unitid" ng-init="GetUnit()" ng-change="PCList()"
+                                    id="unitid">
+                                <option value="">--Select--</option>
+                                <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="col-md-4">
+                            <label class="mb-1">Search</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search by PC No, Customer, Seller...">
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div><br />
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="tblinfo">
+                            <thead>
+                                <tr>
+                                    <th style="display:none;">ID</th>
+
+                                    <th ng-click='sortBy("pcnumber")'>
+                                        Price Con. Number
+                                        <span ng-show="sortColumn=='pcnumber'"
+                                              ng-class="{'fa fa-angle-double-down': !reverse, 'fa fa-angle-double-up': reverse}">
+                                        </span>
+                                    </th>
+
+                                    <th ng-click='sortBy("sqnumber")'>
+                                        Number
+                                        <span ng-show="sortColumn=='sqnumber'"
+                                              ng-class="{'fa fa-angle-double-down': !reverse, 'fa fa-angle-double-up': reverse}">
+                                        </span>
+                                    </th>
+
+                                    <th ng-click='sortBy("agreementtype")'>
+                                        Type
+                                        <span ng-show="sortColumn=='agreementtype'"
+                                              ng-class="{'fa fa-angle-double-down': !reverse, 'fa fa-angle-double-up': reverse}">
+                                        </span>
+                                    </th>
+
+                                    <th ng-click='sortBy("documentcreateddate")'>
+                                        Quotation Date
+                                        <span ng-show="sortColumn=='documentcreateddate'"
+                                              ng-class="{'fa fa-angle-double-down': !reverse, 'fa fa-angle-double-up': reverse}">
+                                        </span>
+                                    </th>
+
+                                    <th ng-click='sortBy("cusname")'>
+                                        Customer Name
+                                        <span ng-show="sortColumn=='cusname'"
+                                              ng-class="{'fa fa-angle-double-down': !reverse, 'fa fa-angle-double-up': reverse}">
+                                        </span>
+                                    </th>
+
+                                    <th ng-click='sortBy("sellername")'>
+                                        Seller Name
+                                        <span ng-show="sortColumn=='sellername'"
+                                              ng-class="{'fa fa-angle-double-down': !reverse, 'fa fa-angle-double-up': reverse}">
+                                        </span>
+                                    </th>
+
+                                    <th ng-click='sortBy("currency")'>
+                                        Currency
+                                        <span ng-show="sortColumn=='currency'"
+                                              ng-class="{'fa fa-angle-double-down': !reverse, 'fa fa-angle-double-up': reverse}">
+                                        </span>
+                                    </th>
+
+                                    <th ng-click='sortBy("docstatus")'>
+                                        Status
+                                        <span ng-show="sortColumn=='docstatus'"
+                                              ng-class="{'fa fa-angle-double-down': !reverse, 'fa fa-angle-double-up': reverse}">
+                                        </span>
+                                    </th>
+
+                                    <th>Remarks</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr dir-paginate="list in PClist | orderBy:sortColumn:reverse | filter:search | itemsPerPage:8">
+                                    <td style="display:none;">{{list.id}}</td>
+                                    <td>{{list.pcnumber}}</td>
+                                    <td>{{list.sqnumber}}</td>
+                                    <td>{{list.agreementtype}}</td>
+                                    <td>{{list.documentcreateddate}}</td>
+                                    <td>{{list.cusname}}</td>
+                                    <td>{{list.sellername}}</td>
+                                    <td>{{list.currency}}</td>
+
+                                    <td>
+                                        <span class="badge rounded-pill badge-soft-info font-size-11" ng-if='list.code=="PEND"'>{{list.docstatus}}</span>
+                                        <span class="badge rounded-pill badge-soft-success font-size-11" ng-if='list.code=="APPR"'>{{list.docstatus}}</span>
+                                        <span class="badge rounded-pill badge-soft-danger font-size-11" ng-if='list.code=="REJC"'>{{list.docstatus}}</span>
+                                        <span class="badge rounded-pill badge-soft-primary font-size-11" ng-if='list.code=="COMP"'>{{list.docstatus}}</span>
+                                    </td>
+
+                                    <td>{{list.descriptions}}</td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#ViewEditexampleModalFullscreen"
+                                                ng-click="ViewCData(list.id,list.proformainvoiceheaderid)">
+                                            <span class="fas fa-search-plus"></span>
+                                        </button>
+
+                                        <button type="button" class="btn btn-info btn-sm"
+                                                ng-disabled='list.code=="COMP"'
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#EditexampleModalFullscreen"
+                                                ng-click="EditbyMasterID(list.id,list.customerid,list.unitid,list.number,list.descriptions,list.termscondition)">
+                                            <span class="fa fa-edit"></span>
+                                        </button>
+
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                                ng-disabled='list.flag == 1'
+                                                ng-click="DeleteMaster(list.id)">
+                                            <span class="fa fa-trash"></span>
+                                        </button>
+
+                                        <button type="button" class="btn btn-soft-primary btn-sm"
+                                                ng-if="list.unitid == 91"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#PrintexampleModalFullscreen"
+                                                ng-click="Print(list.id)">
+                                            <span class="fas fa-print"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <!-- Pagination Init -->
+                    <div ng-init="currentPage=1; pageSize=8"></div>
+
+                    <!-- Pagination Style -->
+                    <style>
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            gap: 6px;
+                            margin-top: 20px;
+                            padding-left: 0;
+                        }
+
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            dir-pagination-controls li a {
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                font-weight: 500;
+                                transition: 0.25s;
+                            }
+
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                            }
+
+                            dir-pagination-controls li a:hover {
+                                background: #e7f1ff;
+                            }
+                    </style>
+
+                    <!-- Bottom Section -->
+                    <div class="row mt-2 align-items-center">
+
+                        <!-- Total -->
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; opacity:0.75;">
+                                Total Records:
+                                <b>{{ (PClist | filter:search).length }}</b>
+                            </span>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="col-md-4 text-center">
+                            <dir-pagination-controls direction-links="true"
+                                                     boundary-links="true"
+                                                     max-size="10"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+                        </div>
+
+                        <div class="col-md-4"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="exampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Price Confirmation (Insertion Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                    <label>Select Business Unit :</label>
+                                    <select class="form-control" ng-model="unitidforload" ng-init="GetUnit()"
+                                        id="unitidforload">
+                                    <option value="">--Select--</option>
+                                    <option ng-repeat="list in unitlist" value="{{list.id}}">
+                                        {{list.name}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="hidden" id="txtPISCID" />
+                                <label>Search By PI/SC :</label>
+                                <input type="text" class="form-control" ng-paste="SearchPI()" ng-keyup="SearchPI()" placeholder="Search PI/SC..." id="txtPISC" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-4">
+                                
+                                <label>Expire date :</label>
+                                <input type="date" class="form-control"   id="txtPriceexdate"  />
+                            </div>
+                           
+                        </div>
+                        <br />
+                        <div class="row">
+                           
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Buyer Details</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label>Buyer Name</label>
+                                                <input type="hidden" id="hcusid" />
+                                                <input type="text" class="form-control" id="txtBuyerName" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Phone</label>
+                                                <input type="text" class="form-control" id="txtPhone" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Email</label>
+                                                <input type="text" class="form-control" id="txtEmail" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Address</label>
+                                                <input type="text" class="form-control" id="txtAddress" disabled />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                      
+                        </div>
+
+                        <div class="biax">
+                            <div class="row table-responsive">
+                                <h4>List of Item's</h4>
+                                <table class="table table-bordered" id="detailsItems">
+                                    <thead>
+                                        <tr>
+                                            <td style="display:none">ID</td>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            <th style="display:none">UOMID</th>
+                                            <th>UOM</th>
+
+                                            <th>Thickness (µ)</th>
+                                            <th>Width (mm)</th>
+                                            <th>Length(meter)</th>
+
+                                            <th>Treatment Lavel</th>
+                                            <th style="display:none">Treatment Direction ID</th>
+                                            <th>Treatment Direction</th>
+                                            <th style="display:none">Core ID</th>
+                                            <th>Core</th>
+                                            <th>Real OD</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Offer Price</th>
+                                            <th style="display:none">Discount%</th>
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Desired Date of Delivery</th>
+                                            <th>Tentative Date of Delivery</th>
+                                            <th>Remarks</th>
+                                            <th>Short Details</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="list in edetailsbyid">
+                                            <td style="display:none">
+                                                <input type="text" class="eid form-control" id="{{'eid'+$index}}" value="{{list.id}}" disabled />
+                                                <span class="error">*</span>
+                                            </td>
+                                            <td>
+                                                <input type="text" hidden id="{{'eitemcode'+$index}}" value="{{list.itemid}}" class="itemcode form-control" disabled />
+                                                <input type="text" style="width:90px" id="" class=" form-control" value="{{list.productcode}}" disabled />
+                                                <span class="error">*</span>
+                                            </td>
+
+                                            <td style="width:300px">
+                                                <input type="hidden" id="ehname" />
+                                                <input class="ename form-control" style="width:300px" type="text" id="{{'ename'+$index}}" value="{{list.itemname}}" ng-keypress="SearchFGLine($index)" disabled>
+                                                <span class="error">Select Item</span>
+                                            </td>
+
+                                            <td>
+                                                <select class="form-select" id="{{'euomid'+$index}}" style="width:100px" ng-init="GetFGUOM()" disabled
+                                                        ng-model="list.uomid" ng-options="val.id as val.name for val in fguomlist" ng-selected="vlist.id==list.uomid">
+                                                    <option value="">--Select--</option>
+                                                </select>
+
+                                                <span class="error">Select UOM</span>
+                                                <span class="error">*</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="{{'ethikness'+$index}}" value="{{list.thikness}}" style="width:60px" class="ethikness form-control" disabled />
+                                                <span class="error">Thikness Required.</span>
+                                            </td>
+                                            <td><input type="text" id="{{'ewidth'+$index}}" value="{{list.width}}" style="width:60px" class="ewidth form-control" disabled /></td>
+                                            <td><input type="text" id="{{'elength'+$index}}" value="{{list.length}}" style="width:60px" class="elength form-control" disabled /></td>
+                                            <td><input type="text" id="{{'etreatmentlevel'+$index}}" value="{{list.treatmentlevel}}" style="width:60px" class="etreatmentlevel form-control" disabled /></td>
+                                            <td>
+                                                <select class="form-select" id="{{'etreatmentdirectionid'+$index}}" style="width:100px" ng-init="GetTreatmentDirection()" disabled
+                                                        ng-model="list.treatmentdirectionid" ng-options="val.id as val.name for val in treatmentdirectionlist" ng-selected="vlist.id==list.treatmentdirectionid">
+                                                    <option value="">--Select--</option>
+                                                </select>
+
+                                                @*   <select class="etreatmentdirectionid form-select" style="width:100px" ng-model="etreatmentdirectionid" ng-init="GetTreatmentDirection()"
+                                                id="etreatmentdirectionid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in treatmentdirectionlist" value="{{list.id}}">
+                                                {{list.name}}
+                                                </option>
+                                                </select>*@
+                                                <span class="error">Treatment Direction</span>
+                                            </td>
+
+                                            <td>
+                                                <select class="form-select" id="{{'ecoreid'+$index}}" style="width:100px" ng-init="GetBiaxFlimCore()" disabled
+                                                        ng-model="list.coreid" ng-options="val.id as val.name for val in flimcorelist" ng-selected="vlist.id==list.coreid">
+                                                    <option value="">--Select--</option>
+                                                </select>
+                                                @* <select class="ecoreid form-select" style="width:100px" ng-model="ecoreid" ng-init="GetBiaxFlimCore()"
+                                                id="ecoreid">
+                                                <option value="">--Select--</option>
+                                                <option ng-repeat="list in flimcorelist" value="{{list.id}}">
+                                                {{list.name}}
+                                                </option>
+                                                </select>*@
+                                            </td>
+
+                                            <td><input type="text" id="{{'erealod'+$index}}" value="{{list.realod}}" style="width:60px" class="erealod form-control" disabled /></td>
+                                            <td>
+                                                <input type="text" id="{{'equantity'+$index}}" value="{{list.quantity}}" style="width:60px" class="equantity form-control" ng-keyup="EditCalculateLine($index,list.discountid)" onkeypress="return isNumber(event)" disabled />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+                                            <td>
+
+                                                <input type="text" id="{{'eunitprice'+$index}}" value="{{list.price}}" style="width:60px" class="eunitprice form-control" ng-keyup="EditCalculateLine($index,list.discountid)" onkeypress="return isNumber(event)" disabled />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+                                            <td>
+
+                                                @*<input type="text" id="{{'eofferprice'+$index}}" value="{{list.price}}" style="width:60px" class="eofferprice form-control" ng-keyup="EditCalculateLine($index,list.discountid)" onkeypress="return isNumber(event)" />
+                                                <span class="error">could not be zero</span>*@
+                                                <input type="text" id="{{'eofferprice'+$index}}" value="{{list.price}}" style="width:60px" class="eofferprice form-control" ng-keyup="EditCalculateLine($index,list.discountid)" onkeypress="return isNumber(event)" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+
+                                            @* <td style="width:100px">
+                                            <select class="form-select" id="{{'ediscountid'+$index}}" style="width:100px" ng-init="GetTreatmentDirection()"
+                                            ng-model="list.discountid" ng-options="val.id as val.disName for val in Dislist" ng-selected="vlist.id==list.discountid">
+                                            <option value="">--Select--</option>
+                                            </select>
+                                            </td>*@
+
+                                            <td>
+                                                <input type="text" id="{{'ediscountamount'+$index}}" style="width:60px" value="{{list.discount}}" class="ediscountamount form-control" ng-keyup="EditCalculateLine($index,list.discountid)" disabled />
+                                            </td>
+
+                                            <td>
+                                                <input type="text" id="{{'etotalamount'+$index}}" style="width:60px" value="{{list.totalamount}}" class="etotalamount form-control" disabled />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+                                            <td><input type="date" id="{{'edateofdelivery'+$index}}" value="{{list.disereddateofdelivery}}" class="edateofdelivery form-control" disabled /></td>
+                                            <td><input type="date" id="{{'etentativedelivery'+$index}}" value="{{list.tentativedateofdelivery}}" class="etentativedelivery form-control" disabled /></td>
+
+                                            <td>
+                                                <input type="text" id="{{'eremarks'+$index}}" style="width:100px" value="{{list.remarks}}" class="eremarks form-control" />
+                                            </td>
+                                            <td>
+                                                <input type="text" id="{{'eshortdetails'+$index}}" style="width:100px" value="{{list.descriptions}}" class="eshortdetails form-control" />
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="jute">
+                            <h4>List of Item :</h4>
+                            <table class="table" id="editmycontainer">
+                                <thead>
+                                    <tr>
+                                        <th>Sl No.</th>
+                                        <th>Item Code</th>
+                                        <th>Item Name</th>
+                                        <th>UOM</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Total Amount</th>
+                                        <th>Currency</th>
+                                        @* <th>Vat%</th>
+                                        <th>Vat Amount</th>*@
+                                        @*<th>Discount%</th>
+                                        <th>Dis. Amount</th>*@
+                                        <th style="display:none">Offer Price</th>
+                                        <th style="display:none">Confirm Price</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr ng-repeat="list in detailsbyid">
+                                        <td style="width:50px">
+                                            {{$index+1}}
+                                        </td>
+                                        <td style="display:none">
+                                            <input type="hidden" class="piscitemid form-control" value="{{list.id}}" />
+                                        </td>
+                                        <td style="width:90px">
+                                            @* <input type="text" hidden id="itemcode" class="temcode form-control" value="{{list.itemid}}" disabled /> *@
+                                            <input type="text" class="itemcode form-control" value="{{list.productcode}}" disabled />
+                                        </td>
+                                        <td style="width:350px">
+                                            <input class="name form-control" type="text" id="name" value="{{list.itemname}}" disabled>
+                                        </td>
+
+                                        <td style="width:100px">
+                                            <input type="text" id="uom" class="uom form-control" value="{{list.strUOM}}" disabled />
+                                        </td>
+
+                                        <td>
+                                            <input type="text" class="quantity form-control" value="{{list.quantity}}" disabled />
+                                        </td>
+                                        <td>
+                                            <input type="text" value="{{list.price}}" class="unitprice form-control" />
+                                        </td>
+                                       
+                                        <td>
+                                            <input type="text" value="{{list.totalamount}}" class="totalamount form-control" disabled />
+                                        </td>
+                                        <td>
+                                            <input type="text" value="{{list.currencycode}}" class="currencycode form-control" disabled />
+                                        </td>
+
+                                        <td style="display:none">
+                                            <input type="text" value="{{list.price}}" class="offerprice form-control" />
+
+                                        </td>
+                                        @*  <td>
+                                            <input type="text" class="confirmprice form-control" value="{{list.price}}" />
+                                             <input type="text" class="confirmprice form-control" value="0" style="display:none" />
+                                        </td> *@
+
+                                    </tr>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms & Condition</label>
+                                <textarea class="form-control" id="termscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description :</label>
+                                <textarea class="form-control" id="description"></textarea>
+                            </div>
+                        </div>
+
+                        @* <div class="row">
+                        <label>Attachment</label>
+                        <input id="fileInput" name="fileInput" class="form-control" type="file" multiple>
+                        </div>*@
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Save()" id="savebutton" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="EditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Price Confirmation (Edit Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-3">
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="hidden" id="etxtPISCID" />
+                                <input id="priceconfirmheaderid" type="hidden" />
+                                <table width="100%">
+                                    <tr>
+                                        <td style="width:100px;">PI/SC Search :</td>
+                                        <td><input type="text" class="form-control" ng-keyup="SearchPI()" placeholder="Search PI/SC..." id="etxtPISC" autocomplete="off" disabled /></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-sm-3">
+                            </div>
+                        </div>
+                        @*<div class="row">
+                        <div class="row mb-4">
+                        <label for="horizontal-email-input" class="col-sm-3 col-form-label">PI/SC Search :</label>
+                        <div class="col-sm-9">
+                        <input type="hidden" id="txtPISCID" />
+                        <input id="priceconfirmheaderid" type="hidden" />
+                        <input type="text" class="form-control" ng-keyup="SearchPI()" placeholder="Search PI/SC..." id="etxtPISC" autocomplete="off" disabled />
+                        <span class="error">Select Agreement.</span>
+                        </div>
+                        </div>
+                        </div>*@
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Seller Info</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Seller Info</label>
+                                                <input type="hidden" id="ehsellerid" />
+                                                <input type="text" class="form-control" id="etxtComName" disabled />
+                                                <span class="error">Seller Info Required</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label>Phone</label>
+                                                <input type="text" class="form-control" id="etxtSellerPhone" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Email</label>
+                                                <input type="text" class="form-control" id="etxtSellerEmail" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>TIN</label>
+                                                <input type="text" class="form-control" id="etxtSellerTIN" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Address</label>
+                                                <input type="text" class="form-control" id="etxtSellerAddress" disabled />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Buyer Details</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label>Buyer Name</label>
+                                                <input type="hidden" id="ehcusid" />
+                                                <input type="text" class="form-control" id="etxtBuyerName" disabled />
+
+                                                @*<input class="name form-control" type="text" id="name" placeholder="Search Item..." autocomplete="off">*@
+                                                <span class="error">Select Buyer</span>
+                                            </div>
+                                            @*<div class="col-sm-6">
+                                            <label>Buyer Bank</label>
+                                            <input type="text" class="form-control" id="etxtBuyerBank" />
+                                            </div>*@
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <label>Phone</label>
+                                                <input type="text" class="form-control" id="etxtPhone" disabled />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label>Email</label>
+                                                <input type="text" class="form-control" id="etxtEmail" disabled />
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>Address</label>
+                                                <input type="text" class="form-control" id="etxtAddress" disabled />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="editbiax">
+                            <div class="row table-responsive">
+                                <div class="col-sm-12">
+                                    <h4>List of Item</h4>
+                                    <div class="row table-responsive">
+                                        <table class="table">
+                                            <tr>
+                                                <th>Item Code</th>
+                                                <th>Item Name</th>
+                                                @*<th></th>*@
+                                                <th>UOM</th>
+
+                                                <th>Thickness (µ)</th>
+                                                <th>Width (mm)</th>
+                                                <th>Length(meter)</th>
+
+                                                <th>Treatment Lavel</th>
+                                                <th>Treatment Direction</th>
+                                                <th>Core ID</th>
+                                                <th>Real OD</th>
+                                                <th>Quantity</th>
+                                                <th>Unit Price</th>
+                                                <th>Offer Price</th>
+                                                <th>Desired Date of Delivery</th>
+                                                <th>Tentative Date of Delivery</th>
+
+                                                @* <th style="display:none">Vat%</th>
+                                                <th style="display:none">Vat Amount</th>*@
+                                                 <th>Discount%</th>
+                                                <th>Dis. Amount</th>
+                                                <th>Total Amount</th>
+                                                <th>Remarks</th>
+                                                <th>Short Details</th>
+                                                <th>Action</th>
+                                            </tr>
+
+                                            <tr ng-repeat="list in edetailsbyidbiax">
+                                                <td style="display:none">
+                                                    <input type="text" class="eid form-control" id="{{'eid'+$index}}" value="{{list.id}}"  />
+                                                    <span class="error">*</span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" hidden id="{{'eitemcode'+$index}}" value="{{list.itemid}}" class="itemcode form-control"  />
+                                                    <input type="text" style="width:90px" id="" class=" form-control" value="{{list.productcode}}"  />
+                                                    <span class="error">*</span>
+                                                </td>
+
+                                                <td style="width:300px">
+                                                    <input type="hidden" id="ehname" />
+                                                    <input class="ename form-control" style="width:300px" type="text" id="{{'ename'+$index}}" value="{{list.itemname}}" ng-keypress="SearchFGLine($index)" >
+                                                    <span class="error">Select Item</span>
+                                                </td>
+
+                                                <td>
+                                                    <select class="form-select" id="{{'euomid'+$index}}" style="width:100px" ng-init="GetFGUOM()" 
+                                                            ng-model="list.uomid" ng-options="val.id as val.name for val in fguomlist" ng-selected="vlist.id==list.uomid">
+                                                        <option value="">--Select--</option>
+                                                    </select>
+
+                                                    <span class="error">Select UOM</span>
+                                                    <span class="error">*</span>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" id="{{'ethikness'+$index}}" value="{{list.thikness}}" class="ethikness form-control"  />
+                                                    <span class="error">Thikness Required.</span>
+                                                </td>
+                                                <td><input type="text" id="{{'ewidth'+$index}}" value="{{list.ewidth}}" class="ewidth form-control"  /></td>
+                                                <td><input type="text" id="{{'elength'+$index}}" value="{{list.length}}" class="elength form-control"  /></td>
+                                                <td><input type="text" id="{{'etreatmentlevel'+$index}}" value="{{list.treatmentlevel}}" class="etreatmentlevel form-control"  /></td>
+                                                <td>
+                                                    <select class="form-select" id="{{'etreatmentdirectionid'+$index}}" style="width:100px" ng-init="GetTreatmentDirection()" 
+                                                            ng-model="list.treatmentdirectionid" ng-options="val.id as val.name for val in treatmentdirectionlist" ng-selected="vlist.id==list.treatmentdirectionid">
+                                                        <option value="">--Select--</option>
+                                                    </select>
+
+                                                    @*   <select class="etreatmentdirectionid form-select" style="width:100px" ng-model="etreatmentdirectionid" ng-init="GetTreatmentDirection()"
+                                                    id="etreatmentdirectionid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in treatmentdirectionlist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                    </option>
+                                                    </select>*@
+                                                    <span class="error">Treatment Direction</span>
+                                                </td>
+
+                                                <td>
+                                                    <select class="form-select" id="{{'ecoreid'+$index}}" style="width:100px" ng-init="GetBiaxFlimCore()" 
+                                                            ng-model="list.coreid" ng-options="val.id as val.name for val in flimcorelist" ng-selected="vlist.id==list.coreid">
+                                                        <option value="">--Select--</option>
+                                                    </select>
+                                                    @* <select class="ecoreid form-select" style="width:100px" ng-model="ecoreid" ng-init="GetBiaxFlimCore()"
+                                                    id="ecoreid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in flimcorelist" value="{{list.id}}">
+                                                    {{list.name}}
+                                                    </option>
+                                                    </select>*@
+                                                </td>
+
+                                                <td><input type="text" id="{{'erealod'+$index}}" value="{{list.realod}}" class="erealod form-control"  /></td>
+                                                <td>
+                                                    <input type="text" id="{{'equantity'+$index}}" value="{{list.quantity}}" class="equantity form-control"   />
+                                                    <span class="error">could not be zero</span>
+                                                </td>
+                                                <td>
+
+                                                    <input type="text" id="{{'eunitprice'+$index}}" value="{{list.price}}" class="eunitprice form-control"  />
+                                                    <span class="error">could not be zero</span>
+                                                </td>
+                                                <td>
+
+                                                    <input type="text" id="{{'eofferprice'+$index}}" value="{{list.offerprice}}" class="eofferprice form-control" ng-keyup="EditCalculateLine($index,list.discountid)" />
+                                                    <span class="error">could not be zero</span>
+                                                </td>
+                                                <td><input type="date" id="{{'edateofdelivery'+$index}}" value="{{list.disereddateofdelivery}}" class="edateofdelivery form-control"  /></td>
+                                                <td><input type="date" id="{{'etentativedelivery'+$index}}" value="{{list.tentativedateofdelivery}}" class="etentativedelivery form-control"  /></td>
+
+                                                <td style="width:100px">
+                                                <select class="form-select" id="{{'ediscountid'+$index}}" style="width:100px" ng-init="Dislist()" ng-change="EditCalculateLine($index,list.discountid)"
+                                                ng-model="list.discountid" ng-options="val.id as val.disName for val in Dislist" ng-selected="vlist.id==list.discountid">
+                                                <option value="">--Select--</option>
+                                                </select>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" id="{{'ediscountamount'+$index}}" value="{{list.discount}}" class="ediscountamount form-control" ng-keyup="EDITDiscountPercentageCalculate($index)"  />
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" id="{{'etotalamount'+$index}}" value="{{list.totalamount}}" class="etotalamount form-control"  />
+                                                    <span class="error">could not be zero</span>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" id="{{'eremarks'+$index}}" value="{{list.remarks}}" class="eremarks form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="{{'eshortdetails'+$index}}" value="{{list.descriptions}}" class="eshortdetails form-control" />
+                                                </td>
+                                                <td>
+                                                    <button type="button" ng-click="UpdateBiaxByLineID($index,list.id,list.uomid,list.treatmentdirectionid,list.coreid,list.discountid)" class="btn btn-info btn-sm"><i class="fas fa-arrow-circle-up"></i></button>
+                                                    @*<button ng-click="DeleteByLineID(list.id)" type="button" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>*@
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="editjute">
+                            <div class="row table-responsive">
+                                <div class="col-sm-12">
+                                    <table class="table" id="editmycontainer">
+                                        <thead>
+                                            <tr>
+                                                <th>Sl No.</th>
+                                                <th>Item Code</th>
+                                                <th>Item Name</th>
+                                                <th>UOM</th>
+                                                <th>Quantity</th>
+                                                <th>Unit Price</th>
+                                                <th>Total Amount</th>
+                                                <th>Currency</th>
+                                                @* <th>Vat%</th>
+                                                <th>Vat Amount</th>*@
+                                                @*<th>Discount%</th>
+                                                <th>Dis. Amount</th>*@
+                                                <th style="display:none">Offer Price</th>
+                                                <th style="display:none">Confirm Price</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr ng-repeat="list in edetailsbyid">
+                                                <td style="width:50px">
+                                                    {{$index+1}}
+                                                </td>
+                                                <td style="width:90px">
+                                                    <input type="text" hidden id="{{'eitemcode'+$index}}" class="eitemcode form-control" value="{{list.itemid}}" disabled />
+                                                    <input type="text" style="width:90px" id="" class=" form-control" value="{{list.itemid}}" disabled />
+                                                </td>
+                                                <td style="width:350px">
+                                                    <input class="ename form-control" type="text" id="{{'ename'+$index}}" value="{{list.itemname}}" disabled>
+                                                </td>
+
+                                                <td style="width:100px">
+                                                    <input type="text" id="{{'euom'+$index}}" class="euom form-control" value="{{list.strUoM}}" disabled />
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" id="{{'equantity'+$index}}" class="equantity form-control" value="{{list.quantity}}" disabled />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="{{'eunitprice'+$index}}" value="{{list.price}}" class="eunitprice form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="{{'etotalamount'+$index}}" value="{{list.totalamount}}" class="etotalamount form-control" disabled />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="{{'ecurrencycode'+$index}}" value="{{list.currencycode}}" class="ecurrencycode form-control" disabled />
+                                                </td>
+                                                <td style="display:none">
+                                                    <input type="text" class="eofferprice form-control" id="{{'eofferprice'+$index}}" ng-model="list.eofferprice" ng-init="list.eofferprice = list.offerprice" />
+                                                    <span class="error">Offer Price Couldn't be zero</span>
+                                                </td>
+                                                @* <td style="display:none">
+                                                    <input type="text" class="econfirmprice form-control" id="{{'econfirmprice'+$index}}" value="{{list.confirmprice}}" />
+                                                    <span class="error">Confirm Price Couldn't be zero</span>
+                                                </td> *@
+                                                <td style="width:90px">
+                                                    <button type="button" ng-click="UpdateJuteByLineID($index,list.id,list.eofferprice)" class="btn btn-info btn-sm"><i class="fas fa-arrow-circle-up"></i></button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label>Terms & Condition</label>
+                                <textarea class="form-control" id="etermscon"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description :</label>
+                                <textarea class="form-control" id="edescription"></textarea>
+                            </div>
+                        </div>
+
+                        @*<div class="row">
+                        <label>Attachment</label>
+                        <input id="fileInput" name="fileInput" class="form-control" type="file" multiple>
+                        </div>*@
+                        <div class="modal-footer">
+                            <button type="button" ng-click="Clear()" class="btn btn-warning" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Update()" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ViewEditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Price Confirmation (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>Price Confirmation</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id="tblview" ng-repeat="list in masterdata" class="table table-bordered" style="font-weight:bold">
+                                            <tr>
+                                                <td style="text-align:right">Price Confirm Number :</td>
+                                                <td style="text-align:left">{{list.pcnumber}}</td>
+                                                <td style="text-align:right">Number :</td>
+                                                <td style="text-align:left">{{list.sqnumber}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:right">Agreement Type :</td>
+                                                <td style="text-align:left">{{list.agreementtype}}</td>
+                                                <td style="text-align:right">Customer Name :</td>
+                                                <td style="text-align:left">{{list.cusname}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:right">Seller Name :</td>
+                                                <td style="text-align:left">{{list.sellername}}</td>
+                                                <td style="text-align:right">Currency :</td>
+                                                <td style="text-align:left">{{list.currency}}</td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="juteview">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h4>List of Item's</h4>
+                                    <table id="tblinfo" class="table table-responsive">
+                                        <tr>
+                                            <th style="display:none;">ID</th>
+                                            <th>Sl No</th>
+                                            <th ng-click='sortBy("itemid")'>
+                                                Item ID
+                                                <span ng-show="sortColumn=='itemid'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("itemname")'>
+                                                Item Name
+                                                <span ng-show="sortColumn=='itemname'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("quantity")'>
+                                                Quantity
+                                                <span ng-show="sortColumn=='quantity'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("price")'>
+                                                Unit Price
+                                                <span ng-show="sortColumn=='price'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("totalamount")'>
+                                                Total Amount
+                                                <span ng-show="sortColumn=='totalamount'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th ng-click='sortBy("currencycode")'>
+                                                Currency
+                                                <span ng-show="sortColumn=='currencycode'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            <th style="display:none" ng-click='sortBy("offerprice")'>
+                                                Offer Price
+                                                <span ng-show="sortColumn=='offerprice'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th>
+                                            @* <th ng-click='sortBy("confirmprice")'>
+                                                Confirm Price
+                                                <span ng-show="sortColumn=='confirmprice'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                            </th> *@
+                                        </tr>
+
+                                        <tr ng-repeat="list in pclistdetails">
+                                            <td style="display:none;">{{list.id}}</td>
+                                            <td>{{$index+1}}</td>
+                                            <td>{{list.itemid}}</td>
+                                            <td>{{list.itemname}}</td>
+                                            <td>{{list.quantity}}</td>
+                                            <td>{{list.price}}</td>
+                                            <td>{{list.totalamount}}</td>
+                                            <td>{{list.currencycode}}</td>
+                                            <td style="display:none">{{list.offerprice}}</td>
+                                            @* <td>{{list.confirmprice}}</td> *@
+                                        <tr />
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="biaxview">
+                            <div class="row table-responsive">
+                                <div class="col-sm-12">
+                                    <h4>List of Item's</h4>
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td style="display:none">ID</td>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            <th style="display:none">UOMID</th>
+                                            <th>UOM</th>
+
+                                            <th>Thickness (µ)</th>
+                                            <th>Width (mm)</th>
+                                            <th>Length(meter)</th>
+
+                                            <th>Treatment Lavel</th>
+                                            <th style="display:none">Treatment Direction ID</th>
+                                            <th>Treatment Direction</th>
+                                            <th style="display:none">Core ID</th>
+                                            <th>Core</th>
+                                            <th>Real OD</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Offer Price</th>
+                                            <th>Confirm Price</th>
+                                            <th style="display:none">Discount%</th>
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Desired Date of Delivery</th>
+                                            <th>Tentative Date of Delivery</th>
+
+
+                                            <th>Remarks</th>
+                                            <th>Short Details</th>
+
+                                        </tr>
+
+                                        <tr class="mycontainer" id="mainrow" ng-repeat="list in viewdetailsbyid">
+                                            <td style="display:none">{{list.id}}</td>
+                                            <td>{{list.productcode}}</td>
+                                            <td>{{list.itemname}}</td>
+                                            <td style="display:none">{{list.uomid}}</td>
+                                            <td>{{list.uom}}</td>
+                                            <td>{{list.thikness}}</td>
+                                            <td>{{list.width}}</td>
+                                            <td>{{list.length}}</td>
+                                            <td>{{list.treatmentlevel}}</td>
+                                            <td style="display:none">{{list.treatmentdirectionid}}</td>
+                                            <td>{{list.treatmentdirection}}</td>
+                                            <td style="display:none">{{list.coreid}}</td>
+                                            <td>{{list.corename}}</td>
+                                            <td>{{list.realod}}</td>
+                                            <td>{{list.quantity}}</td>
+                                            <td>{{list.price}}</td>
+                                            <td>{{list.offerprice}}</td>
+                                            <td>{{list.confirmprice}}</td>
+                                            <td style="display:none">{{list.discountid}}</td>
+                                            <td>{{list.discount}}</td>
+                                            <td>{{list.totalamount}}</td>
+                                            <td>{{list.disereddateofdelivery}}</td>
+                                            <td>{{list.tentativedateofdelivery}}</td>
+                                            <td>{{list.remarks}}</td>
+                                            <td>{{list.description}}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <br />
+
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+        <div id="PrintexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="PrintexampleModalFullscreenLabel" aria-hidden="true">
+
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @*   <button type="button" class="btn btn-soft-primary btn-sm print" ng-click="PrintDoc()"><i class="fas fa-times-circle"></i></button> *@
+
+                        <button type="button" class="btn btn-soft-primary btn-sm print" data-bs-toggle="modal" ng-click="PrintDoc()">
+                            <span class="fas fa-print "></span>
+                        </button>
+
+
+                        <button type="button" class="btn btn-soft-danger btn-sm print ms-2" data-bs-toggle="modal" ng-click="PrintReport()">
+                            <span class="fas fa-file-excel"></span>
+                        </button>
+
+               
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="printThis">
+                        <form class="needs-validation" novalidate>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <img src="~/assets/images/brand/91.png" height="90px;width:130px;" />
+                                </div>
+                                <div class="col-sm-6">
+                                </div>
+                            </div>
+                            <div class="row" style="border:1px solid;font-size:6px;">
+                                <div class="col-sm-6">
+                                    <div class=row>
+                                        <div class="col-sm-6" style="background:lightgray;text-align:left;">
+                                            <h5>PRICE</h5>
+                                            <h6>Approval</h6>
+                                        </div>
+                                        <div class="col-sm-6">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-6">
+                                    @*     <div class="row">
+                                 <div class="col-sm-6"></div>
+
+                             </div> *@
+
+
+                                    @*   <br /> *@
+                                    <div class="row" style="font-size:9px;">
+                                        <div class="col-sm-6"></div>
+                                        <div class="col-sm-6" style="text-align:right">
+
+                                            <div class="row" style="text-align:right">
+                                                <div class="col-sm-6" style="text-align:left;font-weight:bolder;color:black;"><label>Date</label></div>
+                                                <div class="col-sm-6" style="text-align:right;font-weight:bolder;color:black;"><label id="date"></label></div>
+                                            </div>
+
+
+
+                                            <div class="row" style="text-align:right">
+                                                <div class="col-sm-6" style="text-align:left;font-weight:bolder;color:black;"><label>Expiration Date</label></div>
+                                                <div class="col-sm-6" style="text-align:right;font-weight:bolder;color:black;"><label id="expdate"></label></div>
+                                            </div>
+
+                                            <div class="row" style="text-align:right">
+                                                <div class="col-sm-6" style="text-align:left;font-weight:bolder;color:black;"><label>Reference Number</label></div>
+                                                <div class="col-sm-6" style="text-align:right;font-weight:bolder;color:black;"><label id="RefNumber"></label></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*  <br /> *@
+                                </div>
+
+                                <div>
+                                    <table id="print" style="width:100%;font-size:8px;">
+                                        @*   <h6>
+                                     <label>Name : </label>
+                                     <label id="cusname"></label>
+                                     <br />
+
+                                        <label>product : </label>
+                                         <label id="producthscode"></label>
+                                     <br />
+
+                                       <label>HS Code : </label>
+                                       <label id="hscode"></label>
+                                     <br />
+
+</h6> *@
+
+                                        <div style="font-size:12px; height:10px;font-weight:bolder;color:black;">
+                                            <label>Name : </label>
+                                            <label id="cusname"></label>
+                                        </div>
+
+                                 
+                                        <thead>
+                                            <tr style="background-color:lightgray;font-weight:bold;font-size:9px; text-align:center;border:1px solid lightgray">
+                                                <th style="font-weight:bolder;color:black;">Product code</th>
+                                                <th style="font-weight:bolder;color:black;">Product Name</th>
+                                                <th style="font-weight:bolder;color:black;">Thickness (μ)</th>
+                                                <th style="font-weight:bolder;color:black;">Length</th>
+                                                <th id="qtyHeader" style="font-weight:bolder;color:black;">quantity(uom)</th>
+                                                <th style="font-weight:bolder;color:black;">Previous Base Price</th>
+                                                <th style="font-weight:bolder;color:black;">Proposed Base Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="price in lineprint track by $index">
+                                                <td style="text-align:left;border:1px solid lightgray;font-weight:bolder;display:none;;color:black;">{{price.id}}</td>
+                                                <td style="text-align:center;border:1px solid lightgray;font-weight:bolder;;color:black;">{{price.productcode}}</td>
+                                                <td style="text-align:left;border:1px solid lightgray;font-weight:bolder;;color:black;">{{price.productname}}</td>
+                                                <td style="text-align:right;border:1px solid lightgray;font-weight:bolder;;color:black;">{{price.thikness}}</td>
+                                                <td style="text-align:right;border:1px solid lightgray;font-weight:bolder;;color:black;">{{price.width}}</td>
+                                                <td style="text-align:right;border:1px solid lightgray;font-weight:bolder;;color:black;">{{price.quantity}}</td>
+                                                <td style="text-align:right;border:1px solid lightgray;font-weight:bolder;;color:black;">{{price.previousbasedprice}}</td>
+                                                <td style="text-align:right;border:1px solid lightgray;font-weight:bolder;;color:black;">{{price.proposedbaseprice}}</td>
+                                            </tr>
+                                        </tbody>
+
+                                        <br />
+                                        <br />
+                                        <br />
+
+                                    </table>
+
+
+                            
+                                 
+                                    <div class="row">
+                                        <div class="col-sm-5" style="margin-top:12px;">
+                                            <h6>Payment Terms: <span id="paymentTerms"></span></h6>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h6 style="font-size:16px;margin-top:8px;color:black;">Terms and Condition</h6>
+                                        <td><h6 style="text-align:left;color:black;margin-top:8px;" id="terms"></h6></td>
+                                    </div>
+                                </div>
+
+                         
+
+
+
+                                @*  <hr /> *@
+                                <div class="row">
+                                    @*   <div class="col-sm-6">
+                                 <h6 style="font-size:9px;">Accepted by buyer</h6>
+                             </div>
+                             <div class="col-sm-6">
+                                 <h6 style="text-align:right;font-size:9px;">Akij BIAX Films Ltd.</h6>
+                             </div> *@
+
+                                    @* <div class="col-sm-3">
+                                 <div style="margin-left:20px; margin-top:300px;">
+                                     <h6 style="font-size:9px;text-align:left;">
+                                         <hr style="width:100px;" />
+                                         <span>Attn Person</span><br />
+                                         <span>Executive, S & M</span><br />
+                                         <span>ABFL</span>
+                                     </h6>
+                                 </div>
+                             </div>
+                             <div class="col-sm-3">
+                                 <div style="margin-left:20px;margin-top:300px;">
+                                     <h6 style="text-align:right;font-size:9px;text-align:left;">
+                                         <hr style="width:100px;" />
+                                         <span>Checked by :</span><br />
+                                         <span>Asst. Manager, S & M</span><br />
+                                         <span>ABFL</span>
+                                     </h6>
+                                 </div>
+
+</div>
+
+                             <div class="col-sm-3">
+                                 <div style="margin-left:20px;margin-top:300px;">
+                                     <h6 style="text-align:right;font-size:9px;text-align:left;">
+                                         <hr style="width:100px;" />
+                                         <span>Proposed by :</span><br />
+                                         <span>Assistant General Manager, S & M </span><br />
+                                         <span>ABFL</span>
+                                     </h6>
+                                 </div>
+
+</div>
+
+                             <div class="col-sm-3">
+                                 <div style="margin-left:20px; margin-top:300px;">
+                                     <h6 style="text-align:right;font-size:9px;text-align:left;">
+                                         <hr style="width:100px;" />
+                                         <span>Approved by :</span><br />
+                                         <span>Chief Operating Officer</span><br />
+                                         <span>ABFL</span>
+                                     </h6>
+                                 </div>
+
+</div> *@
+
+
+                                    <div style="display:flex; width:100%;">
+
+                                        <div style="width:22%;">
+                                            <div style="margin-left:20px; margin-top:300px;">
+                                                <h6 style="font-size:9px;text-align:left;">
+                                                    <hr style="width:110px;" />
+                                                    <span>Attn Person</span><br />
+                                                    <span>Executive, S & M</span><br />
+                                                    <span>ABFL</span>
+                                                </h6>
+                                            </div>
+                                        </div>
+
+                                        <div style="width:22%;">
+                                            <div style="margin-left:20px;margin-top:300px;">
+                                                <h6 style="font-size:9px;text-align:left;">
+                                                    <hr style="width:110px;" />
+                                                    <span>Checked by :</span><br />
+                                                    <span>Asst. Manager, S & M</span><br />
+                                                    <span>ABFL</span>
+                                                </h6>
+                                            </div>
+                                        </div>
+
+                                        <div style="width:22%;">
+                                            <div style="margin-left:20px;margin-top:300px;">
+                                                <h6 style="font-size:9px;text-align:left;">
+                                                    <hr style="width:110px;" />
+                                                    <span>Proposed by :</span><br />
+                                                    <span style="white-space:nowrap;">Assistant General Manager, S & M </span><br />
+                                                    <span>ABFL</span>
+                                                </h6>
+                                            </div>
+                                        </div>
+
+                                        <div style="width:22%;">
+                                            <div style="margin-left:65px;margin-top:300px;">
+                                                <h6 style="font-size:9px;text-align:left;">
+                                                    <hr style="width:110px;" />
+                                                    <span>Approved by :</span><br />
+                                                    <span style="white-space:nowrap;">Senior General Manager, S & M</span><br />
+                                                    <span>ABFL</span>
+                                                </h6>
+                                            </div>
+                                        </div>
+
+                                        @* <div style="width:22%;">
+                                            <div style="margin-left:20px; margin-top:300px;">
+                                                <h6 style="font-size:9px;text-align:left;">
+                                                    <hr style="width:100px;" />
+                                                    <span>Approved by :</span><br />
+                                                    <span>Chief Operating Officer</span><br />
+                                                    <span>ABFL</span>
+                                                </h6>
+                                            </div>
+                                        </div> *@
+
+                                    </div>
+
+
+
+
+
+                                </div>
+
+                                @*    <br /><br /><br /> *@
+                                @*   <div class="row" style="margin-top:40px;">
+                             <div class="col-sm-6">
+                                 <h6 style="font-size:9px;">(Authorised signatory)</h6>
+                             </div>
+                             <div class="col-sm-6">
+                                 <h6 style="text-align:right;font-size:9px;">(Authorised signatory)</h6>
+                             </div>
+                         </div> *@
+                                @*   <br /> *@
+                            </div>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            @*    <br />
+                     <br />
+                     <br />
+                     <br /> *@
+
+                            @* <pre>
+                      
+
+                     <div class="row">
+
+                         <div class="col-sm-3" style="width:50px;margin-left">
+                             <img src="~/assets/images/brand/favicon.ico" width="30px" />
+                         </div>
+                         <div class="col-sm-7">
+                             <h6>PART OF ----------</h6>
+                             <h5>AKIJBASHIR</h5>
+                         </div>
+                     </div> *@
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        @*  // Alternative for no blank second page
+        <div id="PrintexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="PrintexampleModalFullscreenLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn btn-soft-primary btn-sm print" data-bs-toggle="modal" ng-click="PrintDoc()">
+                            <span class="fas fa-print"></span>
+                        </button>
+                        <button type="button" class="btn btn-soft-danger btn-sm print ms-2" data-bs-toggle="modal" ng-click="PrintReport()">
+                            <span class="fas fa-file-excel"></span>
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body" id="printThis">
+                        <form class="needs-validation" novalidate>
+                            <!-- Header Logo -->
+                            <div class="row mb-2">
+                                <div class="col-sm-6">
+                                    <img src="~/assets/images/brand/91.png" style="height:90px; width:130px;" />
+                                </div>
+                                <div class="col-sm-6"></div>
+                            </div>
+
+                            <!-- Outer Document Box -->
+                            <div class="row" style="border:1px solid black; font-size:9px; padding: 10px;">
+                                <!-- Document Header Details -->
+                                <div class="col-sm-6">
+                                    <div class="row">
+                                        <div class="col-sm-6" style="background:lightgray; text-align:left; padding: 5px;">
+                                            <h5 style="margin:0;">PRICE</h5>
+                                            <h6 style="margin:0;">Approval</h6>
+                                        </div>
+                                        <div class="col-sm-6"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="row" style="font-size:9px;">
+                                        <div class="col-sm-6"></div>
+                                        <div class="col-sm-6" style="text-align:right">
+                                            <div class="row">
+                                                <div class="col-sm-6" style="text-align:left; font-weight:bolder; color:black;"><label>Date</label></div>
+                                                <div class="col-sm-6" style="text-align:right; font-weight:bolder; color:black;"><label id="date"></label></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-6" style="text-align:left; font-weight:bolder; color:black;"><label>Expiration Date</label></div>
+                                                <div class="col-sm-6" style="text-align:right; font-weight:bolder; color:black;"><label id="expdate"></label></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-6" style="text-align:left; font-weight:bolder; color:black;"><label>Reference Number</label></div>
+                                                <div class="col-sm-6" style="text-align:right; font-weight:bolder; color:black;"><label id="RefNumber"></label></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Data Table Container -->
+                                <div class="col-sm-12 mt-2">
+                                    <div style="font-size:12px; font-weight:bolder; color:black; margin-bottom: 5px;">
+                                        <label>Name : </label>
+                                        <label id="cusname"></label>
+                                    </div>
+
+                                    <table id="print" style="width:100%; font-size:8px; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background-color:lightgray; font-weight:bold; font-size:9px; text-align:center; border:1px solid lightgray">
+                                                <th style="font-weight:bolder; color:black; padding: 4px;">Product code</th>
+                                                <th style="font-weight:bolder; color:black; padding: 4px;">Product Name</th>
+                                                <th style="font-weight:bolder; color:black; padding: 4px;">Thickness (μ)</th>
+                                                <th style="font-weight:bolder; color:black; padding: 4px;">Length</th>
+                                                <th id="qtyHeader" style="font-weight:bolder; color:black; padding: 4px;">quantity(uom)</th>
+                                                <th style="font-weight:bolder; color:black; padding: 4px;">Previous Base Price</th>
+                                                <th style="font-weight:bolder; color:black; padding: 4px;">Proposed Base Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="price in lineprint track by $index">
+                                                <td style="text-align:left; border:1px solid lightgray; font-weight:bolder; display:none; color:black;">{{price.id}}</td>
+                                                <td style="text-align:center; border:1px solid lightgray; font-weight:bolder; color:black; padding: 3px;">{{price.productcode}}</td>
+                                                <td style="text-align:left; border:1px solid lightgray; font-weight:bolder; color:black; padding: 3px;">{{price.productname}}</td>
+                                                <td style="text-align:right; border:1px solid lightgray; font-weight:bolder; color:black; padding: 3px;">{{price.thikness}}</td>
+                                                <td style="text-align:right; border:1px solid lightgray; font-weight:bolder; color:black; padding: 3px;">{{price.width}}</td>
+                                                <td style="text-align:right; border:1px solid lightgray; font-weight:bolder; color:black; padding: 3px;">{{price.quantity}}</td>
+                                                <td style="text-align:right; border:1px solid lightgray; font-weight:bolder; color:black; padding: 3px;">{{price.previousbasedprice}}</td>
+                                                <td style="text-align:right; border:1px solid lightgray; font-weight:bolder; color:black; padding: 3px;">{{price.proposedbaseprice}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Payment Terms Section -->
+                                <div class="col-sm-12 mt-2">
+                                    <h6>Payment Terms: <span id="paymentTerms"></span></h6>
+                                </div>
+
+                                <!-- Terms & Conditions Section -->
+                                <div class="col-sm-12 mt-1">
+                                    <h6 style="font-size:12px; margin-top:4px; color:black; font-weight:bold;">Terms and Condition</h6>
+                                    <h6 style="text-align:left; color:black; margin-top:2px; font-weight:normal;" id="terms"></h6>
+                                </div>
+
+                                <!-- Equal Space Signature Blocks (18% x 5 = 90%, spaced evenly across 100%) -->
+                                <div class="col-sm-12" style="margin-top: 50px;">
+                                    <div style="display:flex; width:100%; justify-content: space-between; align-items: flex-end;">
+
+                                        <div style="width:18%;">
+                                            <h6 style="font-size:9px; text-align:left; margin:0;">
+                                                <hr style="width:100%; margin-bottom:4px;" />
+                                                <span>Attn Person</span><br />
+                                                <span>Executive, S & M</span><br />
+                                                <span>ABFL</span>
+                                            </h6>
+                                        </div>
+
+                                        <div style="width:18%;">
+                                            <h6 style="font-size:9px; text-align:left; margin:0;">
+                                                <hr style="width:100%; margin-bottom:4px;" />
+                                                <span>Checked by :</span><br />
+                                                <span>Asst. Manager, S & M</span><br />
+                                                <span>ABFL</span>
+                                            </h6>
+                                        </div>
+
+                                        <div style="width:18%;">
+                                            <h6 style="font-size:9px; text-align:left; margin:0;">
+                                                <hr style="width:100%; margin-bottom:4px;" />
+                                                <span>Proposed by :</span><br />
+                                                <span style="white-space:nowrap;">Assistant General Manager, S & M</span><br />
+                                                <span>ABFL</span>
+                                            </h6>
+                                        </div>
+
+                                        <div style="width:18%;">
+                                            <h6 style="font-size:9px; text-align:left; margin:0;">
+                                                <hr style="width:100%; margin-bottom:4px;" />
+                                                <span>Reviewed by :</span><br />
+                                                <span style="white-space:nowrap;">Senior General Manager, S & M</span><br />
+                                                <span>ABFL</span>
+                                            </h6>
+                                        </div>
+
+                                        <div style="width:18%;">
+                                            <h6 style="font-size:9px; text-align:left; margin:0;">
+                                                <hr style="width:100%; margin-bottom:4px;" />
+                                                <span>Approved by :</span><br />
+                                                <span>Chief Operating Officer</span><br />
+                                                <span>ABFL</span>
+                                            </h6>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+

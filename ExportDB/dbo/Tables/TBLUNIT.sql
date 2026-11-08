@@ -1,0 +1,19 @@
+﻿CREATE TABLE [dbo].[TBLUNIT] (
+    [ID]               INT            IDENTITY (1, 1) NOT NULL,
+    [ORGANIZATIONID]   INT            NOT NULL,
+    [CODE]             NVARCHAR (50)  NULL,
+    [NAME]             NVARCHAR (50)  NOT NULL,
+    [PRESENTADDRESS]   NVARCHAR (500) NOT NULL,
+    [PARMANENTADDRESS] NVARCHAR (500) NULL,
+    [EMAILID]          NVARCHAR (50)  NULL,
+    [MOBILE]           NVARCHAR (50)  NOT NULL,
+    [BIN]              NVARCHAR (50)  NOT NULL,
+    [TIN]              NVARCHAR (50)  NOT NULL,
+    [ISACTIVE]         BIT            NOT NULL,
+    [CREATEDBY]        NVARCHAR (50)  NOT NULL,
+    [CREATEDDATE]      DATETIME       NOT NULL,
+    [UPDATEDBY]        NVARCHAR (50)  NOT NULL,
+    [UPDATEDDATE]      DATETIME       NOT NULL,
+    CONSTRAINT [PK_TBLUNIT] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

@@ -1,0 +1,3 @@
+﻿CREATE TYPE [dbo].[TYPESQIDLINE] AS TABLE (
+    [ID] INT NULL);
+

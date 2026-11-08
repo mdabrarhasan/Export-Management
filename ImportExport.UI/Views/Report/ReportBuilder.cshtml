@@ -1,0 +1,69 @@
+﻿@*  <script src="/CustomJS/Report/Report.js"></script>  *@
+<link href="~/assets/css/app.min.css" rel="stylesheet" />
+<link href="~/assets/css/angucomplete-alt.css" rel="stylesheet" />
+<link href="~/assets/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/assets/css/choices.min.css" rel="stylesheet" />
+<link href="~/assets/css/classic.min.css" rel="stylesheet" />
+<link href="~/assets/css/icons.min.css" rel="stylesheet" />
+<link href="~/assets/css/flatpickr.min.css" rel="stylesheet" />
+<link href="~/assets/css/jquery-ui.css" rel="stylesheet" />
+<link href="~/assets/css/monolith.min.css" rel="stylesheet" />
+<link href="~/assets/css/nano.min.css" rel="stylesheet" />
+<link href="~/assets/css/notify.css" rel="stylesheet" />
+<link href="~/assets/css/notify.min.css" rel="stylesheet" />
+
+
+
+
+<div ng-app="App" ng-controller="Ctl">
+
+    @* <div ng-app="App" ng-controller="Ctl1" ng-init="">
+        <h1>Report Viewer</h1>
+
+        <iframe ng-src="{{iframeUrl}}" width="100%" height="600px" class="border rounded"></iframe> *@
+
+
+    <h1>Report Viewer</h1>
+    <iframe ng-src="{{iframeUrl}}" width="100%" height="1000px" class="border rounded"></iframe>
+</div>
+
+<script>
+    var app = angular.module('App', []);
+    app.controller('Ctl', ['$scope', '$sce', function ($scope, $sce) {
+        // Retrieve URLs from the model and encode them for safe use in the URL
+        var motherUrl = '@Model.MOTHERURL';
+        var folderUrl ='@Model.FOLDERURL';
+        var otherUrl = '@Model.OTHERURL';
+
+        // Username and password for the report server (encoded for URL use)
+        var username = 'Dummy_String';
+        var password = 'Dummy_String';
+
+        // Construct the proxy URL, embedding the credentials and other URL parameters
+        $scope.iframeUrl = $sce.trustAsResourceUrl('/proxy?motherUrl=' + encodeURIComponent(motherUrl) +
+            '&folderUrl=' + encodeURIComponent(folderUrl) +
+            '&otherUrl=' + encodeURIComponent(otherUrl) + 
+            '&Log In Name=' + encodeURIComponent(username) +
+            '&Password=' + encodeURIComponent(password));
+
+        // Set the iframe URL with the trusted, encoded proxy URL
+     //   $scope.iframeUrl = $sce.trustAsResourceUrl(proxyUrl);
+    }]);
+</script>
+
+
+
+@* <script>
+    var app = angular.module('App', []);
+    app.controller('Ctl', ['$scope', '$sce', function ($scope, $sce) {
+        // Retrieve URLs from the model
+        var motherUrl = '@Model.MOTHERURL';
+        var folderUrl = '@Model.FOLDERURL';
+        var otherUrl = '@Model.OTHERURL';
+
+        // Create the proxy URL with separate parameters
+        $scope.iframeUrl = $sce.trustAsResourceUrl('/proxy?motherUrl=' + encodeURIComponent(motherUrl) +
+                                                     '&folderUrl=' + encodeURIComponent(folderUrl) +
+                                                     '&otherUrl=' + encodeURIComponent(otherUrl));
+    }]);
+</script> *@

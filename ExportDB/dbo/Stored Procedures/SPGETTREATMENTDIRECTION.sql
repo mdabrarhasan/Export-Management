@@ -1,0 +1,8 @@
+﻿CREATE PROCEDURE SPGETTREATMENTDIRECTION
+(
+@UNITID				INT
+)
+AS
+BEGIN
+SELECT intTreatmentDirection AS ID,strTreatmentDirection AS NAME FROM ERP_SAD.DBO.tblTreatmentDirection
+END;

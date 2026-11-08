@@ -1,0 +1,87 @@
+﻿<script src="~/customjs/pilanding.js"></script>
+
+<div ng-app="PIApp" ng-controller="PICTL" ng-init="GetPIData()">
+    <div ng-show="loading">
+        <img style="width:100%;height:100%;position:absolute;z-index:1;" src="~/assets/images/loading01.gif">
+    </div>
+    <div class="row">
+       
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="margin-top:7px;color:black;font-family:'Bell MT'">Agreement Landing Info</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2" data-bs-toggle="modal" data-bs-target=".create-task"><i class="mdi mdi-plus me-1"></i> Add New</button>
+                        </div>
+                        <div class="col-sm-5">
+                            <select class="vatid form-control" ng-model="statusid" ng-init="StatusList()" ng-change="SQList()"
+                                    id="vatid">
+                                <option value="">--Select--</option>
+                                <option ng-repeat="list in statuslist" value="{{list.code}}">
+                                    {{list.name}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" ng-model="search" class="form-control" placeholder="Search.." />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table id="tblinfo" class="table table-responsive">
+                            <tr>
+                                <th style="display:none;">ID</th>
+                                <th ng-click='sortBy("piNumber")'>PI Number
+                                    <span ng-show="sortColumn=='piNumber'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+                                <th ng-click='sortBy("customerName")'>Customer
+                                    <span ng-show="sortColumn=='customerName'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+
+                                <th>Currency</th>
+                                <th ng-click='sortBy("piDate")'>
+                                    Created Date
+                                    <span ng-show="sortColumn=='piDate'" ng-class="{'fa fa-angle-double-down' : !reverse, 'fa fa-angle-double-up' : reverse}"></span>
+                                </th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            <tr dir-paginate="list in PIlist | orderBy: sortColumn : reverse | filter:search | itemsPerPage:8">
+
+                                <td style="display:none;">{{list.id}}</td>
+                                <td>{{list.piNumber}}</td>
+                                <td>{{list.customerName}}</td>
+                                <td>{{list.currencyName}}</td>
+                                <td>{{list.piDate}}</td>
+                                <td>
+                                    <span class="badge rounded-pill badge-soft-primary font-size-11"  ng-if='list.docName=="Pending"'>{{list.docName}}</span>
+                                    <span class="badge rounded-pill badge-soft-success font-size-11"  ng-if='list.docName=="Approved"'>{{list.docName}}</span>
+                                    <span class="badge rounded-pill badge-soft-danger font-size-11"   ng-if='list.docName=="Rejected"'>{{list.docName}}</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" ng-click="GetEmployeeByID(emplist.ID)"><span class="fa fa-edit"></span></button>
+                                    <button type="button" class="btn btn-danger btn-sm" ng-click="Delete(emplist.ID)"><span class="fa fa-trash"></span></button>
+                                    <button type="button" class="btn btn-soft-primary btn-sm" ng-click="Delete(emplist.ID)"><span class="fa fa-print"></span></button>
+                                </td>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-9">
+                            @*<span>Showing Result Out of {{PIlist.length}}</span>*@
+
+                        </div>
+                        <div class="col-sm-3">
+                            <dir-pagination-controls max-size="10" style="font-size:16px;"
+                                                     direction-links="true"
+                                                     boundary-links="true">
+                            </dir-pagination-controls>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

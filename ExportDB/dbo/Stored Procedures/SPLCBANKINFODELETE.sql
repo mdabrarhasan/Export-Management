@@ -1,0 +1,11 @@
+﻿CREATE PROCEDURE [dbo].[SPLCBANKINFODELETE]
+(
+    @ID     INT,
+    @Msg    VARCHAR(100) OUTPUT
+)
+AS
+BEGIN
+    UPDATE TBLLCBANKINFO
+    SET ISACTIVE = 0 WHERE ID = @ID
+    SET @Msg = 'Data Deleted Successfully.'
+END

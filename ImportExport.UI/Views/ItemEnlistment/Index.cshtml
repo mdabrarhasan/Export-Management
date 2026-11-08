@@ -1,0 +1,309 @@
+﻿<script src="~/CustomJS/ItemEnlistment/ItemEnlistment.js"></script>
+<div ng-app="App" ng-controller="Ctl" ng-init="LoadData()">
+    <div ng-show="loading">
+        <img style="width:70%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Item Enlistment</h4>
+                </div>
+
+                <div class="card-body" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+
+                    <!-- Top Bar -->
+                    <div class="row align-items-center mb-3">
+                        <div class="col-md-6 ms-auto">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search Item...">
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Insert Section -->
+                    <div class="row mb-4">
+                        <div class="col-sm-12">
+                            <div class="d-flex align-items-end gap-3" style="flex-wrap:nowrap;">
+
+                                <div style="flex:1 1 0; min-width:0;">
+                                    <label>Seller Unit</label>
+                                    <select class="form-control"
+                                            ng-model="SelectedUnit"
+                                            ng-change="onUnitChange()"
+                                            ng-options="u.value as u.text for u in SellerUnits">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+
+                                @* <div style="flex:1 1 0; min-width:0;">
+                                    <label>Item Type</label>
+                                    <select class="form-control"
+                                            ng-model="SelectedType"
+                                            ng-options="t.value as t.text for t in ItemTypes">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div> *@
+
+                                <!-- Item Type: add ng-change -->
+                                <div style="flex:1 1 0; min-width:0;">
+                                    <label>Item Type</label>
+                                    <select class="form-control"
+                                            ng-model="SelectedType"
+                                            ng-change="onTypeChange()"
+                                            ng-options="t.value as t.text for t in ItemTypes">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+
+                                <!-- NEW: Category (enabled only for Weaving) -->
+                                <div style="flex:1 1 0; min-width:0;">
+                                    <label>Category</label>
+                                    <select class="form-control"
+                                            ng-model="SelectedCategory"
+                                            ng-disabled="!isWeaving()"
+                                            ng-options="c.value as c.text for c in ProductCategories">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+
+                                <div style="flex:1 1 0; min-width:0; position:relative;">
+                                    <label>Item Name</label>
+                                    <input type="text"
+                                           maxlength="200"
+                                           id="txtName"
+                                           class="form-control"
+                                           ng-model="inputName"
+                                           placeholder="Enter Item Name" />
+                                    <span class="error"
+                                          style="visibility:hidden; position:absolute; left:0; top:100%;">Item Name Required</span>
+                                </div>
+
+                                <div style="flex:0 0 auto;">
+                                    <label>&nbsp;</label>
+                                    <button ng-click="Save()"
+                                            id="savebutton"
+                                            class="btn btn-success btn-sm d-block"
+                                            ng-disabled="!SelectedUnit || !SelectedType || !inputName">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table id="tblinfo" class="table table-bordered table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Seller Unit</th>
+                                            <th>Item Type</th>
+                                            <th>Item Name</th>
+                                            <th style="width:140px; text-align:center;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr dir-paginate="list in ItemList | filter:search | itemsPerPage: pageSize"
+                                            current-page="currentPage">
+                                            <td>{{list.unitname}}</td>
+                                            <td>{{list.itemtypename}}</td>
+                                            <td>{{list.productname}}</td>
+                                            <td class="text-center">
+                                                <button type="button"
+                                                        class="btn btn-info btn-sm"
+                                                        ng-click="Edit(list)"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editItemModal">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm"
+                                                        ng-click="DeleteRate(list.id)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-init="currentPage=1; pageSize=10"></div>
+
+                    <style>
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 6px;
+                            padding-left: 0;
+                            margin-top: 20px;
+                        }
+
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            dir-pagination-controls li a {
+                                display: inline-block;
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                font-weight: 500;
+                                border: 1px solid transparent;
+                                transition: all 0.25s ease;
+                            }
+
+                                dir-pagination-controls li a:hover {
+                                    background: #e7f1ff;
+                                    border-color: #0d6efd;
+                                    text-decoration: none;
+                                }
+
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                                border-color: #0d6efd;
+                                box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
+                            }
+
+                            dir-pagination-controls li.disabled a {
+                                background: #e9ecef;
+                                color: #adb5bd;
+                                cursor: not-allowed;
+                            }
+
+                            dir-pagination-controls li a:active {
+                                transform: scale(0.95);
+                            }
+                    </style>
+
+                    <!-- Bottom Bar -->
+                    <div class="row mt-2 align-items-center">
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; color:#444; letter-spacing:0.3px; opacity:0.75;">
+                                Total Records:
+                                <span style="color:#444; font-weight:700;">
+                                    {{ (ItemList | filter:search).length }}
+                                </span>
+                            </span>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <dir-pagination-controls direction-links="true"
+                                                     max-size="10"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+                        </div>
+                        <div class="col-md-4"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal (fully Angular) -->
+    <div id="editItemModal" class="modal fade" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editItemModalLabel">Item Enlistment Edit Form</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @* <div class="row">
+                        <div class="col-sm-4">
+                            <label>Seller Unit :</label>
+                            <select class="form-control"
+                                    ng-model="EditSelectedUnit"
+                                    ng-change="onEditUnitChange()"
+                                    ng-options="u.value as u.text for u in SellerUnits">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Item Type :</label>
+                            <select class="form-control"
+                                    ng-model="EditSelectedType"
+                                    ng-options="t.value as t.text for t in EditItemTypes">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Item Name :</label>
+                            <input type="text" maxlength="200" class="form-control"
+                                   id="txtEditName" ng-model="editName"
+                                   placeholder="Enter Item Name" />
+                            <span class="error">Item Name Required</span>
+                        </div>
+                    </div> *@
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label>Seller Unit :</label>
+                            <select class="form-control"
+                                    ng-model="EditSelectedUnit"
+                                    ng-change="onEditUnitChange()"
+                                    ng-options="u.value as u.text for u in SellerUnits">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Item Type :</label>
+                            <select class="form-control"
+                                    ng-model="EditSelectedType"
+                                    ng-change="onEditTypeChange()"
+                                    ng-options="t.value as t.text for t in EditItemTypes">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <!-- NEW: Category -->
+                        <div class="col-sm-3">
+                            <label>Category :</label>
+                            <select class="form-control"
+                                    ng-model="EditSelectedCategory"
+                                    ng-disabled="!isEditWeaving()"
+                                    ng-options="c.value as c.text for c in ProductCategories">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Item Name :</label>
+                            <input type="text" maxlength="200" class="form-control"
+                                   id="txtEditName" ng-model="editName"
+                                   placeholder="Enter Item Name" />
+                            <span class="error">Item Name Required</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                    <button ng-click="Update()" id="updatebutton" type="button" class="btn btn-success">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

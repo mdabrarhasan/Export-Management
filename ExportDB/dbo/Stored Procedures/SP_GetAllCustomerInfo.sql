@@ -1,0 +1,19 @@
+﻿-- Get all customers
+CREATE PROCEDURE SP_GetAllCustomerInfo
+AS
+BEGIN
+    SELECT ID,
+           CUSTOMERNAME,
+           CUSTOMERBANKBRANCHNAME,
+           CUSTOMERBANKNAME,
+           CUSTOMERBANKADDRESSLINEONE,
+           CUSTOMERBANKADDRESSLINETWO,
+           CUSTOMERBANKADDRESSLINETHREE,
+           CUSTOMERBANKBINNO,
+           ISACTIVE,
+           CREATEDBY,
+           CREATEDDATE,
+           UPDATEDBY,
+           UPDATEDDATE
+    FROM CustomerInfoX
+END

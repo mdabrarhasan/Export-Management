@@ -1,0 +1,2220 @@
+﻿<script src="~/customjs/SalesQuatation.js"></script>
+<script src="~/customjs/common.js"></script>
+
+
+<div ng-app="App" ng-controller="Ctl" ng-init="SQList()">
+    <div ng-show="loading">
+        <img style="width:70%;height:100%;position:absolute;z-index:1;" src="~/assets/images/Untitled.svg">
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+
+                <!-- Header -->
+                <div class="card-header">
+                    <h4>Sales Quotation Landing</h4>
+                </div>
+
+                <div class="card-body" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:14px;">
+
+                    <!-- Top Controls -->
+                    <div class="row align-items-center mb-3">
+
+                        <!-- Create Button -->
+                        <div class="col-md-6 d-flex align-items-center">
+                            <button type="button"
+                                    class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+                                    ng-click="Clear()"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalFullscreen">
+                                <b>
+                                    <i class="mdi mdi-plus"></i>
+                                    <span>Add New</span>
+                                </b>
+                            </button>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="mdi mdi-magnify"></i>
+                                </span>
+
+                                <input type="text"
+                                       ng-model="search"
+                                       class="form-control"
+                                       placeholder="Search SQ, Customer, Seller..."
+                                       ng-change="onSearchChange()">
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        ng-click="search=''"
+                                        ng-show="search">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table id="tblinfo" class="table table-bordered table-hover">
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="display:none;">ID</th>
+
+                                    <th ng-click='sortBy("sqnumber")'>SQ No</th>
+                                    <th ng-click='sortBy("cusid")'>Customer Code</th>
+                                    <th ng-click='sortBy("customername")'>Customer Name</th>
+                                    <th ng-click='sortBy("unitID")'>Seller Code</th>
+                                    <th ng-click='sortBy("unitdescription")'>Seller Name</th>
+                                    <th ng-click='sortBy("documentcreateddate")'>Created Date</th>
+                                    <th>Status</th>
+                                    
+                                    <th style="text-align:center">Action</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr dir-paginate="list in SQlist | orderBy: sortColumn : reverse | filter:search | itemsPerPage: pageSize"
+                                    current-page="currentPage">
+
+                                    <td style="display:none;">{{list.id}}</td>
+
+                                    <td>
+                                        <a href="" ng-click="Report(list.sqnumber)">
+                                            {{list.sqnumber}}
+                                        </a>
+                                    </td>
+
+                                    <td>{{list.cusid}}</td>
+                                    <td>{{list.customername}}</td>
+                                    <td>{{list.unitname}}</td>
+                                    <td>{{list.unitdescription}}</td>
+                                    <td>{{list.documentcreateddate}}</td>
+
+                                    <!-- Status -->
+                                    <td>
+                                        <span class="badge rounded-pill badge-soft-info"
+                                              ng-if='list.docstatus=="Pending"'>{{list.docstatus}}</span>
+
+                                        <span class="badge rounded-pill badge-soft-success"
+                                              ng-if='list.docstatus=="Approved"'>{{list.docstatus}}</span>
+
+                                        <span class="badge rounded-pill badge-soft-danger"
+                                              ng-if='list.docstatus=="Rejected"'>{{list.docstatus}}</span>
+
+                                        <span class="badge rounded-pill badge-soft-primary"
+                                              ng-if='list.docstatus=="Completed"'>{{list.docstatus}}</span>
+                                    </td>
+
+                                    <!-- Report -->
+                                    @* <td>
+                                        <button type="button"
+                                                class="btn btn-success btn-sm"
+                                                ng-click="ContractReport(list.id)">
+                                            <i class="fas fa-file-alt"></i>
+                                        </button>
+                                    </td> *@
+
+                                    <!-- Actions -->
+                                    <td class="text-center">
+
+                                        <button type="button"
+                                                class="btn btn-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#ViewexampleModalFullscreen"
+                                                ng-click="ViewbyMasterID(list.id,list.sqnumber)">
+                                            <i class="fas fa-search-plus"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-info btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#EditexampleModalFullscreen"
+                                                ng-click="EditbyMasterID(list.id,list.sqnumber)">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm"
+                                                ng-click="DeleteMaster(list.id)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-secondary btn-sm"
+                                                ng-click="CopyMaster(list.id)"
+                                                title="Copy this Sales Quotation">
+                                            <i class="fa fa-copy"></i>
+                                        </button>
+
+                                      @*<button type="button"
+                                                class="btn btn-secondary btn-sm"
+                                                ng-disabled='list.isprocessedwithapproval==true'
+                                                ng-click="Cancled(1,list.id)">
+                                            <i class="fa fa-ban"></i>
+                                        </button>*@
+
+                                    </td>
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <!-- Pagination Init -->
+                    <div ng-init="currentPage=1; pageSize=8"></div>
+
+                    <!-- Pagination Style -->
+                    <style>
+                        dir-pagination-controls ul {
+                            display: flex;
+                            justify-content: center;
+                            gap: 6px;
+                            margin-top: 20px;
+                            padding-left: 0;
+                        }
+
+                        dir-pagination-controls li {
+                            list-style: none;
+                        }
+
+                            dir-pagination-controls li a {
+                                padding: 8px 14px;
+                                border-radius: 8px;
+                                background: #f8f9fa;
+                                color: #0d6efd;
+                                font-weight: 500;
+                                transition: 0.25s;
+                            }
+
+                                dir-pagination-controls li a:hover {
+                                    background: #e7f1ff;
+                                }
+
+                            dir-pagination-controls li.active a {
+                                background: #0d6efd;
+                                color: #fff;
+                            }
+
+                            dir-pagination-controls li.disabled a {
+                                background: #e9ecef;
+                                color: #adb5bd;
+                            }
+                    </style>
+
+                    <style>
+                        .ui-autocomplete {
+                            max-height: 220px;
+                            overflow-y: auto;
+                            overflow-x: hidden;
+                            border: 1px solid #ced4da;
+                            border-radius: 6px;
+                            background: #fff;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+                            z-index: 20000; /* above the fullscreen modal */
+                            padding: 4px 0;
+                        }
+
+                            .ui-autocomplete .ui-menu-item-wrapper {
+                                padding: 6px 12px;
+                                font-size: 13px;
+                                cursor: pointer;
+                            }
+
+                                .ui-autocomplete .ui-menu-item-wrapper.ui-state-active {
+                                    background: #0d6efd;
+                                    color: #fff;
+                                    border: none;
+                                    margin: 0;
+                                }
+                    </style>
+
+                    <!-- Footer -->
+                    <div class="row mt-2 align-items-center">
+
+                        <!-- Total -->
+                        <div class="col-md-4">
+                            <span style="font-size:13px; font-weight:600; opacity:0.75;">
+                                Total Records:
+                                <b>{{ (SQlist | filter:search).length }}</b>
+                            </span>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="col-md-4 text-center">
+                            <dir-pagination-controls direction-links="true"
+                                                     max-size="10"
+                                                     boundary-links="true"
+                                                     current-page="currentPage">
+                            </dir-pagination-controls>
+                        </div>
+
+                        <div class="col-md-4"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exampleModalFullscreen"
+         class="modal fade"
+         tabindex="-1"
+         aria-labelledby="exampleModalFullscreenLabel"
+         data-bs-backdrop="static">
+
+        <div class="modal-dialog modal-fullscreen">
+
+            <form class="needs-validation" novalidate>
+
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myExtraLargeModalLabel">
+                            Sales Quotation (Insertion Mode)
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+
+                        <!-- Quotation Information -->
+                        <div class="row">
+                            <div class="col-sm-12">
+
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>Quotation Information</h6>
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <!-- Hidden Shipment Mode -->
+                                        <div style="display:none">
+
+                                            <label>Shipment Mode :</label>
+
+                                            <select class="sqid form-select"
+                                                    ng-model="txtshipmentmodeid"
+                                                    ng-init="GetShipmentMode()"
+                                                    id="txtshipmentmodeid"
+                                                    style="font-size: 13px;">
+
+                                                <option value="">
+                                                    --Select Shipment Mode--
+                                                </option>
+
+                                                <option ng-repeat="list in shipmentmodelist"
+                                                        value="{{list.id}}">
+                                                    {{list.name}}
+                                                </option>
+
+                                            </select>
+
+                                        </div>
+
+                                        <!-- Row 1 -->
+                                        <div class="row">
+
+                                            <div class="col">
+
+                                                @* <label>Seller Info</label>
+
+                                                <input type="hidden" id="hsellerid" />
+
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtComName"
+                                                       ng-keyup="SearchHeaderSeller()"
+                                                       placeholder="Search a Seller"
+                                                       autocomplete="off"
+                                                       required />
+
+                                                <span class="error">
+                                                    Select a Seller
+                                                </span> *@
+
+                                                <label>Seller Info</label>
+                                                <input type="hidden" id="hsellerid" />
+                                                <select class="form-select"
+                                                        id="txtComName"
+                                                        ng-model="selectedSellerId"
+                                                        ng-change="OnSellerChange()"
+                                                        required>
+                                                    <option value="">--Select Seller--</option>
+                                                    <option ng-repeat="s in sellerList" value="{{s.id}}">{{s.name}}</option>
+                                                </select>
+                                                <span class="error">Select a Seller</span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Expire Date</label>
+
+                                                <input type="date"
+                                                       id="txtExpireDate"
+                                                       class="form-control" />
+
+                                                <span class="error">
+                                                    Select Expire Date
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>SQ Type</label>
+
+                                                <select class="sqtypeid form-select"
+                                                        ng-model="sqtypeid"
+                                                        ng-init="SQType()"
+                                                        id="sqtypeid"
+                                                        style="font-size: 13px;">
+
+                                                    <option value="">
+                                                        --Select SQ Type--
+                                                    </option>
+
+                                                    <option ng-repeat="list in sqtypelist"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select SQ Type
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>From Shipment :</label>
+
+                                                <select class="txtFromshipmentcountryid form-select"
+                                                        ng-model="txtFromshipmentcountryid"
+                                                        ng-init="GetSQShipmentCountry()"
+                                                        ng-change="VatCal()"
+                                                        id="txtFromshipmentcountryid"
+                                                        style="font-size: 13px;">
+
+                                                    <option value="">
+                                                        --Select From Shipment--
+                                                    </option>
+
+                                                    <option ng-repeat="list in shipmentcountrylist"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select Shipment
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>To Shipment :</label>
+
+                                                <select class="txtToshipmentcountryid form-select"
+                                                        ng-model="txtToshipmentcountryid"
+                                                        ng-init="GetToShipment()"
+                                                        id="txtToshipmentcountryid"
+                                                        style="font-size: 13px;">
+
+                                                    <option value="">
+                                                        --Select To Shipment--
+                                                    </option>
+
+                                                    <option ng-repeat="list in toshipmentcountrylist"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select Shipment
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Loading Place :</label>
+
+                                                <input class="loadingplace form-control"
+                                                       type="text"
+                                                       id="loadingplace">
+
+                                                <span class="error">
+                                                    Enter Loading Place
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Currency :</label>
+
+                                                <select class="txtcurrencyid form-select"
+                                                        ng-model="txtcurrencyid"
+                                                        ng-init="GetCurrency()"
+                                                        id="txtcurrencyid"
+                                                        style="font-size: 13px;">
+
+                                                    <option value="">
+                                                        --Select Currency List--
+                                                    </option>
+
+                                                    <option ng-repeat="list in currencylist"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select Currency
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Loading Port :</label>
+
+                                                <select class="txtloadingport form-select"
+                                                        ng-model="txtloadingport"
+                                                        ng-init="GetLoadingport()"
+                                                        id="txtloadingport"
+                                                        style="font-size: 13px;">
+
+                                                    <option value="">
+                                                        --Select Loadingport--
+                                                    </option>
+
+                                                    <option ng-repeat="list in loadingportlist"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select Loading Port
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Row 2 -->
+                                        <div class="row mt-2">
+
+                                            <div class="col">
+
+                                                <label>Destination Port :</label>
+
+                                                <input type="text"
+                                                       class="txtToshipmentcountryid form-control"
+                                                       id="txtDESTINATIONPORT"
+                                                       placeholder="To Destination Port.."
+                                                       required />
+
+                                                <span class="error">
+                                                    Enter Destination Port
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Country of Origin :</label>
+
+                                                <input type="text"
+                                                       class="form-control"
+                                                       value="Bangladesh"
+                                                       disabled
+                                                       id="txtOriginCountry" />
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Buyer Name</label>
+
+                                                <input type="hidden" id="hcusid" />
+
+                                                <input type="text"
+                                                       class="form-control"
+                                                       ng-keyup="SearchHeaderBuyer()"
+                                                       placeholder="Search Buyer..."
+                                                       id="txtBuyerName"
+                                                       autocomplete="off" />
+
+                                                <span class="error">
+                                                    Select Buyer
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Incoterms :</label>
+
+                                                <select class="txtincotermid form-select"
+                                                        ng-model="txtincotermid"
+                                                        ng-init="GetIncoTerm()"
+                                                        id="txtincotermid"
+                                                        style="font-size: 13px;">
+
+                                                    <option value="">
+                                                        --Select Incoterms--
+                                                    </option>
+
+                                                    <option ng-repeat="list in incotermlist"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select Inco Terms
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Payment Terms :</label>
+
+                                                <select class="txtPaymentTerms form-select"
+                                                        ng-model="txtPaymentTerms"
+                                                        ng-init="GetPaymentTerm()"
+                                                        ng-change="onPaymentChange()"
+                                                        id="txtPaymentTerms">
+
+                                                    <option value="">
+                                                        --Select Payment Term--
+                                                    </option>
+
+                                                    <option ng-repeat="list in paymenttermlist"
+                                                            value="{{list.name}}"
+                                                            data-id="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Payment Term Others :</label>
+
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="etxtpaymentterm"
+                                                       ng-disabled="txtPaymentTerms !== 'Others'"
+                                                       ng-model="etxtpaymentterm" />
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Shipping Period :</label>
+
+                                                <input type="text"
+                                                       class="form-control"
+                                                       value=""
+                                                       id="txtShippingPeriod" />
+
+                                                <span class="error">
+                                                    Select ShippingPeriod
+                                                </span>
+
+                                            </div>
+
+                                            <div class="col">
+
+                                                <label>Shipment Mode :</label>
+
+                                                <select class="sqid form-select"
+                                                        ng-model="txttransportmodeid"
+                                                        ng-init="GetTransportationMode()"
+                                                        id="txttransportmodeid"
+                                                        style="font-size: 13px;">
+
+                                                    <option value="">
+                                                        --Select Shipment Mode--
+                                                    </option>
+
+                                                    <option ng-repeat="list in transportationmode"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select Shipment Mode
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                        
+                                        
+                                        <!-- Row 3 -->
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Product Quantity :</label>
+
+                                                <textarea
+                                                       class="txtQuantitySummary form-control"
+                                                       id="txtQuantitySummary"
+                                                       ng-model="txtQuantitySummary"
+                                                       placeholder="Product Quantity..."
+                                                       required></textarea>
+
+                                                <span class="error">
+                                                    Enter Product Quantity
+                                                </span>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>Description and Specification :</label>
+
+                                                <textarea class="txtDescriptionSpecification form-control"
+                                                          id="txtDescriptionSpecification"
+                                                          ng-model="txtDescriptionSpecification"
+                                                          placeholder="Description & Specification..."
+                                                          required></textarea>
+
+                                                <span class="error">
+                                                    Enter Description and Specification
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Row 4 -->
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Packing :</label>
+
+                                                <textarea class="txtPacking form-control"
+                                                          id="txtPacking"
+                                                          ng-model="txtPacking"
+                                                          placeholder="Packing..."
+                                                          required></textarea>
+
+                                                <span class="error">
+                                                    Enter Packing
+                                                </span>
+                                            </div>
+                                            <div class="col-sm-6">
+
+                                                <label>Truss Marks :</label>
+
+                                                <textarea class="txtMarker form-control"
+                                                          id="txtMarker"
+                                                          ng-model="txtMarker"
+                                                          placeholder="Truss Marks..."
+                                                          required></textarea>
+
+                                                @* <label>Price :</label>
+
+                                                <textarea
+                                                       class="txtPriceReport form-control"
+                                                       id="txtPriceReport"
+                                                       ng-model="txtPriceReport"
+                                                       placeholder="Price..."
+                                                       required></textarea>
+
+                                                <span class="error">
+                                                    Enter Price
+                                                </span> *@
+
+                                            </div>
+                                            
+                                        </div>
+
+                                        <!-- Row 5 -->
+                                        <div class="row mt-2">
+
+                                            <div class="col">
+                                                <label>Buyer Phone</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtPhone"
+                                                       disabled />
+                                            </div>
+
+                                            <div class="col">
+                                                <label>Buyer Email</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtEmail"
+                                                       disabled />
+                                            </div>
+
+                                            <div class="col">
+                                                <label>Buyer Address</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtAddress"
+                                                       disabled />
+                                            </div>
+
+                                            <div class="col">
+                                                <label>Buyer TIN</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtBuyerTine"
+                                                       disabled />
+                                            </div>
+
+                                            <div class="col">
+                                                <label>Seller Phone</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtSellerPhone"
+                                                       disabled />
+                                            </div>
+
+                                            <div class="col">
+                                                <label>Seller Email</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtSellerEmail"
+                                                       disabled />
+                                            </div>
+
+                                            <div class="col">
+                                                <label>Seller TIN</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtSellerTIN"
+                                                       disabled />
+                                            </div>
+
+                                            <div class="col">
+                                                <label>Seller Address</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="txtSellerAddress"
+                                                       disabled />
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Add Item -->
+                        <div class="row table-responsive">
+
+                            <div class="col-sm-12">
+
+                                <h4>Add Item</h4>
+
+                                <div class="row table-responsive">
+
+                                    <table class="table">
+
+                                        <tr>
+                                            
+                                            <th>Item Type</th>
+                                            <th>Item Name</th>
+
+                                            <th style="color:#5dade2">Size</th>
+                                            <th style="color:#5dade2">Construction</th>
+                                            <th style="color:#5dade2">Weight</th>
+
+                                            <th style="color:#5dade2">Slit</th>
+                                            <th style="color:#5dade2">Scrim</th>
+
+                                            <th style="color:red">Quality</th>
+
+                                            <th>Item Title</th>
+                                            <th>Packing Details</th>
+                                            <th>UOM</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Discount%</th>
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Short Details</th>
+                                            <th>Add Item</th>
+                                            <th>Excel Upload</th>
+                                        </tr>
+
+                                        <!-- Main Row -->
+                                        <tr class="mycontainer" id="mainrow">
+
+                                            <!-- Item Type -->
+                                            <td style="width:120px">
+
+                                                <select style="width:120px"
+                                                        class="itemtypeid form-select"
+                                                        ng-model="itemtypeid"
+                                                        ng-init="GetItemType()"
+                                                        ng-change="EnableDisableItemTypeWise()"
+                                                        id="itemtypeid">
+
+                                                    <option value="">
+                                                        --Select--
+                                                    </option>
+
+                                                    <option ng-repeat="list in itemtype"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select Type
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Item Name -->
+                                            <td style="width:200px">
+
+                                                <input type="hidden"
+                                                       id="itemcode"
+                                                       class="itemcode form-control" />
+
+                                                <input type="hidden" id="hname" />
+
+                                                <div class="sq-search-dropdown" style="position:relative; width:200px;">
+                                                    <input style="width:200px; padding-right:28px;"
+                                                           class="name form-control"
+                                                           type="text"
+                                                           id="name"
+                                                           ng-keyup="SearchFGHeader()"
+                                                           placeholder="Search Item..."
+                                                           autocomplete="off">
+                                                    <i class="mdi mdi-chevron-down sq-search-caret"
+                                                       style="position:absolute; right:8px; top:50%; transform:translateY(-50%); pointer-events:none; color:#6c757d;"></i>
+                                                </div>
+
+                                                @* <input style="width:200px"
+                                                       class="name form-control"
+                                                       type="text"
+                                                       id="name"
+                                                       ng-keyup="SearchFGHeader()"
+                                                       placeholder="Search Item..."
+                                                       autocomplete="off"> *@
+
+
+                                                <span class="error">
+                                                    Select Item
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Size -->
+                                            <td>
+
+                                                <input type="hidden"
+                                                       id="txtSizeID"
+                                                       class="txtSizeID" />
+
+                                                <input style="width:100px"
+                                                       type="text"
+                                                       id="txtSize"
+                                                       class="txtSize form-control"
+                                                       ng-keyup="SearchSize()"
+                                                       ng-paste="SearchSize()" />
+
+                                                <span class="error">
+                                                   Enter Size
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Construction -->
+                                            <td>
+
+                                                <input type="hidden"
+                                                       id="txtConstructionID"
+                                                       class="txtConstructionID" />
+
+                                                <input style="width:100px"
+                                                       type="text"
+                                                       id="txtConstruction"
+                                                       class="txtConstruction form-control"
+                                                       ng-keyup="SearchContruction()"
+                                                       ng-paste="SearchContruction()" />
+
+                                                <span class="error">
+                                                    Enter Construction
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Weight -->
+                                            <td>
+
+                                                <input type="hidden"
+                                                       id="txtWeightID"
+                                                       class="txtWeightID" />
+
+                                                <input style="width:100px"
+                                                       type="text"
+                                                       id="txtWeight"
+                                                       class="txtWeight form-control"
+                                                       ng-keyup="SearchWeight()"
+                                                       ng-paste="SearchWeight()" />
+
+                                                <span class="error">
+                                                    Enter Weight
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Slit -->
+                                            <td>
+
+                                                <input type="hidden"
+                                                       id="txtSlitID"
+                                                       class="txtSlitID" />
+
+                                                <input style="width:100px"
+                                                       type="text"
+                                                       id="txtSlit"
+                                                       class="txtSlit form-control"
+                                                       ng-keyup="SearchSlit()"
+                                                       ng-paste="SearchSlit()" />
+
+                                                <span class="error">
+                                                    Enter Slit
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Scrim -->
+                                            <td>
+
+                                                <input type="hidden"
+                                                       id="txtScrimID"
+                                                       class="txtScrimID" />
+
+                                                <input style="width:100px"
+                                                       type="text"
+                                                       id="txtScrim"
+                                                       class="txtScrim form-control"
+                                                       ng-keyup="SearchScrim()"
+                                                       ng-paste="SearchScrim()" />
+
+                                                <span class="error">
+                                                    Enter Scrim
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Quality -->
+                                            <td>
+
+                                                <input type="hidden"
+                                                       id="txtQualityID"
+                                                       class="txtQualityID" />
+
+                                                <input style="width:100px"
+                                                       type="text"
+                                                       id="txtQuality"
+                                                       class="txtQuality form-control"
+                                                       ng-keyup="SearchQuality()"
+                                                       ng-paste="SearchQuality()" />
+
+                                                <span class="error">
+                                                    Enter Quality
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Item Title -->
+                                            <td>
+
+                                                <input style="width:150px"
+                                                       type="text"
+                                                       id="txtItemTitle"
+                                                       class="txtItemTitle form-control" />
+
+                                                <span class="error">
+                                                    Enter Item Title
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Packing Details -->
+                                            <td>
+
+                                                <input style="width:100px"
+                                                       type="text"
+                                                       id="packingdetails"
+                                                       class="packingdetails form-control" />
+
+                                            </td>
+
+                                            <!-- UOM -->
+                                            <td>
+
+                                                <select style="width:100px"
+                                                        class="uomid form-select"
+                                                        ng-model="UOMID"
+                                                        id="uomid">
+
+                                                    <option value="">
+                                                        --Select UOM--
+                                                    </option>
+
+                                                    <option ng-repeat="list in uomlist"
+                                                            value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select UOM
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Quantity -->
+                                            <td>
+
+                                                <input style="width:100px"
+                                                       type="number"
+                                                       id="quantity"
+                                                       value="0"
+                                                       class="quantity form-control"
+                                                       ng-keyup="Calculate()"
+                                                       ng-keypress="isNumber($event)" />
+
+                                                <span class="error">
+                                                    could not be zero
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Unit Price -->
+                                            <td style="width:100px">
+
+                                                <input type="hidden"
+                                                       id="hvatvalue"
+                                                       class="hunitprice form-control" />
+
+                                                <input style="width:120px"
+                                                       type="number"
+                                                       id="unitprice"
+                                                       value="0"
+                                                       class="unitprice form-control"
+                                                       ng-keyup="Calculate()"
+                                                       ng-keypress="isNumber($event)" />
+
+                                                <span class="error">
+                                                    could not be zero
+                                                </span>
+                                            </td>
+
+                                            <!-- Discount -->
+                                            <td>
+
+                                                <select style="width:100px" ng-change="DisCal()"
+                                                        class="discountid form-select"
+                                                        ng-model="discountid"
+                                                        id="discountid">
+
+                                                    <option value="">
+                                                        --Select Dis--
+                                                    </option>
+
+                                                    <option ng-repeat="list in Dislist"
+                                                            value="{{list.id}}">
+                                                        {{list.disName}}
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="error">
+                                                    Select Discount
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Discount Amount -->
+                                            <td>
+
+                                                <input type="number"
+                                                       id="discountamount"
+                                                       class="discountamount form-control"
+                                                       ng-keyup="Calculate()"
+                                                       disabled />
+
+                                            </td>
+
+                                            <!-- Total Amount -->
+                                            <td>
+
+                                                <input style="width:200px"
+                                                       type="number"
+                                                       id="totalamount"
+                                                       value="0"
+                                                       class="totalamount form-control"
+                                                       disabled />
+
+                                                <span class="error">
+                                                    could not be zero
+                                                </span>
+
+                                            </td>
+
+                                            <!-- Remarks -->
+                                            <td>
+
+                                                <input style="width:200px"
+                                                       type="text"
+                                                       id="remarks"
+                                                       class="remarks form-control" />
+
+                                            </td>
+
+                                            <!--Add-->
+                                            <td>
+                                                <div class="d-flex align-items-center">
+
+                                                    <button type="button"
+                                                            id="add"
+                                                            value="add"
+                                                            ng-click="Add()"
+                                                            class="btn btn-info btn-sm mr-5">
+                                                        <i class="fas fa-ad"></i>       <!--    -->
+                                                    </button>
+
+
+
+                                                </div>
+                                            </td>
+
+                                            <!--Attach Excel-->
+                                            <td>
+                                                <div class="d-flex align-items-center">
+
+                                                   
+
+                                                    <button type="button"
+                                                            id="excelButton"
+                                                            style="background-color:seagreen"
+                                                            class="btn btn-primary btn-sm"
+                                                            data-toggle="modal"
+                                                            data-target="#itemmodelSQ">
+                                                        <i class="fas fa-file-excel"></i>
+                                                    </button>
+
+                                                </div>
+                                            </td>
+
+
+                                        </tr>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Details -->
+                            <div>
+
+                                <div class="row table-responsive">
+
+                                    <div class="col-sm-12">
+
+                                        <table class="table" id="detailsItems"></table>
+
+                                        <span id="ItemsError"
+                                              style="color: red;font-weight: bolder;font-family: Calibri;"
+                                              class="ItemsError">
+                                        </span>
+
+                                        <div class="row table-responsive" id="Items"></div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Terms & Description -->
+                                <div class="row">
+
+                                    <div class="col-sm-6">
+
+                                        <label>Terms and Condition</label>
+
+                                        <textarea class="form-control"
+                                                  id="termscon"></textarea>
+
+                                    </div>
+
+                                    <div class="col-sm-6">
+
+                                        <label>Description</label>
+
+                                        <textarea class="form-control"
+                                                  id="description"></textarea>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Attachment -->
+                                <div class="row">
+
+                                    <div class="col-sm-12">
+
+                                        <label>Attachment</label>
+
+                                        <input id="fileInput"
+                                               name="fileInput"
+                                               class="form-control"
+                                               type="file"
+                                               multiple>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="modal-footer">
+
+                                    <button type="button"
+                                            ng-click="Clear()"
+                                            class="btn btn-warning"
+                                            data-bs-dismiss="modal">
+
+                                        <i class="fas fa-times-circle"></i>
+
+                                    </button>
+
+                                    <button ng-click="Save()"
+                                            id="savebutton"
+                                            type="button"
+                                            class="btn btn-success">
+
+                                        <i class="fas fa-check"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+
+
+
+
+                <!-- Excel Upload Modal -->
+                <div class="modal" id="itemmodelSQ" data-backdrop="static" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered modal-md">
+
+                        <div class="modal-content border rounded shadow-lg">
+
+                            <!-- Header -->
+                            <div class="modal-header py-2 px-3">
+                                <h5 class="modal-title mb-0">Upload Excel</h5>
+
+                                <button type="button"
+                                        class="close"
+                                        data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="modal-body px-3 py-3">
+
+                                <div class="form-group mb-0">
+                                    <label for="fileInputSQ" class="mb-2">
+                                        Choose File
+                                    </label>
+
+                                    <input id="fileInputSQ"
+                                           type="file"
+                                           class="form-control border"
+                                           accept=".xls,.xlsx">
+                                </div>
+
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="modal-footer py-2 px-3">
+
+                                <button type="button"
+                                        class="btn btn-outline-secondary"
+                                        data-dismiss="modal">
+                                    Close
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        ng-click="UploadExcelSalesQuotation()"
+                                        data-dismiss="modal">
+                                    Upload
+                                </button>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+  
+    <div id="EditexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Sales Quotation (Edit Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <input type="hidden" id="editheaderid" />
+                        <input type="hidden" id="ehselleridunitid" />
+                        <input type="hidden" id="editsqnumber" />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6>Quotation Information</h6>
+                                    </div>
+                                    <div class="card-body">
+
+                                        <!-- Row 1 -->
+                                        <div class="row">
+                                            <div class="col">
+                                                <label>Expire Date</label>
+                                                <input type="date" id="etxtExpireDate" class="form-control" />
+                                            </div>
+                                            <div class="col">
+                                                <label>SQ Type</label>
+                                                <select class="esqtypeid form-select" ng-model="esqtypeid" ng-init="SQType()"
+                                                        id="esqtypeid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in esqtypelist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Sales Type</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>From Shipment :</label>
+                                                <select class="EtxtFromshipmentcountryid form-select" ng-model="EtxtFromshipmentcountryid" ng-init="GetSQShipmentCountry()" ng-change="VatCal()"
+                                                        id="EtxtFromshipmentcountryid" style="font-size: 13px;">
+                                                    <option value="">--Select From Shipment--</option>
+                                                    <option ng-repeat="list in shipmentcountrylist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Shipment</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>To Shipment :</label>
+                                                <select class="EtxtToshipmentcountryid form-select" ng-model="EtxtToshipmentcountryid" ng-init="GetToShipment()"
+                                                        id="EtxtToshipmentcountryid" style="font-size: 13px;">
+                                                    <option value="">--Select To Shipment--</option>
+                                                    <option ng-repeat="list in toshipmentcountrylist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select To Shipment</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Loading Place :</label>
+                                                <input class="loadingplace form-control" type="text" id="Eloadingplace">
+                                                <span class="error">Enter Loading Place</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Currency :</label>
+                                                <select class="Etxtcurrencyid form-select" ng-model="Etxtcurrencyid" ng-init="GetCurrency()"
+                                                        id="Etxtcurrencyid" style="font-size: 13px;">
+                                                    <option value="">--Select Currency List--</option>
+                                                    <option ng-repeat="list in currencylist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Currency</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Loading Port :</label>
+                                                <select class="Etxtloadingport form-select" ng-model="Etxtloadingport" ng-init="GetLoadingport()" ng-change="VatCal()"
+                                                        id="Etxtloadingport" style="font-size: 13px;">
+                                                    <option value="">--Select Loadingport--</option>
+                                                    <option ng-repeat="list in loadingportlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Loading Port</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Destination Port :</label>
+                                                <input type="text" class="EtxtToshipmentcountryid form-control" id="EtxtDESTINATIONPORT" placeholder="To Destination Port.." required />
+                                                <span class="error">Enter Destination Port</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Row 2 -->
+                                        <div class="row mt-2">
+                                            
+                                            <div class="col">
+                                                <label>Country of Origin :</label>
+                                                <input type="text" class="form-control" value="Bangladesh" disabled id="EtxtOriginCountry" />
+                                            </div>
+                                            <div class="col">
+                                                <label>Incoterms :</label>
+                                                <select class="Etxtincotermid form-select" ng-model="Etxtincotermid" ng-init="GetIncoTerm()"
+                                                        id="Etxtincotermid" style="font-size: 13px;">
+                                                    <option value="">--Select Incoterms--</option>
+                                                    <option ng-repeat="list in incotermlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col">
+                                                <label>Payment Terms :</label>
+                                                <select class="Etxtpaymenttermid form-select" ng-model="Etxtpaymenttermid" ng-init="GetPaymentTerm()" ng-change="EonPaymentChange()"
+                                                        id="Etxtpaymenttermid">
+                                                    <option value="">--Select Payment Term--</option>
+                                                    <option ng-repeat="list in paymenttermlist"
+                                                            value="{{list.id}}"
+                                                            data-name="{{list.name}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col">
+                                                <label>Payment Term Others :</label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="Eetxtpaymentterm"
+                                                       ng-disabled="paymenttermsname !== 'Others'"
+                                                       ng-model="Eetxtpaymentterm" />
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipping Period :</label>
+                                                <input type="text" class="form-control" value="" id="EtxtShippingPeriod" />
+                                                <span class="error">Select ShippingPeriod</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Shipment Mode :</label>
+                                                <select class="sqid form-select" ng-model="Etxttransportmodeid" ng-init="GetTransportationMode()"
+                                                        id="Etxttransportmodeid" style="font-size: 13px;">
+                                                    <option value="">--Select Shipment Mode--</option>
+                                                    <option ng-repeat="list in transportationmode" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col">
+                                                <label>Company Name</label>
+                                                <input type="hidden" id="ehsellerid" />
+                                                <input type="text" class="form-control" id="edittxtComName" ng-keyup="SearchHeaderSeller()" placeholder="Seller.." autocomplete="off" required disabled />
+                                                <span class="error">Select seller unit</span>
+                                            </div>
+                                            <div class="col">
+                                                <label>Buyer Name</label>
+                                                <input type="hidden" id="hheaderid" />
+                                                <input type="hidden" id="ehcusid" />
+                                                <input type="text" class="form-control" ng-keyup="SearchHeaderBuyer()" placeholder="Search Buyer..." id="etxtBuyerName" autocomplete="off" disabled />
+                                                <span class="error">Select Buyer</span>
+                                            </div>
+                                            
+                                        </div>
+
+                                        
+
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Product Quantity :</label>
+                                                <textarea class="EtxtQuantitySummary form-control" id="EtxtQuantitySummary" ng-model="EtxtQuantitySummary" placeholder="Product Quantity..." required></textarea>
+                                                <span class="error">Enter Product Quantity</span>
+                                            </div>
+                                            
+                                            <div class="col-sm-6">
+                                                <label>Description and Specification :</label>
+                                                <textarea class="EtxtDescriptionSpecification form-control" id="EtxtDescriptionSpecification" ng-model="EtxtDescriptionSpecification" placeholder="Description & Specification..." required></textarea>
+                                                <span class="error">Enter Description and Specification</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Packing :</label>
+                                                <textarea class="EtxtPacking form-control" id="EtxtPacking" ng-model="EtxtPacking" placeholder="Packing..." required></textarea>
+                                                <span class="error">Enter Packing</span>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>Truss Marks :</label>
+                                                <textarea class="EtxtMarker form-control" id="EtxtMarker" ng-model="EtxtMarker" placeholder="Truss Marks..." required></textarea>
+                                                @* <label>Price :</label>
+                                                <textarea class="EtxtPriceReport form-control" id="EtxtPriceReport" ng-model="EtxtPriceReport" placeholder="Price..." required></textarea>
+                                                <span class="error">Enter Price</span> *@
+                                            </div>
+                                            
+                                        </div>
+
+                                        
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h4>Add Item</h4>
+                                <div class="row table-responsive">
+                                    <table class="table table-responsive">
+                                        <tr>
+                                            <th>Item Type</th>
+                                            <th>Item Name</th>
+                                            <th style="color:#5dade2">Size</th>
+                                            <th style="color:#5dade2">Construction</th>
+                                            <th style="color:#5dade2">Weight</th>
+                                            <th style="color:#5dade2">Slit</th>
+                                            <th style="color:#5dade2">Scrim</th>
+                                            <th style="color:red">Quality</th>
+                                            <th>Item Title</th>
+                                            <th>Packing Details</th>
+                                            <th>UOM</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Discount%</th>
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Short Details</th>
+                                            <th>Action</th>
+                                        </tr>
+
+                                        <tr class="mycontainer">
+                                            
+                                            <td style="width:120px">
+                                                <select style="width:120px" class="itemtypeid form-select" ng-model="eitemtypeid" ng-init="GetItemType()" ng-change="EditEnableDisableItemTypeWise()"
+                                                        id="eitemtypeid">
+                                                    <option value="">--Select--</option>
+                                                    <option ng-repeat="list in itemtype" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select Type</span>
+                                            </td>
+                                            
+                                            <td style="width:350px">
+                                                <input type="hidden" id="eitemcode" class="itemcode form-control" />
+                                                <input style="width:350px" class="ename form-control" type="text" id="ename" ng-keyup="ESearchFGHeader()" placeholder="Search Item..." autocomplete="off">
+                                                <span class="error">Select Item</span>
+                                            </td>
+
+
+                                            <td>
+                                                <input style="width:100px" type="text" id="etxtSize" class="txtSize form-control" ng-keyup="eSearchSize()" ng-paste="eSearchSize()" />
+                                                <span class="error">Enter Size</span>
+                                            </td>
+
+
+                                            <td>
+                                                <input style="width:100px" type="text" id="etxtConstruction" class="txtConstruction form-control" ng-keyup="eSearchContruction()" ng-paste="eSearchContruction()" />
+                                                <span class="error">Enter Construction</span>
+                                            </td>
+
+                                            <td><input style="width:100px" type="text" id="etxtWeight" class="txtWeight form-control" ng-keyup="eSearchWeight()" ng-paste="eSearchWeight()" /><span class="error">Enter Weight</span></td>
+                                            <td>
+                                                <input style="width:100px" type="text" id="etxtSlit" class="txtSlit form-control" ng-keyup="eSearchSlit()" ng-paste="eSearchSlit()" />
+                                                <span class="error">Enter Slit</span>
+                                            </td>
+
+                                            <td>
+                                                <input style="width:100px" type="text" id="etxtScrim" class="txtScrim form-control" ng-keyup="eSearchScrim()" ng-paste="eSearchScrim()" />
+                                                <span class="error">Enter Scrim</span>
+                                            </td>
+
+                                            <td><input style="width:100px" type="text" id="etxtQuality" class="txtQuality form-control" ng-keyup="eSearchQuality()" ng-paste="eSearchQuality()" /><span class="error">Enter Quality</span></td>
+
+
+                                            <td><input style="width:150px" type="text" id="etxtItemTitle" class="txtItemTitle form-control" /></td>
+                                            <td>
+                                                <input style="width:100px" type="text" id="epackingdetails" class="packingdetails form-control" />
+                                            </td>
+                                            <td>
+                                                <select style="width:100px" class="uomid form-select" ng-model="eUOMID"
+                                                        id="euomid">
+                                                    <option value="">--Select UOM--</option>
+                                                    <option ng-repeat="list in uomlist" value="{{list.id}}">
+                                                        {{list.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="error">Select UOM</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="number" id="equantity" value="0" class="equantity form-control" ng-keyup="EditCalculate()" onkeypress="return isNumber(event)" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="hidden" id="hvatvalue" class="hunitprice form-control" />
+                                                <input type="number" id="eunitprice" style="width:100px;" value="0" class="eunitprice form-control" ng-keyup="EditCalculate()" onkeypress="return isNumber(event)" />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                            
+                                            <td style="width:100px">
+                                                <select class="ediscountid form-select"
+                                                        ng-model="ediscountid"
+                                                        ng-options="list.id as list.disName for list in Dislist"
+                                                        ng-init="GetDislist()"
+                                                        ng-change="EditDisCal()"
+                                                        id="ediscountid">
+                                                    <option value="">--Select Discount--</option>
+                                                </select>
+                                                <span class="error">Select Discount</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="number" id="ediscountamount" value="0" class="ediscountamount form-control" onkeypress="return isNumber(event)" ng-keyup="EditCalculate()" disabled />
+                                            </td>
+
+                                            <td>
+                                                <input style="width:120px" type="number" id="etotalamount" value="0" class="etotalamount form-control" onkeypress="return isNumber(event)" disabled />
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                            <td>
+                                                <input style="width:200px" type="text" id="eremarks" class="remarks form-control" />
+                                            </td>
+                                            <td>
+                                                <button type="button" id="eadd" value="add" ng-click="eAdd()" class="btn btn-info btn-sm"><i class="fas fa-ad"></i></button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <input type="hidden" id="especificid" />
+                                <h4>List of Item</h4>
+                                
+                                <div class="row table-responsive">
+                                    <table class="table table-responsive" id="editmycontainer">
+                                        <tr>
+                                            <th>Sl No.</th>
+                                            <th>Item Type</th>
+                                            <th>Item Name</th>
+                                            <th style="color:#5dade2">Size</th>
+                                            <th style="color:#5dade2">Construction</th>
+                                            <th style="color:#5dade2">Weight</th>
+                                            <th style="color:#5dade2">Slit</th>
+                                            <th style="color:#5dade2">Scrim</th>
+                                            <th style="color:red">Quality</th>
+                                            <th>Item Title</th>
+                                            <th>Packing Details</th>
+                                            <th>UOM</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Discount%</th>
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Short Details</th>
+                                            <th>Action</th>
+                                        </tr>
+
+                                        <tr ng-repeat="list in edetailsbyid" runoncreate="InitialEditEnableDisableItemTypeWiseLine($index)">
+                                            <td>{{$index+1}}</td>
+                                            <td style="width:120px">
+                                                
+                                                <select style="width:120px" class="form-select" id="{{'eitemtypeid'+$index}}"
+                                                        ng-model="list.itemtypeid" ng-options="val.id as val.name for val in itemtype" ng-selected="ilist.id==list.itemtypeid" ng-change="EditEnableDisableItemTypeWiseLine($index)">
+                                                    <option value="">--Select--</option>
+                                                </select>
+                                            </td>
+                                            
+                                            <td style="width:350px">
+                                                <input class="ename form-control" type="hidden" id="{{'eitemcode'+$index}}" value="{{list.itemid}}">
+                                                <input style="width:350px" class="ename form-control" type="text" id="{{'ename'+$index}}" value="{{list.itemname}}" ng-keypress="SearchFGLine($index)" placeholder="Search Item..." autocomplete="off">
+                                                <span class="error">Select Item</span>
+                                            </td>
+
+                                            <td><input style="width:100px" value="{{list.size}}" type="text" id="{{'etxtSize'+$index}}" class="txtCount form-control" ng-keypress="eSearchSizeLine($index)" ng-paste="eSearchSizeLine($index)"/><span class="error">Enter Size</span></td>
+                                            <td><input style="width:100px" value="{{list.construction}}" type="text" id="{{'etxtConstruction'+$index}}" class="txtPly form-control" ng-keypress="eSearchContructionLine($index)" ng-paste="eSearchContructionLine($index)" /><span class="error">Enter Construction</span></td>
+                                            <td><input style="width:100px" value="{{list.weight}}" type="text" id="{{'etxtWeight'+$index}}" class="txtQuality form-control" ng-keypress="eSearchWeightLine($index)" ng-paste="eSearchWeightLine($index)" /><span class="error">Enter Weight</span></td>
+
+                                            <td><input style="width:100px" value="{{list.slit}}" type="text" id="{{'etxtSlit'+$index}}" class="txtWidth form-control" ng-keypress="eSearchSlitLine($index)" ng-paste="eSearchSlitLine($index)" /><span class="error">Enter Slit</span></td>
+                                            <td><input style="width:100px" value="{{list.scrim}}" type="text" id="{{'etxtScrim'+$index}}" class="txtLength form-control" ng-keypress="eSearchScrimLine($index)" ng-paste="eSearchScrimLine($index)" /><span class="error">Enter Scrim</span></td>
+                                            <td><input style="width:100px" value="{{list.quality}}" type="text" id="{{'etxtQuality'+$index}}" class="txtWeight form-control" ng-keypress="eSearchQualityLine($index)" ng-paste="eSearchQualityLine($index)" /><span class="error">Enter Quality</span></td>
+                                            <td><input style="width:150px" value="{{list.itemtitle}}" type="text" id="{{'eitemtitle'+$index}}" class="txtItemTitle form-control" /><span class="error">Enter Item Title</span></td>
+                                            <td><input style="width:150px" value="{{list.packingdetails}}" type="text" id="{{'epackingdetails'+$index}}" class="txtItemTitle form-control" /></td>
+                                            
+                                            <td>
+                                                <select style="width:100px" class="form-select" id="{{'euomid'+$index}}"
+                                                        ng-model="list.uomid" ng-options="val.id as val.name for val in uomlist" ng-selected="ulist.id==list.uomid">
+                                                    <option value="">--Select UOM--</option>
+                                                </select>
+
+                                                <span class="error">Select UOM</span>
+                                            </td>
+
+                                            <td>
+                                                <input type="number"
+                                                       ng-model="list.quantity"
+                                                       id="{{'equantity'+$index}}"
+                                                       class="equantity form-control"
+                                                       onkeypress="return isNumber(event)"
+                                                       ng-keyup="EditCalculateLine($index,list.discountid)" />
+                                            </td>
+
+                                            <td>
+                                                <input type="hidden"
+                                                       ng-value="list.price"
+                                                       class="hunitprice form-control" />
+
+                                                <input style="width:100px"
+                                                       type="number"
+                                                       ng-model="list.price"
+                                                       class="eunitprice form-control"
+                                                       id="{{'eunitprice'+$index}}"
+                                                       onkeypress="return isNumber(event)"
+                                                       ng-keyup="EditCalculateLine($index,list.discountid)" />
+
+                                                <span class="error">could not be zero</span>
+                                            </td>
+                                           
+                                            <td>
+                                                <select style="width:100px" class="form-select" id="{{'ediscountid'+$index}}"
+                                                        ng-model="list.discountid" ng-options="val.id as val.disName for val in Dislist" ng-change="EditDisCalLine($index,list.discountid)" ng-selected="dlist.id==list.discountid">
+                                                    <option value="">--Select Discount--</option>
+                                                </select>
+                                                <span class="error">Select Discount</span>
+                                            </td>
+                                            
+                                            <td>
+                                                <input type="number"
+                                                       ng-model="list.discount"
+                                                       id="{{'ediscountamount'+$index}}"
+                                                       ng-keyup="EditCalculateLine($index,list.discountid)"
+                                                       class="ediscountamount form-control"
+                                                       onkeypress="return isNumber(event)"
+                                                       disabled />
+                                            </td>
+                                            
+                                            <td>
+                                                <input style="width:100px"
+                                                       type="number"
+                                                       ng-value="list.totalamount"
+                                                       id="{{'etotalamount'+$index}}"
+                                                       class="etotalamount form-control"
+                                                       onkeypress="return isNumber(event)"
+                                                       disabled />
+
+                                                <span class="error">could not be zero</span>
+                                            </td>
+
+                                            <td>
+                                                <input style="width:180px" type="text" value="{{list.remarks}}" id="{{'eremarks'+$index}}" class="eremarks form-control" />
+                                            </td>
+                                           
+                                            <td style="width:100px; display:flex; gap:5px;">
+                                                <button type="button"
+                                                        ng-click="UpdateByLineID($index,list.id,list.itemtypeid,list.discountid,list.uomid)"
+                                                        class="btn btn-info btn-sm">
+                                                    <i class="fas fa-arrow-circle-up"></i>
+                                                </button>
+
+                                                <button type="button"
+                                                        ng-click="DeleteByLineID(list.id)"
+                                                        class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Terms and Condition</label>
+                                    <textarea class="form-control" id="etermscon"></textarea>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>Description</label>
+                                    <textarea class="form-control" id="edescription"></textarea>
+                                </div>
+                         </div>
+
+                         <div class="row">
+                             <label>Attachment</label>
+                              <input id="efileInput" ng-click="GetUploadedFiles()" class="form-control" type="file" multiple>
+                         </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" ng-click="Clear()" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>
+                            <button ng-click="Update()" type="button" class="btn btn-success"><i class="fas fa-check"></i></button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ViewexampleModalFullscreen" class="modal fade" tabindex="-1" aria-labelledby="EditexampleModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myExtraLargeModalLabel">Sales Quotation (View Mode)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+
+                                    <div class="card-header">
+                                        <h6>Basic Information</h6>
+                                    </div>
+                                    <div class="row table-responsive">
+                                        <table ng-repeat="list in masterdata" class="table table-bordered" border="1" style="font-weight:bold">
+                                            <tbody>
+
+                                               @*<tr>
+                                                    <td style="text-align:right">Company Name :</td>
+                                                    <td style="text-align:left">{{list.unitName}}</td>
+                                                    <td style="text-align:right">Buyer Name :</td>
+                                                    <td style="text-align:left">{{list.customername}}</td>
+                                                    <td style="text-align:right">Phone :</td>
+                                                    <td style="text-align:left">{{list.sellerPhone}}</td>
+                                                    <td style="text-align:right">Phone :</td>
+                                                    <td style="text-align:left">{{list.cusPhone}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:right">TIN :</td>
+                                                    <td style="text-align:left">{{list.sellerTin}}</td>
+                                                    <td style="text-align:right">TIN :</td>
+                                                    <td style="text-align:left">N/A</td>
+                                                    <td style="text-align:right">Email :</td>
+                                                    <td style="text-align:left">{{list.sellerEmail}}</td>
+                                                    <td style="text-align:right">Email :</td>
+                                                    <td style="text-align:left">{{list.cusEmail}}</td>
+                                                </tr>*@
+
+                                                <tr>
+                                                    <td style="text-align:right">Payment Term :</td>
+                                                    <td style="text-align:left">{{list.paymenttermsname}}</td>
+                                                    <td style="text-align:right">Payment Terms Others:</td>
+                                                    <td style="text-align:left">{{list.paymenttermsothers}}</td>
+                                                    <td style="text-align:right">Expire Date :</td>
+                                                    <td style="text-align:left">{{list.expiredate}}</td>
+                                                    <td style="text-align:right">SQ Type :</td>
+                                                    <td style="text-align:left">{{list.sqtypename}}</td>
+                                                    
+                                                </tr>
+
+                                                <tr>
+                                                   
+                                                    <td style="text-align:right">From Shipment :</td>
+                                                    <td style="text-align:left">{{list.fromshipmentname}}</td>
+                                                    <td style="text-align:right">To Shipment :</td>
+                                                    <td style="text-align:left">{{list.toshipment}}</td>
+                                                    <td style="text-align:right">Loading Place :</td>
+                                                    <td style="text-align:left">{{list.loadingplace}}</td>
+                                                    
+                                                    <td style="text-align:right">Loading Port :</td>
+                                                    <td style="text-align:left">{{list.fromloadingpart}}</td>
+                                                </tr>
+
+                                                 <tr>
+                                                   
+                                                    <td style="text-align:right">Shipping Period :</td>
+                                                    <td style="text-align:left">{{list.shippingperiod}}</td>
+                                                    <td style="text-align:right">Shipment Mode :</td>
+                                                    <td style="text-align:left">{{list.transportationmodename}}</td>
+                                                    <td style="text-align:right">Currency :</td>
+                                                    <td style="text-align:left">{{list.currencyname}}</td>
+                                                    <td style="text-align:right">Incoterm :</td>
+                                                    <td style="text-align:left">{{list.incotermname}}</td>
+                                                </tr>
+
+                                                 <tr>
+                                                    <td style="text-align:right">Description :</td>
+                                                    <td style="text-align:left">{{list.descriptions}}</td>
+                                                    <td style="text-align:right">Terms & Condition :</td>
+                                                    <td style="text-align:left">{{list.termscondition}}</td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h4>List of Item's</h4>
+                                <div class="row table-responsive">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Sl No.</th>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            <th>UOM</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Discount%</th> 
+                                            <th>Dis. Amount</th>
+                                            <th>Total Amount</th>
+                                            <th>Short Details</th>
+                                        </tr>
+
+                                        <tr ng-repeat="list in detailsbyid">
+                                            <td>
+                                                {{$index+1}}
+                                            </td>
+                                            <td>
+                                                {{list.itemid}}
+                                            </td>
+                                            <td style="width:350px">
+                                                {{list.itemname}}
+                                            </td>
+
+                                            <td>
+                                                {{list.uom}}
+                                            </td>
+
+                                            <td>
+                                                {{list.quantity}}
+                                            </td>
+                                            <td>
+                                                {{list.price}}
+                                            </td>
+                                      
+                                            <td style="width:100px">
+                                                {{list.disname}}
+                                            </td>
+                                   
+                                            <td> 
+                                                {{list.discount}} 
+                                             </td>
+
+                                            <td>
+                                                {{list.totalamount}}
+
+                                            </td>
+                                            <td>
+                                                {{list.remarks}}
+                                            </td>
+                                            <td>
+                                                {{list.descriptions}}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h4>Document Status Level</h4>
+                                <div class="row table-responsive">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Sl No.</th>
+                                            <th>Codeno</th>
+                                            <th>Inititator</th>
+                                            <th>Approver</th>
+                                            <th>Action Date</th>
+                                            <th>Status</th>
+                                            <th>Short Details</th>
+                                        </tr>
+
+                                        <tr ng-repeat="vlist in docstatusview">
+                                            <td>
+                                                {{$index+1}}
+                                            </td>
+                                            <td>
+                                                {{vlist.processcode}}
+                                            </td>
+                                            <td>
+                                                {{vlist.vinitiator}}
+                                            </td>
+
+                                            <td>
+                                                {{vlist.approvar}}
+                                            </td>
+
+                                            <td>
+                                                {{vlist.documentcreateddate}}
+                                            </td>
+                                            <td>
+                                                {{vlist.docstatus}}
+                                            </td>
+                                            <td>
+                                                {{vlist.descriptions}}
+                                            </td>
+
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                       @*<div class="row">
+                            <label for="efileInput">Attachment</label>
+                            <input id="efileInput"
+                                    class="form-control"
+                                    type="file"
+                                    multiple
+                                    ng-model="selectedFiles">
+                        </div>*@
+
+                        @* <div class="row">
+                            <div class="col-sm-12">
+                                        <h5>Attachment</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>File Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr>
+                                        <td><label id="vSINO" ></label></td>
+                                        <td><label id="vFileName"></label></td>
+                                        <td><button type="button" class="btn btn-primary btn-sm insert" id="downloadButton" style="display: none;">Download File</button></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div> *@
+
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Attachments</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th style="width:80px;">Sl No</th>
+                                        <th>File Name</th>
+                                        <th style="width:220px;">Action</th>
+                                    </tr>
+
+                                    <tbody id="tblData">
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        @*  <div class="row">
+                            <div class="col-sm-12">
+                                <h5>Attachment</h5>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Sl No</th>
+                                        <th>File Name</th>
+                                        <th>File Type</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tbody id="tblData">
+                                    
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>  *@
+                       
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning sm" data-bs-dismiss="modal"><i class="fas fa-times-circle"></i></button>                       
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+</div>
+
+
+
+

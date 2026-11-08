@@ -1,0 +1,19 @@
+﻿CREATE TABLE [dbo].[TBLORGANIZATION] (
+    [ID]               INT           IDENTITY (1, 1) NOT NULL,
+    [CODE]             NVARCHAR (50) NULL,
+    [NAME]             NVARCHAR (50) NULL,
+    [PRESENTADDRESS]   NVARCHAR (50) NULL,
+    [PARMANENTADDRESS] NVARCHAR (50) NULL,
+    [EMAILID]          NVARCHAR (50) NULL,
+    [MOBILE]           NVARCHAR (50) NULL,
+    [CONTRACTPERSONID] INT           NULL,
+    [BIN]              NVARCHAR (50) NULL,
+    [TIN]              NVARCHAR (50) NULL,
+    [ISACTIVE]         BIT           NULL,
+    [CREATEDBY]        NVARCHAR (50) NULL,
+    [CREATEDDATE]      DATETIME      NULL,
+    [UPDATEDBY]        NVARCHAR (50) NULL,
+    [UPDATEDDATE]      DATETIME      NULL,
+    CONSTRAINT [PK_TBLORGANIZATION] PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+

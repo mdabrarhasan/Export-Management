@@ -1,0 +1,43 @@
+﻿CREATE PROCEDURE [dbo].[SPLCBANKINFOSAVE]
+(
+    @LCID                   INT,
+    @DOCNEGOTIATEDATE       VARCHAR(100),
+    @BENEFICIARYBANKCOST    DECIMAL(18,2),
+    @CROSSBANKCHARGE        DECIMAL(18,2),
+    @PAYMENTRECEIVEDATE     VARCHAR(100),
+    @IDPBIDBCNO             NVARCHAR(100),
+    @CREATEDBY              INT,
+    @Msg                    VARCHAR(100) OUTPUT
+)
+AS
+BEGIN
+    INSERT INTO TBLLCBANKINFO
+    (
+        LCID,
+        DOCNEGOTIATEDATE,
+        BENEFICIARYBANKCOST,
+        CROSSBANKCHARGE,
+        PAYMENTRECEIVEDATE,
+        IDPBIDBCNO,
+        CREATEDBY,
+        UPDATEDBY,
+        CREATEDDATE,
+        UPDATEDDATE,
+        ISACTIVE
+    )
+    VALUES
+    (
+        @LCID,
+        @DOCNEGOTIATEDATE,
+        @BENEFICIARYBANKCOST,
+        @CROSSBANKCHARGE,
+        @PAYMENTRECEIVEDATE,
+        @IDPBIDBCNO,
+        @CREATEDBY,
+        @CREATEDBY,
+        GETDATE(),
+        GETDATE(),
+        1
+    )
+    SET @Msg = 'Data Saved Successfully.'
+END
