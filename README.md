@@ -1,6 +1,6 @@
 # Export Management - Jute & Textile Export Operations
 
-An enterprise ERP that manages the complete export cycle for jute and textile mills, from sales quotation and sales contract to price confirmation, LC, mill declaration, invoicing and shipping documents, with a configurable parallel approval workflow and SSRS document generation.
+An enterprise ERP that manages the complete export cycle for jute and textile mills, from sales quotation and sales contract to price confirmation, LC, mill declaration, invoicing and shipping documents, with a configurable multi-level approval workflow and SSRS document generation.
 
 ![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?logo=dotnet&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)
